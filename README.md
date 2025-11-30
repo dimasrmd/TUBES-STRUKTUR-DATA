@@ -1,7 +1,7 @@
 # TUBES-STRUKTUR-DATA
 Sedang mencari ide untuk tugas besar
 
-Kelompok 3:
-- Dimas Ramadhani
-- Lutfi Shidqi Mardian
-- Abisar Fathir
+## 👥 Anggota kelompok 3:   
+* [Dimas Ramadhani] - [103112400065]
+* [Lutfi Shidqi Mardian] - [103112400077]
+* [Abisar Fathir] - [103112400068]
