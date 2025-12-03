@@ -2,7 +2,7 @@
 Membuat naratif game berbasis Binary Search Tree
 
 ## 📃 Deskripsi TUBES
-Game ini akan berlatar gedung rektorat di Telkom University Purwokerto. Game ini akan menjadi game bertemakan petualangan atau menjelajah suatu ruangan atau tempat dalam gedung Rektorat. Game ini memiliki mekanik seperti memilih tempat mana yang ingin dikunjungi dan beberapa pemutusan permasalahan (decision making) disertai dengan beberapa tantangan.
+Game ini akan berlatar di gedung rektorat pada sebuah Kampus. Game ini akan menjadi game bertemakan petualangan atau menjelajah suatu ruangan atau tempat dalam gedung Rektorat. Game ini memiliki mekanik seperti memilih tempat mana yang ingin dikunjungi dan beberapa pemutusan permasalahan (decision making) disertai dengan beberapa tantangan.
 
 Game ini menggunakan algoritma Binary Search Tree dalam pemetaan objek di setiap lantai. Menggunakan nilai integer sebagai posisi dari setiap objeknya, dan setiap lantai memiliki range nilai contoh pada lantai 1 memiliki range nilai 0-100 (nilai 100 adalah tangga menuju lantai 2), lantai 2 memilii range 101-200, dan seterusnya sampai lantai 5.
 
