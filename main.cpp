@@ -141,7 +141,69 @@ void mulaiBermain(address root, int radiusPandang) {
     } while (masihBermain);
 }
 
-void lihatSetting(int &radiusPandang) {
+void buatNodeTembok(address &root, int xAwal, int yAwal, int xAkhir, int yAkhir) {
+    // jika tembok vertikal, xAwal dan yAwal merupakan titik paling bawah dari tembok
+    // jika tembok Horizontal, xAwal dan yAwal merupakan titik paling kiri dari tembok
+
+    for (int y = yAwal; y <= yAkhir; y++) {
+        for (int x = xAwal; x <= xAkhir; x++) {
+            root = insert(root, x, y, "Tembok", "AWAS! Ada tembok, tidak bisa lewat!", true);
+        }
+    }
+}
+
+void inputTembok(address &root) {
+    int xAwal, xAkhir, yAwal, yAkhir;
+    system("cls");
+    cout << "=========================" << endl;
+    cout << "    PEMBUATAN TEMBOK     " << endl;
+    cout << "=========================" << endl;
+    cout << "NOTE: jika tembok vertikal, xAwal dan yAwal merupakan titik paling bawah dari tembok" << endl;
+    cout << "NOTE: jika tembok Horizontal, xAwal dan yAwal merupakan titik paling kiri dari tembok" << endl;
+    cout << "Input xAwal: ";
+    cin >> xAwal;
+    cout << "Input yAwal: ";
+    cin >> yAwal;
+    cout << "Input xAkhir: ";
+    cin >> xAkhir;
+    cout << "Input yAkhir: ";
+    cin >> yAkhir;
+
+    buatNodeTembok(root, xAwal, yAwal, xAkhir, yAkhir);
+}
+
+void inputObject(address &root) {
+    root = insert(root, 0, -2, "Bunga", "NIH BUNGA BUAT KAMU", false); 
+}
+
+void menuDeveloper(address &root) {
+    int pililihanDeveloper;
+    do {
+        system("cls");
+        cout << "=========================" << endl;
+        cout << "      SANG DEVELOPER     " << endl;
+        cout << "=========================" << endl;
+        cout << "1. Tambahin tembok" << endl;
+        cout << "2. Tambahin Object" << endl;
+        cout << "3. Keluar" << endl;
+        cout << "-------------------------" << endl;
+        cout << "Pilih menu (1-3): ";
+        cin >> pililihanDeveloper;
+        switch (pililihanDeveloper)
+        {
+        case 1:
+            inputTembok(root);
+            break;
+        case 2:    
+            inputObject(root);
+            break;
+        default:
+            break;
+        }
+    } while (pililihanDeveloper != 3);
+}
+
+void lihatSetting(address &root, int &radiusPandang) {
     int pilihanSetting;
     do {
         system("cls");
@@ -161,7 +223,7 @@ void lihatSetting(int &radiusPandang) {
             cin >> radiusPandang;
             break;
         case 2:
-            // masukDevMode();
+            menuDeveloper(root);
             // comingsoon
             break;
         default:
@@ -170,49 +232,10 @@ void lihatSetting(int &radiusPandang) {
     } while (pilihanSetting != 3);
 }
 
-void inputTembok(address &root) {
-    root = insert(root, -1, -1, "Tembok Kanan", "AWAS! Ada tembok, tidak bisa lewat!", true);
-    root = insert(root, 0, -1, "Tembok Kiri", "AWAS! Ada tembok, tidak bisa lewat!", true);
-    root = insert(root, 1, -1, "Tembok Atas", "AWAS! Ada tembok, tidak bisa lewat!", true);
-
-    root = insert(root, -1, 0, "Tembok Atas", "AWAS! Ada tembok, tidak bisa lewat!", true);
-    // root = insert(root, 0, 0, "Tembok Atas", "AWAS! Ada tembok, tidak bisa lewat!", true); ini koordinat player kocak
-    root = insert(root, 1, 0, "Tembok Atas", "AWAS! Ada tembok, tidak bisa lewat!", true);
-
-    // root = insert(root, 0, 1, "Tembok Atas", "AWAS! Ada tembok, tidak bisa lewat!", true);
-    root = insert(root, -1, 1, "Tembok Atas", "AWAS! Ada tembok, tidak bisa lewat!", true);
-    root = insert(root, 1, 1, "Tembok Atas", "AWAS! Ada tembok, tidak bisa lewat!", true);
-
-    root = insert(root, -1, 2, "Tembok Atas", "AWAS! Ada tembok, tidak bisa lewat!", true);
-    root = insert(root, 1, 2, "Tembok Atas", "AWAS! Ada tembok, tidak bisa lewat!", true);
-    
-    root = insert(root, -1, 3, "Tembok Atas", "AWAS! Ada tembok, tidak bisa lewat!", true);
-    root = insert(root, 1, 3, "Tembok Atas", "AWAS! Ada tembok, tidak bisa lewat!", true);
-
-    root = insert(root, -1, 4, "Tembok Atas", "AWAS! Ada tembok, tidak bisa lewat!", true);
-    root = insert(root, 1, 4, "Tembok Atas", "AWAS! Ada tembok, tidak bisa lewat!", true);
-
-    root = insert(root, -1, 5, "Tembok Atas", "AWAS! Ada tembok, tidak bisa lewat!", true);
-    root = insert(root, 1, 5, "Tembok Atas", "AWAS! Ada tembok, tidak bisa lewat!", true);
-
-    root = insert(root, -1, 6, "Tembok Atas", "AWAS! Ada tembok, tidak bisa lewat!", true);
-    root = insert(root, 1, 6, "Tembok Atas", "AWAS! Ada tembok, tidak bisa lewat!", true);
-
-    root = insert(root, -1, 7, "Tembok Atas", "AWAS! Ada tembok, tidak bisa lewat!", true);
-    root = insert(root, 1, 7, "Tembok Atas", "AWAS! Ada tembok, tidak bisa lewat!", true);
-}
-
-void inputObject(address &root) {
-    root = insert(root, 0, -2, "Bunga", "NIH BUNGA BUAT KAMU", false); 
-}
-
 int main () {
     address root = NIL;
     int pilihanMenu;
-    int radiusPandang = 5;\
-
-    inputTembok(root);
-    inputObject(root);
+    int radiusPandang = 5;
 
     do {
         system("cls");
@@ -231,7 +254,7 @@ int main () {
             mulaiBermain(root, radiusPandang);
             break;
         case 2:
-            lihatSetting(radiusPandang);
+            lihatSetting(root, radiusPandang);
             break;
         case 3:
             cout << "Terimakasih telah bermain!" << endl;
