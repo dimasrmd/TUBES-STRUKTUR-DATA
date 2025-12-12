@@ -1,6 +1,6 @@
 # TUBES-STRUKTUR-DATA
 Membuat naratif game berbasis Binary Search Tree
-
+ddddddddd
 ## 📃 Deskripsi TUBES
 Game ini akan berlatar di gedung rektorat pada sebuah Kampus. Game ini akan menjadi game bertemakan petualangan atau menjelajah suatu ruangan atau tempat dalam gedung Rektorat. Game ini memiliki mekanik seperti memilih tempat mana yang ingin dikunjungi dan beberapa pemutusan permasalahan (decision making) disertai dengan beberapa tantangan.
 
