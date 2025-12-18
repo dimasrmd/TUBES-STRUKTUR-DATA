@@ -95,3 +95,11 @@ void gambarPeta(address root, int posisiX, int posisiY, int radiusPandang) {
         cout << endl;
     }
 }
+
+void buatNodeTembok(address &root, int xAwal, int yAwal, int xAkhir, int yAkhir) {
+    for (int y = yAwal; y <= yAkhir; y++) {
+        for (int x = xAwal; x <= xAkhir; x++) {
+            root = insert(root, x, y, "Tembok", "AWAS! Ada tembok, tidak bisa lewat!", true);
+        }
+    }
+}
