@@ -1,6 +1,15 @@
 #include "gameplay.h"
 #include "pesanObjek.h"
 
+// --gameplay.h--
+// variabel global kunci
+bool kunciDimiliki = false;
+
+// --gameplay.h--
+// variabel global info ruangan
+// 1 = Perpustakaan, 2 = Lorong Kampus
+int ruanganAktif = 1;
+
 bool apakahTembok(address root, int x, int y) {
     if (root == NIL) return false;
     if (root->x == x && root->y == y) return root->tembus; // jika dilewati true => penghalang

@@ -5,15 +5,6 @@
 #include <conio.h>
 
 // --gameplay.h--
-// variabel global kunci
-bool kunciDimiliki = false;
-
-// --gameplay.h--
-// variabel global info ruangan
-// 1 = Perpustakaan, 2 = Lorong Kampus
-int ruanganAktif = 1;
-
-// --gameplay.h--
 // untuk mengecek apakah koordinat tertentu tembok
 bool apakahTembok(address root, int x, int y);
 
