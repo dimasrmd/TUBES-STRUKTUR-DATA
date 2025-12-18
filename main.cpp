@@ -54,14 +54,6 @@ address cariNode(address root, int x, int y) {
 //                      RENDER & MAP SETUP
 // =========================================================
 
-void buatNodeTembok(address &root, int xAwal, int yAwal, int xAkhir, int yAkhir) {
-    for (int y = yAwal; y <= yAkhir; y++) {
-        for (int x = xAwal; x <= xAkhir; x++) {
-            root = insert(root, x, y, "Tembok", "AWAS! Ada tembok, tidak bisa lewat!", true);
-        }
-    }
-}
-
 // ========== INISIALISASI RUANGAN ==========
 void inisialisasiPetaPerpustakaan(address &root) {
     root = NIL;
