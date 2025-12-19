@@ -1,12 +1,17 @@
 #include "bstNode.h"
 #include "gameplay.h"
+#include "database.h"
 
 using namespace std;
 
 int main () {
+    sqlite3* databasePemain; // untuk menghubungkan ke database
     address root = NIL;
     int pilihanMenu;
     int radiusPandang = 5;
+
+    // inisialisasi database
+    buatDatabase(databasePemain);
 
     // Inisialisasi ruangan awal (Perpustakaan)
     pindahKeRuangan(root, /*playerX*/ *(new int(0)), /*playerY*/ *(new int(0)), 1);
@@ -26,7 +31,8 @@ int main () {
         switch (pilihanMenu)
         {
         case 1:
-            mulaiBermain(root, radiusPandang);
+            menuProfil(profil);
+            mulaiBermain(root, radiusPandang, profil);
             break;
         case 2:
             lihatSetting(root, radiusPandang);
