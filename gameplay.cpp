@@ -393,18 +393,46 @@ void menuProfil(int &profil) {
             }
         } while (pilihanMenu > 2); // akan ulang terus kalo inputnya selain 1 dan 2
     } else { // bakal munculin semua profil yang ada
-        cout << "PILIH PROFIL" << endl;
-        cout << "KLIK UNTUK LANJUT" << endl;
-        getch();
+        if(sqlite3_open("dataPemain.db", &data) == SQLITE_OK){
+            tampilkanDaftarPemain(data);
+            sqlite3_close(data);
+        }
+        
+        cout << "PILIH OPSI:" << endl;
+        cout << "1. Pilih Profil (Masukkan ID)" << endl;
+        cout << "2. Buat Profil Baru" << endl;
+        cout << "-------------------------------------" << endl;
+        cout << "> ";
+        cin.ignore();
+        cin >> pilihanMenu;
+        
+        if (pilihanMenu == 2) {
+             buatUsername(profil);
+             totalProfil++;
+        } else {
+             // Asumsi input langsung ID
+             cout << "Masukkan ID Profil yang ingin dimainkan: ";
+             cin >> profil;
+             cout << "Profil ID " << profil << " terpilih." << endl;
+             cout << "Tekan apapun untuk lanjut...";
+             getch();
+        }
     }
 }
 
 void mulaiBermain(address &root, int radiusPandang, int &profil, SkillNode* SkillRoot) {
     int playerLevel = 150;
     sqlite3* data;
+    if (sqlite3_open("dataPemain.db", &data) != SQLITE_OK) {
+        cout << "Gagal membuka database saat mulai bermain!" << endl;
+        return;
+    }
+
     int x; 
     int y;
     ambilData(data, profil, x, y, kunciDimiliki, ruanganAktif);
+    sqlite3_close(data); // Close after getting data
+    
     // Pastikan spawn sesuai ruangan awal
     if (ruanganAktif == 1) { x = 0; y = 0; }
     else if (ruanganAktif == 2) { x = -10; y = 0; }
