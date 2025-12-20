@@ -5,6 +5,9 @@
 // variabel global kunci
 bool kunciDimiliki = false;
 
+// variabel global status pintu perpustakaan
+bool aksesPerpustakaanTerbuka = false;
+
 // --gameplay.h--
 // variabel global info ruangan
 // 1 = Perpustakaan, 2 = Lorong Kampus
@@ -405,6 +408,22 @@ void mulaiBermain(address &root, int radiusPandang) {
 
         // --- Interaksi PANEL (PASSWORD) ---
         if (ruanganAktif == 1 && namaObjekLangkah == "Panel") {
+            // Cek jika sudah terbuka
+            if (aksesPerpustakaanTerbuka) {
+                // Langsung skip ke logika buka pintu
+                // Kita gunakan trik 'goto' atau sekadar set inputKode = "4826" (simulasi)
+                // Tapi lebih rapi kita handle di bawah atau duplikasi logika pindah
+                // Opsi paling bersih:
+                system("cls");
+                cout << "Status: Pintu sudah TERBUKA." << endl;
+                cout << "Tekan tombol apa saja untuk keluar." << endl;
+                _getch();
+                 pindahKeRuangan(root, langkahX, langkahY, 2);
+                 x = langkahX;
+                 y = langkahY;
+                 continue;
+            }
+
             system("cls");
             cout << "=== PANEL AKSES PINTU ===" << endl;
             cout << "PETUNJUK (Riddle):" << endl;
@@ -442,7 +461,19 @@ void mulaiBermain(address &root, int radiusPandang) {
 
             if (cancelInput) {
                  pesanObj = "Input dibatalkan.";
+            } else if (aksesPerpustakaanTerbuka) {
+                 // Jika sudah terbuka sebelumnya, langsung lewat
+                 cout << "\nAKSES DITERIMA (Tersimpan). Pintu terbuka!" << endl;
+                 cout << "Tekan tombol apa saja..." << endl;
+                 _getch();
+                 
+                  // pindah ke ruangan 2 (Lorong)
+                 pindahKeRuangan(root, langkahX, langkahY, 2);
+                 x = langkahX;
+                 y = langkahY;
+                 continue;
             } else if (inputKode == "4826") {
+                aksesPerpustakaanTerbuka = true; // Simpan status terbuka
                 cout << "\nAKSES DITERIMA. Pintu terbuka!" << endl;
                 cout << "Tekan tombol apa saja..." << endl;
                 _getch();
