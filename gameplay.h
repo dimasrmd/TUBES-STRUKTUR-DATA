@@ -27,6 +27,11 @@ void tampilkanTempatSampah();
 
 // menampilkan art di perpustakaan
 void tampilkanArtPerpustakaan();
+
+// menampilkan art clue
+void tampilkanArtClue(int nomorClue);
+
+
     
 // --gameplay.h--
 // mencari nama objek dan mengembalikan variabel tipe string
@@ -43,7 +48,7 @@ void buatNodeTembok(address &root, int xAwal, int yAwal, int xAkhir, int yAkhir)
 
 // --gameplay.h--
 // untuk membuat rak buku
-void buatRakBuku(address &root, int xAwal, int yAwal, int xAkhir, int yAkhir);
+void buatRakBuku(address &root, int xAwal, int yAwal, int xAkhir, int yAkhir, string pesan);
 
 // --gameplay.h--
 // Membuat ruangan perpustakaan

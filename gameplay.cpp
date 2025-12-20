@@ -64,7 +64,19 @@ void tampilkanTempatSampah() {
 void tampilkanArtPerpustakaan() {
     system("cls");
     cout << artPerpustakaan << std::endl;
-    cout << "\n(Sebuah karya seni...)\n";
+    _getch();
+}
+
+
+
+void tampilkanArtClue(int nomorClue) {
+    system("cls");
+    if (nomorClue == 1) cout << artClue1 << endl;
+    else if (nomorClue == 2) cout << artClue2 << endl;
+    else if (nomorClue == 3) cout << artClue3 << endl;
+    else if (nomorClue == 4) cout << artClue4 << endl;
+    
+    cout << "\n(Anda menemukan petunjuk!)\n";
     _getch();
 }
 
@@ -123,10 +135,10 @@ void buatNodeTembok(address &root, int xAwal, int yAwal, int xAkhir, int yAkhir)
     }
 }
 
-void buatRakBuku(address &root, int xAwal, int yAwal, int xAkhir, int yAkhir) {
+void buatRakBuku(address &root, int xAwal, int yAwal, int xAkhir, int yAkhir, string pesan) {
     for (int y = yAwal; y <= yAkhir; y++) {
         for (int x = xAwal; x <= xAkhir; x++) {
-            root = insert(root, x, y, "RakBuku", "Rak ini penuh dengan buku-buku menarik.", true);
+            root = insert(root, x, y, "RakBuku", pesan, true);
         }
     }
 }
@@ -144,27 +156,54 @@ void inisialisasiPetaPerpustakaan(address &root) {
     buatNodeTembok(root, -BATAS, -BATAS, -BATAS, BATAS); // Kiri
     buatNodeTembok(root, BATAS, -BATAS, BATAS, BATAS);  // Kanan
     
+    // --- CLUE DIGIT (Ditaruh SEBELUM rak supaya tidak tertimpa/shadowing) ---
+    // statusDilewati = true supaya 'keras' seperti rak buku (tidak bisa ditembus)
+    // Digit 1: 4
+    root = insert(root, -5, 3, "BukuClue1", "Buku 'Sejarah 4 Penjuru Mata Angin'.", true);
+    // Digit 2: 8
+    root = insert(root, -3, -2, "BukuClue2", "Buku '8 Keajaiban Dunia'.", true);
+    // Digit 3: 2
+    root = insert(root, 1, 4, "BukuClue3", "Buku 'Biografi Presiden Ke-2'.", true);
+    // Digit 4: 6
+    root = insert(root, 3, -3, "BukuClue4", "Buku '6 Langkah Menuju Sukses'.", true);
+
     // --- Menambahkan Rak Buku (Tembok internal) ---
     // Konfigurasi: 6 kolom rak, terbelah di tengah (y=0) untuk jalan
     // Kolom X: -5, -3, -1, 1, 3, 5
-    int kolomRak[] = {-5, -3, -1, 1, 3, 5};
-    for (int i = 0; i < 6; i++) {
-        int x = kolomRak[i];
-        // Bagian Bawah (y: -5 s.d -1)
-        buatRakBuku(root, x, -5, x, -1);
-        // Bagian Atas (y: 1 s.d 5)
-        buatRakBuku(root, x, 1, x, 5);
-    }
+    
+    // Rak Kiri Luar (-5) - Sejarah
+    buatRakBuku(root, -5, -5, -5, -1, "Area Sejarah: Buku-buku kuno berdebu.");
+    buatRakBuku(root, -5, 1, -5, 5, "Area Sejarah: Buku-buku kuno berdebu.");
+
+    // Rak Kiri Tengah (-3) - Bahasa
+    buatRakBuku(root, -3, -5, -3, -1, "Area Bahasa: Kamus dan buku tata bahasa.");
+    buatRakBuku(root, -3, 1, -3, 5, "Area Bahasa: Kamus dan buku tata bahasa.");
+
+    // Rak Kiri Dalam (-1) - Sains
+    buatRakBuku(root, -1, -5, -1, -1, "Area Sains: Ensiklopedia alam semesta.");
+    buatRakBuku(root, -1, 1, -1, 5, "Area Sains: Ensiklopedia alam semesta.");
+
+    // Rak Kanan Dalam (1) - Matematika
+    buatRakBuku(root, 1, -5, 1, -1, "Area Matematika: Rumus-rumus yang memusingkan.");
+    buatRakBuku(root, 1, 1, 1, 5, "Area Matematika: Rumus-rumus yang memusingkan.");
+
+    // Rak Kanan Tengah (3) - Fiksi
+    buatRakBuku(root, 3, -5, 3, -1, "Area Fiksi: Novel dan cerita rakyat.");
+    buatRakBuku(root, 3, 1, 3, 5, "Area Fiksi: Novel dan cerita rakyat.");
+
+    // Rak Kanan Luar (5) - Umum
+    buatRakBuku(root, 5, -5, 5, -1, "Area Umum: Koran dan majalah.");
+    buatRakBuku(root, 5, 1, 5, 5, "Area Umum: Koran dan majalah.");
     
     // --- Objek PENTING ---
-    // Objek 1: Kunci yang harus ditemukan (*)
-    root = insert(root, 6, 6, "Kunci", "Anda menemukan KUNCI EMAS!", false);
+    // Objek 1: Panel Pembuka Pintu
+    root = insert(root, 6, 0, "Panel", "Panel akses pintu.", false);
     
     // Objek 3: Pesan Awal
-    root = insert(root, 0, 0, "Pesan", "Anda di dalam perpustakaan. Cari kunci (X=6, Y=6) dan Pintu (X=7, Y=0) untuk keluar!", false);
+    root = insert(root, 0, 0, "Pesan", "Anda di dalam perpustakaan. Pintu terkunci dengan password. Cari petunjuk di buku-buku!", false);
 
-    // Objek 4: Lukisan Art (Interaksi Point)
-    root = insert(root, 5, 0, "Lukisan", "Sebuah karya seni misterius.", false);
+    // Objek 4: Lukisan Art (Interaksi Point) - DIKEMBALIKAN (Geser ke 4,0)
+    root = insert(root, 4, 0, "Lukisan", "Sebuah karya seni misterius.", false);
 }
 
 void buatLorongKampus(address &root) {
@@ -299,8 +338,9 @@ void mulaiBermain(address &root, int radiusPandang) {
         
         // --- Menampilkan Inventori ---
         cout << "Item: ";
-        if (kunciDimiliki) cout << "Kunci Emas";
-        else cout << "Kosong";
+        // --- Menampilkan Inventori ---
+        cout << "Item: ";
+        cout << "Pecahan Kode"; // Logic item kunci sudah dihapus
         cout << endl;
         // ------------------------------
         
@@ -349,9 +389,72 @@ void mulaiBermain(address &root, int radiusPandang) {
         }
 
         // --- Interaksi LUKISAN di ruangan 1 ---
+        // (Dihapus karena diganti Meja)
+        
+        // --- Interaksi LUKISAN di ruangan 1 ---
         if (ruanganAktif == 1 && namaObjekLangkah == "Lukisan") {
             tampilkanArtPerpustakaan();
-            pesanObj = "Anda mengagumi karya seni tersebut.";
+            pesanObj = "Perpustakaan sudah kosong, seram sekali.";
+        }
+
+        // --- Interaksi CLUE ---
+        if (namaObjekLangkah == "BukuClue1") { tampilkanArtClue(1); pesanObj = "Aneh sekali, aku tidak tau mereka punya buku seperti ini di perpustakaan. Pasti ini digit yang kubutuhkan."; }
+        if (namaObjekLangkah == "BukuClue2") { tampilkanArtClue(2); pesanObj = "Ketemu lagi, aku harus cari sisanya.."; }
+        if (namaObjekLangkah == "BukuClue3") { tampilkanArtClue(3); pesanObj = "Ini dia, aku hanya butuh satu digit lagi.."; }
+        if (namaObjekLangkah == "BukuClue4") { tampilkanArtClue(4); pesanObj = "Terakhir, sekarang sudah lengkap untuk membuka password pintu."; }
+
+        // --- Interaksi PANEL (PASSWORD) ---
+        if (ruanganAktif == 1 && namaObjekLangkah == "Panel") {
+            system("cls");
+            cout << "=== PANEL AKSES PINTU ===" << endl;
+            cout << "PETUNJUK (Riddle):" << endl;
+            cout << "Digit 1: Aku seringkali dilupakan, di antara debu masa lalu." << endl;
+            cout << "Digit 2: Jika ingin fasih berkata-kata, temukan aku di sana." << endl;
+            cout << "Digit 3: Tempat di mana angka dan rumus berkuasa." << endl;
+            cout << "Digit 4: Dunia khayalan dan cerita rakyat bersembunyi di sini." << endl;
+            cout << "========================" << endl;
+            cout << "Masukan 4 digit kode akses (backspace untuk kembali) : ";
+            
+            // IMPLEMENTASI INPUT MANUAL DENGAN BACKSPACE
+            string inputKode = "";
+            char ch;
+            bool cancelInput = false;
+
+            while (true) {
+                ch = _getch(); // Ambil input tanpa echo otomatis
+
+                if (ch == 13) { // ENTER
+                    break; 
+                } else if (ch == 8) { // BACKSPACE
+                    if (inputKode.length() > 0) {
+                        cout << "\b \b"; // Hapus karakter di layar
+                        inputKode.pop_back();
+                    } else {
+                        // Jika buffer kosong dan tekan backspace -> CANCEL
+                        cancelInput = true;
+                        break;
+                    }
+                } else {
+                    cout << ch; // Tampilkan karakter
+                    inputKode += ch;
+                }
+            }
+
+            if (cancelInput) {
+                 pesanObj = "Input dibatalkan.";
+            } else if (inputKode == "4826") {
+                cout << "\nAKSES DITERIMA. Pintu terbuka!" << endl;
+                cout << "Tekan tombol apa saja..." << endl;
+                _getch();
+                
+                 // pindah ke ruangan 2 (Lorong)
+                pindahKeRuangan(root, langkahX, langkahY, 2);
+                x = langkahX;
+                y = langkahY;
+                continue;
+            } else {
+                pesanObj = "Akses Ditolak! Kode salah.";
+            }
         }
 
 
@@ -367,32 +470,11 @@ void mulaiBermain(address &root, int radiusPandang) {
             }
         }
 
-        // --- Interaksi PINTU bergantung ruangan aktif dan nama pintu ---
+        // --- Interaksi PINTU ---
         if (namaObjekLangkah == "Pintu" || namaObjekLangkah == "PintuPerpustakaan" || namaObjekLangkah == "PintuRuangKelas" || namaObjekLangkah == "PintuKeluar") {
             // Perilaku berbeda bergantung pada nama pintu dan ruangan aktif
             if (ruanganAktif == 1 && (namaObjekLangkah == "Pintu" || namaObjekLangkah == "PintuPerpustakaan")) {
-                // Ini pintu perpustakaan -> pindah ke lorong (ruangan 2) bila kunci dimiliki
-                if (kunciDimiliki) {
-                    // Pesan transisi
-                    system("cls");
-                    cout << "Anda membuka pintu perpustakaan dan keluar..." << endl;
-                    cout << "Tekan tombol apa saja untuk melanjutkan ke Lorong Kampus." << endl;
-                    _getch();
-
-                    // pindah ke ruangan 2 (Lorong)
-                    pindahKeRuangan(root, langkahX, langkahY, 2);
-
-                    // set posisi player ke spawn ruangan baru
-                    x = langkahX;
-                    y = langkahY;
-
-                    // lanjut loop untuk render ruangan baru
-                    continue;
-                } else {
-                    // pintu terkunci - bersifat penghalang jika dilewati==true
-                    pesanObj = "Pintu terkunci. Temukan kunci terlebih dahulu!";
-                    // tidak bergerak
-                }
+                 pesanObj = "Pintu terkunci secara elektronik. Gunakan Panel di sebelahnya (X=6, Y=0).";
             } else if (ruanganAktif == 2 && namaObjekLangkah == "PintuPerpustakaan") {
                 // balik ke perpustakaan (mis. pintu di lorong yang menuju perpustakaan)
                 system("cls");
