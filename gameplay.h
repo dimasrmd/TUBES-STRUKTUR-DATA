@@ -1,8 +1,26 @@
 #ifndef GAMEPLAY_H
 #define GAMEPLAY_H
 #include "bstNode.h"
+#include "database.h"
 #include <cstdlib>
 #include <conio.h>
+
+// --gameplay.h--
+// variabel global kunci
+extern bool kunciDimiliki; // pake extern karena buat nunjukin kalo isi dari variabelnya 
+
+// --gameplay.h--
+// variabel global info ruangan
+// 1 = Perpustakaan, 2 = Lorong Kampus
+extern int ruanganAktif;
+
+// --gameplay.h--
+// untuk memilih profil yang akan dimainkan
+extern int profil; 
+
+// --gameplay.h--
+// variabel menghitung jumlah profil yang dibuat
+extern int totalProfil;
 
 // --gameplay.h--
 // untuk mengecek apakah koordinat tertentu tembok
@@ -80,6 +98,10 @@ void inputTembok(address &root);
 
 // --gameplay.h--
 // untuk memulai gamenya
-void mulaiBermain(address &root, int radiusPandang);
+void mulaiBermain(address &root, int radiusPandang, int &profil);
+
+// --gameplay.h--
+// untuk memilih profil yang akan dimainkan
+void menuProfil(int &profil);
 
 #endif
