@@ -36,6 +36,15 @@ Berikut beberapa fitur yang ada didalam game **The Game: Bizzare Night at Campus
 
 ***
 
+## CARA RUN
+>g++ *.cpp Database/sqlite3.o -o main
+>./main
+
+atau
+
+> g++ (ls *.cpp).name Database/sqlite3.o -o main
+> ./main
+
 <p align = "center"> 🛠️ MASIH DALAM PENGEMBANGAN (ON-GOING) </p>
 
 <!-- ## ✍️ Cheat Penulisan dalam Markdown
