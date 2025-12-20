@@ -1,10 +1,28 @@
 #ifndef GAMEPLAY_H
 #define GAMEPLAY_H
 #include "bstNode.h"
+#include "database.h"
 #include <cstdlib>
 #include <conio.h>
 #include "Skilltree.h"
 
+
+// --gameplay.h--
+// variabel global kunci
+extern bool kunciDimiliki; // pake extern karena buat nunjukin kalo isi dari variabelnya 
+
+// --gameplay.h--
+// variabel global info ruangan
+// 1 = Perpustakaan, 2 = Lorong Kampus
+extern int ruanganAktif;
+
+// --gameplay.h--
+// untuk memilih profil yang akan dimainkan
+extern int profil; 
+
+// --gameplay.h--
+// variabel menghitung jumlah profil yang dibuat
+extern int totalProfil;
 
 // --gameplay.h--
 // untuk mengecek apakah koordinat tertentu tembok
@@ -24,8 +42,16 @@ void ubahPropertiNode(address root, int x, int y,
     bool statusBaruDilewati, string pesanBaru);
     
 // --gameplay.h--
-// fungsi untuk menampilkan obejk tempat sampah
+// function untuk menampilkan obejk tempat sampah
 void tampilkanTempatSampah();
+
+// menampilkan art di perpustakaan
+void tampilkanArtPerpustakaan();
+
+// menampilkan art clue
+void tampilkanArtClue(int nomorClue);
+
+
     
 // --gameplay.h--
 // mencari nama objek dan mengembalikan variabel tipe string
@@ -39,6 +65,10 @@ void gambarPeta(address root, int x,
 // --gameplay.h--
 // untuk developer mode membuat tembok
 void buatNodeTembok(address &root, int xAwal, int yAwal, int xAkhir, int yAkhir);
+
+// --gameplay.h--
+// untuk membuat rak buku
+void buatRakBuku(address &root, int xAwal, int yAwal, int xAkhir, int yAkhir, string pesan);
 
 // --gameplay.h--
 // Membuat ruangan perpustakaan
@@ -71,5 +101,10 @@ void inputTembok(address &root);
 // --gameplay.h--
 // untuk memulai gamenya
 void mulaiBermain(address &root, int radiusPandang, SkillNode* SkillRoot);
+void mulaiBermain(address &root, int radiusPandang, int &profil);
+
+// --gameplay.h--
+// untuk memilih profil yang akan dimainkan
+void menuProfil(int &profil);
 
 #endif
