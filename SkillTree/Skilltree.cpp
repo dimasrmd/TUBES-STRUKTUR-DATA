@@ -48,7 +48,7 @@ void clearAllSkills(SkillNode*& root) {
     clearAllSkills(root->left);
     clearAllSkills(root->right);
 
-    clearAlleffects(root->data.effects);
+    // clearAlleffects(root->data.effects);
  
     delete root;
     root = nullptr;
@@ -79,7 +79,7 @@ void deleteSkill(SkillNode*& root, string namaSkill) {
 
         // LANGKAH PENTING: Hapus dulu anak-anaknya (List Effect)
         // Kalau tidak dihapus, memorinya nyangkut (Memory Leak)
-        clearAlleffects(root->data.effects);
+        // clearAlleffects(root->data.effects);
 
         // Kasus 1: Tidak punya anak atau cuma 1 anak
         if (root->left == nullptr) {
@@ -124,7 +124,7 @@ void inorder(SkillNode* root) {
     
     // Cetak Efek (Child - Linked List)
     // Fungsi ini ada di effect.cpp
-    displayEffects(root->data.effects);
+    // displayEffects(root->data.effects);
 
     // Ke Kanan
     inorder(root->right);
@@ -145,9 +145,8 @@ void viewByCategory(SkillNode* root, string kategori) {
     viewByCategory(root -> right, kategori);
 }
 
-   void menuSkillTree(SkillNode* root) {
+void menuSkillTree(SkillNode *root) {
     string inputNama;
-    
     while (true) {
         system("cls");
         horrorGlitch("=== THE MIND PALACE ===");
@@ -158,19 +157,15 @@ void viewByCategory(SkillNode* root, string kategori) {
         cout << " [1] INTELLECT (Logika)" << endl;
         viewByCategory(root, "INTELLECT");
         cout << "--------------------------------------------------" << endl;
-
         cout << " [2] PSYCHE (Jiwa)" << endl;
         viewByCategory(root, "PSYCHE");
         cout << "--------------------------------------------------" << endl;
-
         cout << " [3] PHYSIQUE (Fisik)" << endl;
         viewByCategory(root, "PHYSIQUE");
         cout << "--------------------------------------------------" << endl;
-
         cout << " [4] MOTORICS (Gerak)" << endl;
         viewByCategory(root, "MOTORICS");
         cout << "==================================================" << endl;
-
         cout << "[Ketik Nama Skill untuk Upgrade] atau [X] Kembali" << endl;
         cout << ">> Pilihan: ";
         
@@ -193,5 +188,3 @@ void viewByCategory(SkillNode* root, string kategori) {
         _getch();
     }
 }
-
-

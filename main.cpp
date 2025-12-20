@@ -7,6 +7,7 @@ using namespace std;
 int main () {
     sqlite3* databasePemain; // untuk menghubungkan ke database
     address root = NIL;
+    SkillNode rootSkill;
     int pilihanMenu;
     int radiusPandang = 5;
 
@@ -32,7 +33,7 @@ int main () {
         {
         case 1:
             menuProfil(profil);
-            mulaiBermain(root, radiusPandang, profil);
+            mulaiBermain(root, radiusPandang, profil, &rootSkill);
             break;
         case 2:
             lihatSetting(root, radiusPandang);

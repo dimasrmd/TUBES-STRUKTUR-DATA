@@ -1,6 +1,6 @@
 #include "gameplay.h"
 #include "pesanObjek.h"
-#include  "Skilltree.h"
+#include "Skilltree/Skilltree.h"
 // --gameplay.h--
 // variabel global kunci
 
@@ -330,10 +330,6 @@ void inputTembok(address &root) {
     buatNodeTembok(root, xAwal, yAwal, xAkhir, yAkhir);
 }
 
-void mulaiBermain(address &root, int radiusPandang, SkillNode* SkillRoot) {
-
-    int playerLevel = 150;
-    int x = 0, y = 0;
 void buatUsername(int &profil) {
     sqlite3* data;
     string usn;
@@ -403,7 +399,8 @@ void menuProfil(int &profil) {
     }
 }
 
-void mulaiBermain(address &root, int radiusPandang, int &profil) {
+void mulaiBermain(address &root, int radiusPandang, int &profil, SkillNode* SkillRoot) {
+    int playerLevel = 150;
     sqlite3* data;
     int x; 
     int y;
@@ -459,11 +456,11 @@ void mulaiBermain(address &root, int radiusPandang, int &profil) {
             break;
         case 'k':
             if (playerLevel >= 2){
-                menuSkillTree(SkillRoot);
+                // menuSkillTree(SkillRoot); SANG PEMBUAT EROR
             } else {
                 pesanObj = "SKill tree terkunci....(Kill The BEAST to unlock)";
             } 
-            continue;
+            break;
         case 'x':
             masihBermain = false;
         default:

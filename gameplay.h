@@ -4,7 +4,7 @@
 #include "database.h"
 #include <cstdlib>
 #include <conio.h>
-#include "Skilltree.h"
+#include "Skilltree/Skilltree.h"
 
 
 // --gameplay.h--
@@ -101,7 +101,7 @@ void inputTembok(address &root);
 // --gameplay.h--
 // untuk memulai gamenya
 void mulaiBermain(address &root, int radiusPandang, SkillNode* SkillRoot);
-void mulaiBermain(address &root, int radiusPandang, int &profil);
+void mulaiBermain(address &root, int radiusPandang, int &profil, SkillNode* rootSkill); 
 
 // --gameplay.h--
 // untuk memilih profil yang akan dimainkan

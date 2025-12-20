@@ -46,7 +46,7 @@ void clearAllSkills(SkillNode*& root);
 //Ui menu
 void bukaMenuSkill(SkillNode* &skillRoot);
 void viewSkillsByCategory(SkillNode* root, string category);
-void menuSkillTree(SkillNode* root);
+void menuSkillTree(SkillNode *root);
 
 #endif
 
