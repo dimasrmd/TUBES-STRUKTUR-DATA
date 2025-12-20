@@ -6,12 +6,14 @@ using namespace std;
 
 struct effect{
     string nama;
-    string deskripsi;
+    string deskripsi; 
     effect* next;
 };
 
-effect* createeffect(string effectname);
-void addeffect(effect*& head,string effectname);
+// Update parameternya: tambah string deskripsi
+effect* createeffect(string effectname, string desc);
+void addeffect(effect*& head, string effectname, string desc);
+
 void removeEffect(effect*& head, string effectname);
 void displayEffects(effect* head);
 void clearAlleffects(effect*& head);

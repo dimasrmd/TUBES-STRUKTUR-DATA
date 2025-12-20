@@ -4,6 +4,8 @@
 #include "database.h"
 #include <cstdlib>
 #include <conio.h>
+#include "Skilltree.h"
+
 
 // --gameplay.h--
 // variabel global kunci
@@ -98,6 +100,7 @@ void inputTembok(address &root);
 
 // --gameplay.h--
 // untuk memulai gamenya
+void mulaiBermain(address &root, int radiusPandang, SkillNode* SkillRoot);
 void mulaiBermain(address &root, int radiusPandang, int &profil);
 
 // --gameplay.h--

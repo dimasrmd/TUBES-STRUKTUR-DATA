@@ -2,6 +2,7 @@
 #define SKILLTREE_H
 
 #include <string>
+#include <conio.h>
 #include "effect.h"
 using namespace std;
 
@@ -41,6 +42,11 @@ void viewByCategory(SkillNode* root, string kategori);
 
 // Utilitas
 void clearAllSkills(SkillNode*& root);
+
+//Ui menu
+void bukaMenuSkill(SkillNode* &skillRoot);
+void viewSkillsByCategory(SkillNode* root, string category);
+void menuSkillTree(SkillNode* root);
 
 #endif
 

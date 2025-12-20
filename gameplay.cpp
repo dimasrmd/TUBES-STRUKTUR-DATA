@@ -1,5 +1,8 @@
 #include "gameplay.h"
 #include "pesanObjek.h"
+#include  "Skilltree.h"
+// --gameplay.h--
+// variabel global kunci
 
 // --- DEFINISI VARIABEL GLOBAL ---
 bool kunciDimiliki = false;
@@ -327,6 +330,10 @@ void inputTembok(address &root) {
     buatNodeTembok(root, xAwal, yAwal, xAkhir, yAkhir);
 }
 
+void mulaiBermain(address &root, int radiusPandang, SkillNode* SkillRoot) {
+
+    int playerLevel = 150;
+    int x = 0, y = 0;
 void buatUsername(int &profil) {
     sqlite3* data;
     string usn;
@@ -430,6 +437,7 @@ void mulaiBermain(address &root, int radiusPandang, int &profil) {
 
         cout << "\n>Gunakan x untuk keluar ke menu\n";
         cout << ">Gunakan (w/a/s/d) untuk bergerak\n";
+        cout << ">K untuk Inventori\n";
         cout << "input: ";
         pilihanBermain = static_cast<char>(_getch());
         
@@ -449,6 +457,13 @@ void mulaiBermain(address &root, int radiusPandang, int &profil) {
         case 'd':
             langkahX++;
             break;
+        case 'k':
+            if (playerLevel >= 2){
+                menuSkillTree(SkillRoot);
+            } else {
+                pesanObj = "SKill tree terkunci....(Kill The BEAST to unlock)";
+            } 
+            continue;
         case 'x':
             masihBermain = false;
         default:
