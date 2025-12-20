@@ -3,6 +3,8 @@
 #include "bstNode.h"
 #include <cstdlib>
 #include <conio.h>
+#include "Skilltree.h"
+
 
 // --gameplay.h--
 // untuk mengecek apakah koordinat tertentu tembok
@@ -68,6 +70,6 @@ void inputTembok(address &root);
 
 // --gameplay.h--
 // untuk memulai gamenya
-void mulaiBermain(address &root, int radiusPandang);
+void mulaiBermain(address &root, int radiusPandang, SkillNode* SkillRoot);
 
 #endif

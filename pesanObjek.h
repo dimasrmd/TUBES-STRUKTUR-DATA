@@ -1,7 +1,7 @@
 #ifndef PESANOBJEK_H
 #define PESANOBJEK_H
 
-const char* trash = R"(                                                                                                       
+static const char* trash = R"(                                                                                                       
 ....                                              
 -=-:.....                                         
 #**++=::.. .                                      
