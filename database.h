@@ -21,4 +21,8 @@ void ambilData(sqlite3* data, int profil, int &x, int &y, bool &kunci, int &ruan
 // Fungsi untuk menghitung total data pemain
 int hitungJumlahPemain(sqlite3* data);
 
+// --file database.h--
+// Fungsi untuk menampilkan daftar pemain
+void tampilkanDaftarPemain(sqlite3* data);
+
 #endif
