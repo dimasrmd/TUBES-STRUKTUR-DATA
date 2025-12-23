@@ -216,26 +216,22 @@ void inisialisasiPetaPerpustakaan(address &root) {
 
 void buatLorongKampus(address &root) {
     root = NIL;
-    const int BATAS = 12;
-
-    // INSERT PINTU-PIINTU SEBELUM MENAMBAHKAN TEMBOK agar tidak tertindih
-    // Pintu menuju Perpustakaan (di sisi kiri)
-    root = insert(root, -BATAS, 0, "PintuPerpustakaan", "Pintu menuju Perpustakaan kecil.", false); // bisa dilewati
-    // Pintu ke ruang kelas di sisi kanan (tertutup untuk contoh)
-    root = insert(root, BATAS, 0, "PintuRuangKelas", "Pintu menuju Ruang Kelas A. Terkunci.", true); // tertutup
-
-    // Dinding luar lorong
-    buatNodeTembok(root, -BATAS, -BATAS, BATAS, -BATAS);
-    buatNodeTembok(root, -BATAS, BATAS, BATAS, BATAS);
-    buatNodeTembok(root, -BATAS, -BATAS, -BATAS, BATAS);
-    buatNodeTembok(root, BATAS, -BATAS, BATAS, BATAS);
-
-    // Beberapa dekorasi / objek di lorong
-    root = insert(root, -3, 1, "Poster", "Poster acara kampus terpampang.", false);
-    root = insert(root, 4, -1, "Tempat Sampah", "Tempat sampah kosong.", false);
-
-    // Pesan titik spawn/intro
-    root = insert(root, 0, 2, "PesanLorong", "Anda sekarang berada di lorong kampus. Ada pintu ke ruang kelas di sebelah kanan.", false);
+    
+    // Lorong panjang sempit: 40 karakter panjang, lebar 3 (1 jalan tengah + 2 tembok samping)
+    // Koordinat X: -11 (pintu perpustakaan) hingga 29 (pintu ujung lorong)
+    // Koordinat Y: -1 (tembok bawah), 0 (jalan), 1 (tembok atas)
+    
+    // INSERT PINTU di ujung kiri (pintu perpustakaan - bisa dibuka)
+    root = insert(root, -11, 0, "PintuPerpustakaan", "Pintu menuju Perpustakaan.", false);
+    
+    // INSERT PINTU di ujung kanan (pintu terkunci)
+    root = insert(root, 29, 0, "PintuUjung", "Pintu terkunci rapat.", true);
+    
+    // Tembok atas lorong (Y = 1, dari X = -11 hingga X = 29)
+    buatNodeTembok(root, -11, 1, 29, 1);
+    
+    // Tembok bawah lorong (Y = -1, dari X = -11 hingga X = 29)
+    buatNodeTembok(root, -11, -1, 29, -1);
 }
 
 void pindahKeRuangan(address &root, int &x, int &y, int tujuan) {
@@ -393,18 +389,47 @@ void menuProfil(int &profil) {
             }
         } while (pilihanMenu > 2); // akan ulang terus kalo inputnya selain 1 dan 2
     } else { // bakal munculin semua profil yang ada
-        cout << "PILIH PROFIL" << endl;
-        cout << "KLIK UNTUK LANJUT" << endl;
-        getch();
+        if(sqlite3_open("dataPemain.db", &data) == SQLITE_OK){
+            tampilkanDaftarPemain(data);
+            sqlite3_close(data);
+        }
+        
+        cout << "PILIH OPSI:" << endl;
+        cout << "1. Pilih Profil (Masukkan ID)" << endl;
+        cout << "2. Buat Profil Baru" << endl;
+        cout << "-------------------------------------" << endl;
+        cout << "> ";
+        cin >> pilihanMenu;
+        
+        if (pilihanMenu == 2) {
+             buatUsername(profil);
+             totalProfil++;
+        } else {
+             // Asumsi input langsung ID
+             cout << "Masukkan ID Profil yang ingin dimainkan: ";
+             cin >> profil;
+             cout << "Profil ID " << profil << " terpilih." << endl;
+             cout << "Tekan apapun untuk lanjut...";
+             getch();
+        }
     }
 }
 
 void mulaiBermain(address &root, int radiusPandang, int &profil, SkillNode* SkillRoot) {
     int playerLevel = 150;
     sqlite3* data;
+    
+    // Open database before loading data
+    if (sqlite3_open("dataPemain.db", &data) != SQLITE_OK) {
+        cout << "Gagal membuka database saat mulai bermain!" << endl;
+        return;
+    }
+    
     int x; 
     int y;
     ambilData(data, profil, x, y, kunciDimiliki, ruanganAktif);
+    sqlite3_close(data); // Close after getting data
+    
     // Pastikan spawn sesuai ruangan awal
     if (ruanganAktif == 1) { x = 0; y = 0; }
     else if (ruanganAktif == 2) { x = -10; y = 0; }

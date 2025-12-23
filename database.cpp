@@ -103,3 +103,33 @@ int hitungJumlahPemain(sqlite3* data) {
     
     return jumlah; // Kembalikan angka totalnya
 }
+
+void tampilkanDaftarPemain(sqlite3* data) {
+    sqlite3_stmt* statement;
+    string query = "SELECT ID, USERNAME FROM pemain;";
+    
+    // Prepare statement
+    if (sqlite3_prepare_v2(data, query.c_str(), -1, &statement, NULL) == SQLITE_OK) {
+        cout << "-------------------------------------" << endl;
+        cout << "DAFTAR PEMAIN TERDAFTAR:" << endl;
+        cout << "-------------------------------------" << endl;
+        
+        bool adaPemain = false;
+        while (sqlite3_step(statement) == SQLITE_ROW) {
+            adaPemain = true;
+            int id = sqlite3_column_int(statement, 0);
+            const unsigned char* username = sqlite3_column_text(statement, 1);
+            
+            cout << id << ". " << username << endl;
+        }
+        
+        if (!adaPemain) {
+            cout << "(Belum ada pemain)" << endl;
+        }
+        cout << "-------------------------------------" << endl;
+    } else {
+        cout << "Gagal mengambil daftar pemain: " << sqlite3_errmsg(data) << endl;
+    }
+    
+    sqlite3_finalize(statement);
+}
