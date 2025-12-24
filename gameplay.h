@@ -4,10 +4,10 @@
 #include "bstNode.h"
 #include "database.h"
 #include "pesanObjek.h"
-#include "effect.h"
-#include "Skilltree.h"
-#include "Character.h"
-#include "Utilitas.h"
+#include "Skilltree/Utilitas.h"
+#include "Skilltree/Character.h"
+#include "Skilltree/effect.h"
+#include "Skilltree/Skilltree.h"
 #include <iostream>
 #include <conio.h>
 

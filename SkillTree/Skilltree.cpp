@@ -143,20 +143,22 @@ void menuSkillTree(SkillNode* root, CharacterStats* playerStats) {
     cout << "Health: " << playerStats->health << "/" << playerStats->maxHealth << endl;
     cout << "Skill Points: " << playerStats->availableSkillPoints << endl;
 
-    cout << "[intelect]" << endl;
-    viewByCategory(root, "INTELECT");
+    cout << "\n[ INTELLECT ]" << endl;
+        viewByCategory(root, "INTELLECT");
 
-    cout << "[MOTORICS]" << endl;
-    viewByCategory(root, "MOTORICS");
+        cout << "\n[ PSYCHE ]" << endl;
+        viewByCategory(root, "PSYCHE");
 
-    cout << "[PSYCHE]" << endl;
-    viewByCategory(root, "PSYCHE");
+        cout << "\n[ PHYSIQUE ]" << endl;
+        viewByCategory(root, "PHYSIQUE");
 
-    cout << "[PHYSIQUE]" << endl;
-    viewByCategory(root, "PHYSIQUE");
+        cout << "\n[ MOTORICS ]" << endl;
+        viewByCategory(root, "MOTORICS");
 
-    cout << "\n[Ketik Nama Skill untuk Upgrade] atau [X] Kembali" << endl;
-    cout << ">> Pilihan: ";
+        cout << "\n========================================" << endl;
+        cout << "Ketik nama skill persis untuk upgrade (Case Sensitive)" << endl;
+        cout << "Ketik 'x' atau 'X' untuk kembali." << endl;
+        cout << ">> Input: ";
         
    if (cin.peek() == '\n') cin.ignore(); 
         getline(cin, inputNama);
@@ -197,7 +199,7 @@ void menuSkillTree(SkillNode* root, CharacterStats* playerStats) {
                     effect* eff = hasil->data.effects;
                     while (eff != nullptr) {
                         if (eff->type == PASSIVE) {
-                            applyEffectToCharacter(*playerStats, eff->statAffected, eff->value);
+                             applyCharacterEffect(*playerStats, eff->statAffected, eff->value);
                             cout << "[+] " << eff->nama << " activated!" << endl;
                         }
                         eff = eff->next;

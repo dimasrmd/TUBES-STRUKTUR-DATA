@@ -5,25 +5,22 @@
 using namespace std;
 
 enum EffectType {
-    PASSIVE,    // Selalu aktif (stat boost)
-    ACTIVE,     // Perlu diaktifkan manual
-    TRIGGERED   // Aktif otomatis saat kondisi tertentu
+    PASSIVE,
+    ACTIVE,
+    TRIGGERED
 };
 
 struct effect {
     string nama;
     string deskripsi;
-    
-    // ⭐ TAMBAHAN BARU - Gameplay properties
-    EffectType type;          // Tipe effect (PASSIVE/ACTIVE/TRIGGERED)
-    string statAffected;      // Stat yang dipengaruhi (HEALTH, INTELLECT, etc)
-    int value;                // Nilai efek (+5 health, +2 intellect, dll)
-    bool isActive;            // Status aktif/tidak
-    
+    EffectType type;
+    string statAffected;
+    int value;
+    bool isActive;
     effect* next;
 };
 
-// ⭐ Function signature BERUBAH - sekarang terima lebih banyak parameter
+// Deklarasi fungsi effect
 effect* createeffect(string effectname, string desc, 
                      EffectType type = PASSIVE, 
                      string statAffected = "", 
@@ -37,5 +34,9 @@ void addeffect(effect*& head, string effectname, string desc,
 void activateEffect(effect* effectNode);
 void deactivateEffect(effect* effectNode);
 effect* findEffect(effect* head, string effectName);
+
+void displayEffects(effect* head);
+void removeEffect(effect*& head, string effectname);
+void clearAlleffects(effect*& head);
 
 #endif

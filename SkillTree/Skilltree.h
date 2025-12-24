@@ -7,6 +7,9 @@
 #include "effect.h"
 using namespace std;
 
+// Forward declaration
+struct CharacterStats;
+
 struct Skill {
     string namaSkill;     
     string kategori;
@@ -43,7 +46,7 @@ SkillNode* skillWithMostEffects(SkillNode* root);
 
 
 //Ui menu
-void MenuSkillTree(SkillNode* root, CharacterStats* playerStats);;
+void menuSkillTree(SkillNode* root, CharacterStats* playerStats);
 
 void displaycategorySkills(SkillNode* root, string kategori);
 

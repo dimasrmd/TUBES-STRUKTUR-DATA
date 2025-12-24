@@ -1,9 +1,5 @@
 #include "gameplay.h"
 #include "pesanObjek.h"
-#include "effect.h"
-#include "Skilltree.h"
-#include "Character.h"
-#include "Utilitas.h"
 #include <conio.h>
 
 // --- DEFINISI VARIABEL GLOBAL ---
