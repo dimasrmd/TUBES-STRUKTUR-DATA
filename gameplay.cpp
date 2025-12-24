@@ -1,27 +1,94 @@
 #include "gameplay.h"
 #include "pesanObjek.h"
-#include  "Skilltree.h"
-// --gameplay.h--
-// variabel global kunci
+#include "effect.h"
+#include "Skilltree.h"
+#include "Character.h"
+#include "Utilitas.h"
+#include <conio.h>
 
 // --- DEFINISI VARIABEL GLOBAL ---
 bool kunciDimiliki = false;
-
-// variabel global status pintu perpustakaan
 bool aksesPerpustakaanTerbuka = false;
-
-// --gameplay.h--
-// variabel global info ruangan
-// 1 = Perpustakaan, 2 = Lorong Kampus
 int ruanganAktif = 1;
-int profil = 0;       // Inisialisasi defalut
-int totalProfil = 0;  // Inisialisasi defalut
-// -----------------------------------------------------
+int profil = 0;       
+int totalProfil = 0;  
+
+// ==========================================
+// FUNGSI BANTUAN DATABASE & PROFIL
+// ==========================================
+
+void buatUsername(int &profil) {
+    sqlite3* data;
+    string usn;
+
+    int status = sqlite3_open("dataPemain.db", &data);
+    if (status != SQLITE_OK) {
+        cout << "Gagal membuka database!" << endl;
+        return;
+    }
+    
+    cout << "Masukkan username: ";
+    cin.ignore();
+    getline(cin, usn);
+    if (usn.empty()) {
+        cout << "Username tidak boleh kosong!" << endl;
+        sqlite3_close(data); 
+        return;
+    }
+    insertDataPemain(data, usn, profil); 
+    sqlite3_close(data);
+}
+
+void menuProfil(int &profil) {
+    sqlite3* data;
+    int pilihanMenu;
+
+    if(sqlite3_open("dataPemain.db", &data) == SQLITE_OK){
+        totalProfil = hitungJumlahPemain(data);
+        sqlite3_close(data); 
+    }
+    system("cls");
+    cout << "==================================" << endl;
+    cout << "         PEMBUATAN PROFIL    " << endl;
+    cout << "==================================" << endl;
+    if (totalProfil == 0) {
+        do {
+            cout << "Tidak ada profil yang sudah dibuat!" << endl;
+            cout << "1. Buat akun baru" << endl;
+            cout << "2. Kembali" << endl;
+            cout << "> ";
+            cin >> pilihanMenu; 
+            
+            switch (pilihanMenu)
+            {
+            case 1:
+                buatUsername(profil);
+                totalProfil++;
+                break;
+            case 2:
+                cout << "Tekan apapun untuk lanjut...";
+                _getch();
+                break;
+            default:
+                break;
+            }
+        } while (pilihanMenu > 2); 
+    } else { 
+        if (profil == 0) profil = 1; 
+        cout << "PROFIL DITEMUKAN (Total: " << totalProfil << ")" << endl;
+        cout << "Menggunakan Profil ID: " << profil << endl;
+        cout << "KLIK UNTUK LANJUT" << endl;
+        _getch();
+    }
+}
+
+// ==========================================
+// LOGIKA GAMEPLAY & MAP
+// ==========================================
 
 bool apakahTembok(address root, int x, int y) {
     if (root == NIL) return false;
-    if (root->x == x && root->y == y) return root->tembus; // jika dilewati true => penghalang
-
+    if (root->x == x && root->y == y) return root->tembus; 
     if (x < root->x) return apakahTembok(root->left, x, y);
     else if(x > root->x) return apakahTembok(root->right, x, y);
     else {
@@ -33,7 +100,6 @@ bool apakahTembok(address root, int x, int y) {
 bool apakahObject(address root, int posisiX, int posisiY) {
     if (root == NIL) return false;
     if (root->x == posisiX && root->y == posisiY) return true;
-
     if (posisiX < root->x) return apakahObject(root->left, posisiX, posisiY);
     else if(posisiX> root->x) return apakahObject(root->right, posisiX, posisiY);
     else {
@@ -45,7 +111,6 @@ bool apakahObject(address root, int posisiX, int posisiY) {
 string cekPesanObj(address root, int x, int y) {
     if (root == NIL) return "";
     if (root->x == x && root->y == y) return root->pesan;
-
     if (x < root->x) return cekPesanObj(root->left, x, y);
     else if(x> root->x) return cekPesanObj(root->right, x, y);
     else {
@@ -62,10 +127,17 @@ void ubahPropertiNode(address root, int x, int y, bool statusBaruDilewati, strin
     }
 }
 
+string cariNamaObj(address root, int x, int y) {
+    address node = cariNode(root, x, y);
+    if (node != NIL) return node->nama;
+    return "";
+}
+
+// --- DISPLAY ART ---
 void tampilkanTempatSampah() {
     system("cls");
-    cout << trash << std::endl;
-    cout << "\n(Tenpat sampah?)\n";
+    cout << trash << std::endl; 
+    cout << "\n(Tempat sampah?)\n";
     _getch();
 }
 
@@ -75,40 +147,27 @@ void tampilkanArtPerpustakaan() {
     _getch();
 }
 
-
-
 void tampilkanArtClue(int nomorClue) {
     system("cls");
     if (nomorClue == 1) cout << artClue1 << endl;
     else if (nomorClue == 2) cout << artClue2 << endl;
     else if (nomorClue == 3) cout << artClue3 << endl;
     else if (nomorClue == 4) cout << artClue4 << endl;
-    
     cout << "\n(Anda menemukan petunjuk!)\n";
     _getch();
-}
-
-string cariNamaObj(address root, int x, int y) {
-    address node = cariNode(root, x, y);
-    if (node != NIL) return node->nama;
-    return "";
 }
 
 void gambarPeta(address root, int posisiX, int posisiY, int radiusPandang) {
     for (int y = posisiY + radiusPandang; y >= posisiY - radiusPandang; y--) {
         for (int x = posisiX - radiusPandang; x <= posisiX + radiusPandang; x++) {
             
-            // 1. Posisi Player
             if (x == posisiX && y == posisiY) {
                 cout << "P ";
                 continue;
             } 
             
-            // Cek apakah ada Node di koordinat ini
             if (apakahObject(root, x, y)) {
                 string namaObjek = cariNamaObj(root, x, y);
-                
-                // PRIORITASKAN SIMBOL KHUSUS
                 if (namaObjek == "Pintu" || namaObjek == "PintuPerpustakaan" || namaObjek == "PintuRuangKelas" || namaObjek == "PintuKeluar") {
                     cout << "= ";
                 } 
@@ -122,11 +181,9 @@ void gambarPeta(address root, int posisiX, int posisiY, int radiusPandang) {
                     cout << "* ";
                 }
             }
-            // 3. Cek Tembok (Hanya jika tidak ada Object/Pintu yang terdeteksi di atas)
             else if (apakahTembok(root, x, y)) { 
                 cout << "# ";
             } 
-            // 4. Area Kosong
             else {
                 cout << "  ";
             }
@@ -135,10 +192,11 @@ void gambarPeta(address root, int posisiX, int posisiY, int radiusPandang) {
     }
 }
 
+// --- BUILDER MAP ---
 void buatNodeTembok(address &root, int xAwal, int yAwal, int xAkhir, int yAkhir) {
     for (int y = yAwal; y <= yAkhir; y++) {
         for (int x = xAwal; x <= xAkhir; x++) {
-            root = insert(root, x, y, "Tembok", "AWAS! Ada tembok, tidak bisa lewat!", true);
+            root = insert(root, x, y, "Tembok", "AWAS! Ada tembok!", true);
         }
     }
 }
@@ -154,88 +212,52 @@ void buatRakBuku(address &root, int xAwal, int yAwal, int xAkhir, int yAkhir, st
 void inisialisasiPetaPerpustakaan(address &root) {
     root = NIL;
     const int BATAS = 7; 
-
-    // INSERT PINTU SEBELUM TEMBOK supaya tidak tertimpa tembok
     root = insert(root, BATAS, 0, "Pintu", "Pintu terkunci. Temukan Kunci!", true);
-
-    // --- Membuat Tembok Pembatas Perpustakaan (Ukuran -7 hingga 7) ---
-    buatNodeTembok(root, -BATAS, -BATAS, BATAS, -BATAS); // Bawah
-    buatNodeTembok(root, -BATAS, BATAS, BATAS, BATAS);  // Atas
-    buatNodeTembok(root, -BATAS, -BATAS, -BATAS, BATAS); // Kiri
-    buatNodeTembok(root, BATAS, -BATAS, BATAS, BATAS);  // Kanan
+    buatNodeTembok(root, -BATAS, -BATAS, BATAS, -BATAS); 
+    buatNodeTembok(root, -BATAS, BATAS, BATAS, BATAS);  
+    buatNodeTembok(root, -BATAS, -BATAS, -BATAS, BATAS); 
+    buatNodeTembok(root, BATAS, -BATAS, BATAS, BATAS);  
     
-    // --- CLUE DIGIT (Ditaruh SEBELUM rak supaya tidak tertimpa/shadowing) ---
-    // statusDilewati = true supaya 'keras' seperti rak buku (tidak bisa ditembus)
-    // Digit 1: 4
+    // Clues
     root = insert(root, -5, 3, "BukuClue1", "Buku 'Sejarah 4 Penjuru Mata Angin'.", true);
-    // Digit 2: 8
     root = insert(root, -3, -2, "BukuClue2", "Buku '8 Keajaiban Dunia'.", true);
-    // Digit 3: 2
     root = insert(root, 1, 4, "BukuClue3", "Buku 'Biografi Presiden Ke-2'.", true);
-    // Digit 4: 6
     root = insert(root, 3, -3, "BukuClue4", "Buku '6 Langkah Menuju Sukses'.", true);
 
-    // --- Menambahkan Rak Buku (Tembok internal) ---
-    // Konfigurasi: 6 kolom rak, terbelah di tengah (y=0) untuk jalan
-    // Kolom X: -5, -3, -1, 1, 3, 5
+    // Rak Buku
+    buatRakBuku(root, -5, -5, -5, -1, "Area Sejarah");
+    buatRakBuku(root, -5, 1, -5, 5, "Area Sejarah");
+    buatRakBuku(root, -3, -5, -3, -1, "Area Bahasa");
+    buatRakBuku(root, -3, 1, -3, 5, "Area Bahasa");
+    buatRakBuku(root, -1, -5, -1, -1, "Area Sains");
+    buatRakBuku(root, -1, 1, -1, 5, "Area Sains");
+    buatRakBuku(root, 1, -5, 1, -1, "Area Matematika");
+    buatRakBuku(root, 1, 1, 1, 5, "Area Matematika");
+    buatRakBuku(root, 3, -5, 3, -1, "Area Fiksi");
+    buatRakBuku(root, 3, 1, 3, 5, "Area Fiksi");
+    buatRakBuku(root, 5, -5, 5, -1, "Area Umum");
+    buatRakBuku(root, 5, 1, 5, 5, "Area Umum");
     
-    // Rak Kiri Luar (-5) - Sejarah
-    buatRakBuku(root, -5, -5, -5, -1, "Area Sejarah: Buku-buku kuno berdebu.");
-    buatRakBuku(root, -5, 1, -5, 5, "Area Sejarah: Buku-buku kuno berdebu.");
-
-    // Rak Kiri Tengah (-3) - Bahasa
-    buatRakBuku(root, -3, -5, -3, -1, "Area Bahasa: Kamus dan buku tata bahasa.");
-    buatRakBuku(root, -3, 1, -3, 5, "Area Bahasa: Kamus dan buku tata bahasa.");
-
-    // Rak Kiri Dalam (-1) - Sains
-    buatRakBuku(root, -1, -5, -1, -1, "Area Sains: Ensiklopedia alam semesta.");
-    buatRakBuku(root, -1, 1, -1, 5, "Area Sains: Ensiklopedia alam semesta.");
-
-    // Rak Kanan Dalam (1) - Matematika
-    buatRakBuku(root, 1, -5, 1, -1, "Area Matematika: Rumus-rumus yang memusingkan.");
-    buatRakBuku(root, 1, 1, 1, 5, "Area Matematika: Rumus-rumus yang memusingkan.");
-
-    // Rak Kanan Tengah (3) - Fiksi
-    buatRakBuku(root, 3, -5, 3, -1, "Area Fiksi: Novel dan cerita rakyat.");
-    buatRakBuku(root, 3, 1, 3, 5, "Area Fiksi: Novel dan cerita rakyat.");
-
-    // Rak Kanan Luar (5) - Umum
-    buatRakBuku(root, 5, -5, 5, -1, "Area Umum: Koran dan majalah.");
-    buatRakBuku(root, 5, 1, 5, 5, "Area Umum: Koran dan majalah.");
-    
-    // --- Objek PENTING ---
-    // Objek 1: Panel Pembuka Pintu
+    // Objek Penting
     root = insert(root, 6, 0, "Panel", "Panel akses pintu.", false);
-    
-    // Objek 3: Pesan Awal
-    root = insert(root, 0, 0, "Pesan", "Anda di dalam perpustakaan. Pintu terkunci dengan password. Cari petunjuk di buku-buku!", false);
-
-    // Objek 4: Lukisan Art (Interaksi Point) - DIKEMBALIKAN (Geser ke 4,0)
+    root = insert(root, 0, 0, "Pesan", "Cari petunjuk!", false);
     root = insert(root, 4, 0, "Lukisan", "Sebuah karya seni misterius.", false);
 }
 
 void buatLorongKampus(address &root) {
     root = NIL;
     const int BATAS = 12;
+    root = insert(root, -BATAS, 0, "PintuPerpustakaan", "Pintu menuju Perpustakaan.", false);
+    root = insert(root, BATAS, 0, "PintuRuangKelas", "Pintu menuju Ruang Kelas A. Terkunci.", true);
 
-    // INSERT PINTU-PIINTU SEBELUM MENAMBAHKAN TEMBOK agar tidak tertindih
-    // Pintu menuju Perpustakaan (di sisi kiri)
-    root = insert(root, -BATAS, 0, "PintuPerpustakaan", "Pintu menuju Perpustakaan kecil.", false); // bisa dilewati
-    // Pintu ke ruang kelas di sisi kanan (tertutup untuk contoh)
-    root = insert(root, BATAS, 0, "PintuRuangKelas", "Pintu menuju Ruang Kelas A. Terkunci.", true); // tertutup
-
-    // Dinding luar lorong
     buatNodeTembok(root, -BATAS, -BATAS, BATAS, -BATAS);
     buatNodeTembok(root, -BATAS, BATAS, BATAS, BATAS);
     buatNodeTembok(root, -BATAS, -BATAS, -BATAS, BATAS);
     buatNodeTembok(root, BATAS, -BATAS, BATAS, BATAS);
 
-    // Beberapa dekorasi / objek di lorong
-    root = insert(root, -3, 1, "Poster", "Poster acara kampus terpampang.", false);
+    root = insert(root, -3, 1, "Poster", "Poster acara kampus.", false);
     root = insert(root, 4, -1, "Tempat Sampah", "Tempat sampah kosong.", false);
-
-    // Pesan titik spawn/intro
-    root = insert(root, 0, 2, "PesanLorong", "Anda sekarang berada di lorong kampus. Ada pintu ke ruang kelas di sebelah kanan.", false);
+    root = insert(root, 0, 2, "PesanLorong", "Anda di lorong kampus.", false);
 }
 
 void pindahKeRuangan(address &root, int &x, int &y, int tujuan) {
@@ -245,37 +267,21 @@ void pindahKeRuangan(address &root, int &x, int &y, int tujuan) {
         x = 6; y = 0;
     } else if (tujuan == 2) {
         buatLorongKampus(root);
-        // Spawn point di lorong (kiri agak masuk)
         x = -11; y = 0;
     }
 }
 
-void lihatSetting(address &root, int &radiusPandang) {
-    int pilihanSetting;
-    do {
-        system("cls");
-        cout << "=========================" << endl;
-        cout << "         SETTING       " << endl;
-        cout << "=========================" << endl;
-        cout << "1. Mengubah jarak pandang. (Saat ini " << radiusPandang << " m)" << endl;
-        cout << "2. Developer Mode" << endl;
-        cout << "3. Keluar" << endl;
-        cout << "-------------------------" << endl;
-        cout << "Pilih menu (1-3): ";
-        cin >> pilihanSetting;
-        switch (pilihanSetting)
-        {
-        case 1:
-            cout << "Masukkan radius yang diinginkan: ";
-            cin >> radiusPandang;
-            break;
-        case 2:
-            menuDeveloper(root);
-            break;
-        default:
-            break;
-        }
-    } while (pilihanSetting != 3);
+// --- MENU SETTING & DEV ---
+void inputTembok(address &root) {
+    int xAwal, xAkhir, yAwal, yAkhir, temp;
+    system("cls");
+    cout << "Input xAwal: "; cin >> xAwal;
+    cout << "Input yAwal: "; cin >> yAwal;
+    cout << "Input xAkhir: "; cin >> xAkhir;
+    cout << "Input yAkhir: "; cin >> yAkhir;
+    if (xAwal > xAkhir) { temp = xAwal; xAwal = xAkhir; xAkhir = temp; }
+    if (yAwal > yAkhir) { temp = yAwal; yAwal = yAkhir; yAkhir = temp; }
+    buatNodeTembok(root, xAwal, yAwal, xAkhir, yAkhir);
 }
 
 void inputObject(address &root) {
@@ -283,346 +289,220 @@ void inputObject(address &root) {
 }
 
 void menuDeveloper(address &root) {
-    int pililihanDeveloper;
+    int pil;
     do {
         system("cls");
-        cout << "=========================" << endl;
-        cout << "      SANG DEVELOPER    " << endl;
-        cout << "=========================" << endl;
-        cout << "1. Tambahin tembok" << endl;
-        cout << "2. Tambahin Object" << endl;
-        cout << "3. Keluar" << endl;
-        cout << "-------------------------" << endl;
-        cout << "Pilih menu (1-3): ";
-        cin >> pililihanDeveloper;
-        switch (pililihanDeveloper)
-        {
-        case 1:
-            inputTembok(root);
-            break;
-        case 2:     
-            inputObject(root);
-            break;
-        default:
-            break;
-        }
-    } while (pililihanDeveloper != 3);
+        cout << "1. Tambah Tembok\n2. Tambah Object\n3. Keluar\nPilih: ";
+        cin >> pil;
+        if(pil==1) inputTembok(root);
+        else if(pil==2) inputObject(root);
+    } while (pil != 3);
 }
 
-// Fungsi developer kecil untuk menambah tembok/object (tetap ada jika ingin)
-void inputTembok(address &root) {
-    int xAwal, xAkhir, yAwal, yAkhir, temp;
-    system("cls");
-    cout << "=========================" << endl;
-    cout << "      PEMBUATAN TEMBOK    " << endl;
-    cout << "=========================" << endl;
-    cout << "Input xAwal: ";
-    cin >> xAwal;
-    cout << "Input yAwal: ";
-    cin >> yAwal;
-    cout << "Input xAkhir: ";
-    cin >> xAkhir;
-    cout << "Input yAkhir: ";
-    cin >> yAkhir;
-    if (xAwal > xAkhir) { temp = xAwal; xAwal = xAkhir; xAkhir = temp; }
-    if (yAwal > yAkhir) { temp = yAwal; yAwal = yAkhir; yAkhir = temp; }
-
-    buatNodeTembok(root, xAwal, yAwal, xAkhir, yAkhir);
+void lihatSetting(address &root, int &radiusPandang) {
+    int pil;
+    do {
+        system("cls");
+        cout << "Setting Radius (" << radiusPandang << ")\n1. Ubah\n2. Dev Mode\n3. Keluar\nPilih: ";
+        cin >> pil;
+        if(pil==1) { cout<<"Radius: "; cin>>radiusPandang; }
+        else if(pil==2) menuDeveloper(root);
+    } while (pil != 3);
 }
 
-void mulaiBermain(address &root, int radiusPandang, SkillNode* SkillRoot) {
+// ==========================================
+// CORE GAME LOOP
+// ==========================================
 
-    int playerLevel = 150;
-    int x = 0, y = 0;
-void buatUsername(int &profil) {
+void mulaiBermain(address &root, int radiusPandang, int &profil, SkillNode* skillRoot, CharacterStats* playerStats) {
     sqlite3* data;
-    string usn;
+    int x = 0; 
+    int y = 0;
 
-    // --- LANGKAH 1: BUKA KONEKSI DATABASE DULU ---
-    // Tanpa ini, variabel 'data' isinya sampah dan insert pasti gagal
-    int status = sqlite3_open("dataPemain.db", &data);
-    if (status != SQLITE_OK) {
-        cout << "Gagal membuka database!" << endl;
-        return;
+    if (playerStats == nullptr) {
+        playerStats = new CharacterStats();
+        playerStats->health = 100;
+        playerStats->maxHealth = 100;
+        playerStats->morale = 50;
+        playerStats->maxMorale = 100;
+        playerStats->availableSkillPoints = 5;
+        playerStats->playerLevel = 1;
     }
-    // ---------------------------------------------
     
-    cout << "Masukkan username: ";
-    cin.ignore();
-    getline(cin, usn);
-    if (usn.empty()) {
-        cout << "Username tidak boleh kosong!" << endl;
-        sqlite3_close(data); // Tutup dulu sebelum return
-        return;
+    // Pastikan database terbuka untuk load posisi
+    int dbStatus = sqlite3_open("dataPemain.db", &data);
+    if(dbStatus == SQLITE_OK) {
+        ambilData(data, profil, x, y, kunciDimiliki, ruanganAktif);
+        sqlite3_close(data);
+    } else {
+        cout << "Warning: Gagal load data database. Menggunakan default." << endl;
     }
-    insertDataPemain(data, usn, profil); // buat sekaligus memakai usn nya
-    sqlite3_close(data);
-}
 
-void menuProfil(int &profil) {
-    sqlite3* data;
-    int pilihanMenu;
-
-    if(sqlite3_open("dataPemain.db", &data) == SQLITE_OK){
-        // simpan hasilnya ke variabel global totalProfil
-        totalProfil = hitungJumlahPemain(data);
-        
-        sqlite3_close(data); // Tutup lagi
+    // Inisialisasi Peta berdasarkan data load
+    if (ruanganAktif == 1) { 
+        inisialisasiPetaPerpustakaan(root);
+        if(x==0 && y==0) { x=0; y=0; }
     }
-    system("cls");
-    cout << "==================================" << endl;
-    cout << "         PEMBUATAN PROFIL    " << endl;
-    cout << "==================================" << endl;
-    if (totalProfil == 0) {
-        do {
-            cout << "Tidak ada profil yang sudah dibuat!" << endl;
-            cout << "1. Buat akun baru" << endl;
-            cout << "2. kembali" << endl;
-            cout << "-------------------------------------" << endl;
-            cout << "> ";
-            cin.ignore();
-            cin >> pilihanMenu;
-            switch (pilihanMenu)
-            {
-            case 1:
-                buatUsername(profil);
-                totalProfil++;
-                break;
-            case 2:
-                cout << "Tekan apapun untuk lanjut...";
-                getch();
-                break;
-            default:
-                break;
-            }
-        } while (pilihanMenu > 2); // akan ulang terus kalo inputnya selain 1 dan 2
-    } else { // bakal munculin semua profil yang ada
-        cout << "PILIH PROFIL" << endl;
-        cout << "KLIK UNTUK LANJUT" << endl;
-        getch();
+    else if (ruanganAktif == 2) { 
+        buatLorongKampus(root);
+        if(x==0 && y==0) { x=-10; y=0; }
     }
-}
-
-void mulaiBermain(address &root, int radiusPandang, int &profil) {
-    sqlite3* data;
-    int x; 
-    int y;
-    ambilData(data, profil, x, y, kunciDimiliki, ruanganAktif);
-    // Pastikan spawn sesuai ruangan awal
-    if (ruanganAktif == 1) { x = 0; y = 0; }
-    else if (ruanganAktif == 2) { x = -10; y = 0; }
 
     bool masihBermain = true;
     char pilihanBermain;
     string pesanObj;
+    
     do {
         system("cls");
-        cout << "======== PERMainan CAMPUS - RUANGAN " << ruanganAktif << " ========" << endl;
+        cout << "======== RUANGAN " << ruanganAktif << " ========" << endl;
         cout << "Posisi: " << x << ", " << y << endl;
         
-        // --- Menampilkan Inventori ---
-        cout << "Item: ";
-        // --- Menampilkan Inventori ---
-        cout << "Item: ";
-        cout << "Pecahan Kode"; // Logic item kunci sudah dihapus
-        cout << endl;
-        // ------------------------------
+        // Menampilkan Stat dari playerStats
+        cout << "HP: " << playerStats->health << "/" << playerStats->maxHealth 
+             << " | Morale: " << playerStats->morale << "/" << playerStats->maxMorale 
+             << " | SP: " << playerStats->availableSkillPoints << endl;
         
-        cout << "P: Player, #: Tembok, *: Objek, =: Pintu" << endl << endl;
-
+        cout << "------------------------------------------" << endl;
         gambarPeta(root, x, y, radiusPandang);
         
-        cout << "\n>Pesan: " << pesanObj;
-        pesanObj = ""; // reset pesan
+        if (!pesanObj.empty()) cout << "\n> INFO: " << pesanObj;
+        pesanObj = ""; 
 
-        cout << "\n>Gunakan x untuk keluar ke menu\n";
-        cout << ">Gunakan (w/a/s/d) untuk bergerak\n";
-        cout << ">K untuk Inventori\n";
-        cout << "input: ";
+        cout << "\n\n[W/A/S/D] Gerak | [K] Skill Tree | [X] Keluar Menu: ";
         pilihanBermain = static_cast<char>(_getch());
         
         int langkahX = x;
         int langkahY = y;
-        switch (pilihanBermain)
-        {
-        case 'w':
-            langkahY++;
-            break;
-        case 's':
-            langkahY--;
-            break;
-        case 'a':
-            langkahX--;
-            break;
-        case 'd':
-            langkahX++;
-            break;
-        case 'k':
-            if (playerLevel >= 2){
-                menuSkillTree(SkillRoot);
-            } else {
-                pesanObj = "SKill tree terkunci....(Kill The BEAST to unlock)";
-            } 
-            continue;
-        case 'x':
-            masihBermain = false;
-        default:
-            break;
+        
+        // Kontrol
+        switch (pilihanBermain) {
+            case 'w': langkahY++; break;
+            case 's': langkahY--; break;
+            case 'a': langkahX--; break;
+            case 'd': langkahX++; break;
+            case 'k':
+                if (playerStats->playerLevel >= 1) {
+                    menuSkillTree(skillRoot,playerStats);
+                } else {
+                    pesanObj = "Skill tree terkunci.";
+                }
+                continue; 
+            case 'x': masihBermain = false; break;
         }
- 
-        // Ambil pesan & nama objek di langkah target (jika ada)
-        pesanObj = cekPesanObj(root, langkahX, langkahY);
+
+        if (!masihBermain) break;
+        
         string namaObjekLangkah = cariNamaObj(root, langkahX, langkahY);
-
-        // --- Interaksi TEMPAT SAMPAH di ruangan 2 ---
-        if (ruanganAktif == 2 && namaObjekLangkah == "Tempat Sampah") {
-            tampilkanTempatSampah();   // <--- menampilkan ASCII
-            pesanObj = "Kamu melihat sesuatu... tapi tempat sampahnya kosong.";
-        }
-
-        // --- Interaksi LUKISAN di ruangan 1 ---
-        // (Dihapus karena diganti Meja)
+        string pesanTemp = cekPesanObj(root, langkahX, langkahY);
         
-        // --- Interaksi LUKISAN di ruangan 1 ---
-        if (ruanganAktif == 1 && namaObjekLangkah == "Lukisan") {
-            tampilkanArtPerpustakaan();
-            pesanObj = "Perpustakaan sudah kosong, seram sekali.";
-        }
-
-        // --- Interaksi CLUE ---
-        if (namaObjekLangkah == "BukuClue1") { tampilkanArtClue(1); pesanObj = "Aneh sekali, aku tidak tau mereka punya buku seperti ini di perpustakaan. Pasti ini digit yang kubutuhkan."; }
-        if (namaObjekLangkah == "BukuClue2") { tampilkanArtClue(2); pesanObj = "Ketemu lagi, aku harus cari sisanya.."; }
-        if (namaObjekLangkah == "BukuClue3") { tampilkanArtClue(3); pesanObj = "Ini dia, aku hanya butuh satu digit lagi.."; }
-        if (namaObjekLangkah == "BukuClue4") { tampilkanArtClue(4); pesanObj = "Terakhir, sekarang sudah lengkap untuk membuka password pintu."; }
-
-        // --- Interaksi PANEL (PASSWORD) ---
-        if (ruanganAktif == 1 && namaObjekLangkah == "Panel") {
-            // Cek jika sudah terbuka
-            if (aksesPerpustakaanTerbuka) {
-                // Langsung skip ke logika buka pintu
-                // Kita gunakan trik 'goto' atau sekadar set inputKode = "4826" (simulasi)
-                // Tapi lebih rapi kita handle di bawah atau duplikasi logika pindah
-                // Opsi paling bersih:
-                system("cls");
-                cout << "Status: Pintu sudah TERBUKA." << endl;
-                cout << "Tekan tombol apa saja untuk keluar." << endl;
-                _getch();
-                 pindahKeRuangan(root, langkahX, langkahY, 2);
-                 x = langkahX;
-                 y = langkahY;
-                 continue;
-            }
-
-            system("cls");
-            cout << "=== PANEL AKSES PINTU ===" << endl;
-            cout << "PETUNJUK (Riddle):" << endl;
-            cout << "Digit 1: Aku seringkali dilupakan, di antara debu masa lalu." << endl;
-            cout << "Digit 2: Jika ingin fasih berkata-kata, temukan aku di sana." << endl;
-            cout << "Digit 3: Tempat di mana angka dan rumus berkuasa." << endl;
-            cout << "Digit 4: Dunia khayalan dan cerita rakyat bersembunyi di sini." << endl;
-            cout << "========================" << endl;
-            cout << "Masukan 4 digit kode akses (backspace untuk kembali) : ";
-            
-            // IMPLEMENTASI INPUT MANUAL DENGAN BACKSPACE
-            string inputKode = "";
-            char ch;
-            bool cancelInput = false;
-
-            while (true) {
-                ch = _getch(); // Ambil input tanpa echo otomatis
-
-                if (ch == 13) { // ENTER
-                    break; 
-                } else if (ch == 8) { // BACKSPACE
-                    if (inputKode.length() > 0) {
-                        cout << "\b \b"; // Hapus karakter di layar
-                        inputKode.pop_back();
-                    } else {
-                        // Jika buffer kosong dan tekan backspace -> CANCEL
-                        cancelInput = true;
-                        break;
-                    }
-                } else {
-                    cout << ch; // Tampilkan karakter
-                    inputKode += ch;
-                }
-            }
-
-            if (cancelInput) {
-                 pesanObj = "Input dibatalkan.";
-            } else if (aksesPerpustakaanTerbuka) {
-                 // Jika sudah terbuka sebelumnya, langsung lewat
-                 cout << "\nAKSES DITERIMA (Tersimpan). Pintu terbuka!" << endl;
-                 cout << "Tekan tombol apa saja..." << endl;
-                 _getch();
-                 
-                  // pindah ke ruangan 2 (Lorong)
-                 pindahKeRuangan(root, langkahX, langkahY, 2);
-                 x = langkahX;
-                 y = langkahY;
-                 continue;
-            } else if (inputKode == "4826") {
-                aksesPerpustakaanTerbuka = true; // Simpan status terbuka
-                cout << "\nAKSES DITERIMA. Pintu terbuka!" << endl;
-                cout << "Tekan tombol apa saja..." << endl;
-                _getch();
-                
-                 // pindah ke ruangan 2 (Lorong)
-                pindahKeRuangan(root, langkahX, langkahY, 2);
-                x = langkahX;
-                y = langkahY;
-                continue;
-            } else {
-                pesanObj = "Akses Ditolak! Kode salah.";
-            }
-        }
-
-
-        // --- Interaksi Umum: Kunci ---
-        if (namaObjekLangkah == "Kunci") {
-            if (!kunciDimiliki) {
-                kunciDimiliki = true;
-                pesanObj = "Anda mengambil Kunci Emas! Pintu perpustakaan sekarang bisa dibuka!";
-                // jika ingin buka pintu perpustakaan otomatis
-                // ubahPropertiNode(root, 7, 0, false, "Pintu terbuka! Keluar!");
-            } else {
-                pesanObj = "Anda sudah memiliki kunci.";
-            }
-        }
-
-        // --- Interaksi PINTU ---
-        if (namaObjekLangkah == "Pintu" || namaObjekLangkah == "PintuPerpustakaan" || namaObjekLangkah == "PintuRuangKelas" || namaObjekLangkah == "PintuKeluar") {
-            // Perilaku berbeda bergantung pada nama pintu dan ruangan aktif
-            if (ruanganAktif == 1 && (namaObjekLangkah == "Pintu" || namaObjekLangkah == "PintuPerpustakaan")) {
-                 pesanObj = "Pintu terkunci secara elektronik. Gunakan Panel di sebelahnya (X=6, Y=0).";
-            } else if (ruanganAktif == 2 && namaObjekLangkah == "PintuPerpustakaan") {
-                // balik ke perpustakaan (mis. pintu di lorong yang menuju perpustakaan)
-                system("cls");
-                cout << "Anda memasuki kembali Perpustakaan..." << endl;
-                cout << "Tekan tombol apa saja untuk melanjutkan." << endl;
-                _getch();
-
-                pindahKeRuangan(root, langkahX, langkahY, 1);
-                x = langkahX;
-                y = langkahY;
-                continue;
-            } else if (ruanganAktif == 2 && namaObjekLangkah == "PintuRuangKelas") {
-                // contoh pintu ruang kelas yang terkunci
-                address nodePintuKelas = cariNode(root, langkahX, langkahY);
-                if (nodePintuKelas != NIL && nodePintuKelas->tembus == true) {
-                    pesanObj = "Pintu ruang kelas terkunci.";
-                } else {
-                    // jika dibuka : bisa buat pindah ke ruangan lain
-                    pesanObj = "Anda masuk ke Ruang Kelas A (belum diimplementasikan).";
-                }
-            }
-        }
-        
-        // --- Logika Pergerakan: jika bukan tembok maka gerak ---
+        // Cek Tembok
         if (!apakahTembok(root, langkahX, langkahY)) {
             x = langkahX;
             y = langkahY;
-        } 
+            if (!pesanTemp.empty()) pesanObj = pesanTemp;
+        } else {
+             pesanObj = "Ada tembok menghalangi!";
+        }
+
+        // --- INTERAKSI KHUSUS ---
+        if (ruanganAktif == 2 && namaObjekLangkah == "Tempat Sampah") {
+            tampilkanTempatSampah();
+            pesanObj = "Kosong melompong.";
+        }
+        if (ruanganAktif == 1 && namaObjekLangkah == "Lukisan") {
+            tampilkanArtPerpustakaan();
+            pesanObj = "Seram sekali lukisannya.";
+        }
+        if (namaObjekLangkah.find("BukuClue") != string::npos) {
+            if (namaObjekLangkah == "BukuClue1") tampilkanArtClue(1);
+            else if (namaObjekLangkah == "BukuClue2") tampilkanArtClue(2);
+            else if (namaObjekLangkah == "BukuClue3") tampilkanArtClue(3);
+            else if (namaObjekLangkah == "BukuClue4") tampilkanArtClue(4);
+            pesanObj = "Petunjuk ditemukan!";
+        }
+
+        // Panel Pintu
+        if (ruanganAktif == 1 && namaObjekLangkah == "Panel") {
+             if (aksesPerpustakaanTerbuka) {
+                 cout << "\nPintu sudah terbuka! Pindah ruangan..." << endl;
+                 _getch();
+                 pindahKeRuangan(root, x, y, 2); 
+             } else {
+                system("cls");
+                cout << "=== MASUKKAN PASSCODE 4 DIGIT ===" << endl;
+                string inputKode = "";
+                char ch;
+                while(true) {
+                    ch = _getch();
+                    if(ch == 13) break; 
+                    if(ch == 8) { if(!inputKode.empty()) { cout << "\b \b"; inputKode.pop_back(); } }
+                    else { cout << "*"; inputKode += ch; }
+                }
+                
+                if (inputKode == "4826") {
+                    aksesPerpustakaanTerbuka = true;
+                    cout << "\nAKSES DITERIMA!" << endl;
+                    _getch();
+                    pindahKeRuangan(root, x, y, 2);
+                } else {
+                    pesanObj = "Password Salah!";
+                }
+             }
+        }
+
+        if (namaObjekLangkah == "PintuPerpustakaan" && ruanganAktif == 2) {
+             pindahKeRuangan(root, x, y, 1);
+        }
 
     } while (masihBermain);
+}
+
+void initializeDefaultSkills(SkillNode*& root) {
+    // ===== INTELLECT SKILLS =====
+    Skill logic;
+    logic.namaSkill = "Logic";
+    logic.kategori = "INTELLECT";
+    logic.level = 0;
+    logic.expCost[0] = 10;
+    logic.expCost[1] = 20;
+    logic.expCost[2] = 30;
+    logic.effects = nullptr;
+    addeffect(logic.effects, "Clear Mind", "Boost puzzle solving", PASSIVE, "INTELLECT", 1);
+    insertSkill(root, logic);
+    
+    // ===== PSYCHE SKILLS =====
+    Skill empathy;
+    empathy.namaSkill = "Empathy";
+    empathy.kategori = "PSYCHE";
+    empathy.level = 0;
+    empathy.expCost[0] = 10;
+    empathy.expCost[1] = 20;
+    empathy.expCost[2] = 30;
+    empathy.effects = nullptr;
+    addeffect(empathy.effects, "Emotional Insight", "Sense hidden truths", PASSIVE, "PSYCHE", 1);
+    insertSkill(root, empathy);
+    
+    // ===== PHYSIQUE SKILLS =====
+    Skill endurance;
+    endurance.namaSkill = "Endurance";
+    endurance.kategori = "PHYSIQUE";
+    endurance.level = 0;
+    endurance.expCost[0] = 10;
+    endurance.expCost[1] = 20;
+    endurance.expCost[2] = 30;
+    endurance.effects = nullptr;
+    addeffect(endurance.effects, "Tough Body", "More health", PASSIVE, "MAX_HEALTH", 5);
+    insertSkill(root, endurance);
+    
+    // ===== MOTORICS SKILLS =====
+    Skill perception;
+    perception.namaSkill = "Perception";
+    perception.kategori = "MOTORICS";
+    perception.level = 0;
+    perception.expCost[0] = 10;
+    perception.expCost[1] = 20;
+    perception.expCost[2] = 30;
+    perception.effects = nullptr;
+    addeffect(perception.effects, "Sharp Eyes", "Notice details", PASSIVE, "MOTORICS", 1);
+    insertSkill(root, perception);
 }
