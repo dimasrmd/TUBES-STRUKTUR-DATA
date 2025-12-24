@@ -1,9 +1,8 @@
 #include "gameplay.h"
 #include "pesanObjek.h"
-#include "Skilltree/Skilltree.h"
+
 // --gameplay.h--
 // variabel global kunci
-
 // --- DEFINISI VARIABEL GLOBAL ---
 bool kunciDimiliki = false;
 
@@ -14,8 +13,6 @@ bool aksesPerpustakaanTerbuka = false;
 // variabel global info ruangan
 // 1 = Perpustakaan, 2 = Lorong Kampus
 int ruanganAktif = 1;
-int profil = 0;       // Inisialisasi defalut
-int totalProfil = 0;  // Inisialisasi defalut
 // -----------------------------------------------------
 
 bool apakahTembok(address root, int x, int y) {
@@ -74,8 +71,6 @@ void tampilkanArtPerpustakaan() {
     cout << artPerpustakaan << std::endl;
     _getch();
 }
-
-
 
 void tampilkanArtClue(int nomorClue) {
     system("cls");
@@ -330,82 +325,9 @@ void inputTembok(address &root) {
     buatNodeTembok(root, xAwal, yAwal, xAkhir, yAkhir);
 }
 
-void buatUsername(int &profil) {
-    sqlite3* data;
-    string usn;
-
-    // --- LANGKAH 1: BUKA KONEKSI DATABASE DULU ---
-    // Tanpa ini, variabel 'data' isinya sampah dan insert pasti gagal
-    int status = sqlite3_open("dataPemain.db", &data);
-    if (status != SQLITE_OK) {
-        cout << "Gagal membuka database!" << endl;
-        return;
-    }
-    // ---------------------------------------------
-    
-    cout << "Masukkan username: ";
-    cin.ignore();
-    getline(cin, usn);
-    if (usn.empty()) {
-        cout << "Username tidak boleh kosong!" << endl;
-        sqlite3_close(data); // Tutup dulu sebelum return
-        return;
-    }
-    insertDataPemain(data, usn, profil); // buat sekaligus memakai usn nya
-    sqlite3_close(data);
-}
-
-void menuProfil(int &profil) {
-    sqlite3* data;
-    int pilihanMenu;
-
-    if(sqlite3_open("dataPemain.db", &data) == SQLITE_OK){
-        // simpan hasilnya ke variabel global totalProfil
-        totalProfil = hitungJumlahPemain(data);
-        
-        sqlite3_close(data); // Tutup lagi
-    }
-    system("cls");
-    cout << "==================================" << endl;
-    cout << "         PEMBUATAN PROFIL    " << endl;
-    cout << "==================================" << endl;
-    if (totalProfil == 0) {
-        do {
-            cout << "Tidak ada profil yang sudah dibuat!" << endl;
-            cout << "1. Buat akun baru" << endl;
-            cout << "2. kembali" << endl;
-            cout << "-------------------------------------" << endl;
-            cout << "> ";
-            cin.ignore();
-            cin >> pilihanMenu;
-            switch (pilihanMenu)
-            {
-            case 1:
-                buatUsername(profil);
-                totalProfil++;
-                break;
-            case 2:
-                cout << "Tekan apapun untuk lanjut...";
-                getch();
-                break;
-            default:
-                break;
-            }
-        } while (pilihanMenu > 2); // akan ulang terus kalo inputnya selain 1 dan 2
-    } else { // bakal munculin semua profil yang ada
-        cout << "PILIH PROFIL" << endl;
-        cout << "KLIK UNTUK LANJUT" << endl;
-        getch();
-    }
-}
-
-void mulaiBermain(address &root, int radiusPandang, int &profil, SkillNode* SkillRoot) {
-    int playerLevel = 150;
-    sqlite3* data;
+void mulaiBermain(address &root, int radiusPandang) {
     int x; 
     int y;
-    ambilData(data, profil, x, y, kunciDimiliki, ruanganAktif);
-    // Pastikan spawn sesuai ruangan awal
     if (ruanganAktif == 1) { x = 0; y = 0; }
     else if (ruanganAktif == 2) { x = -10; y = 0; }
 
@@ -417,8 +339,6 @@ void mulaiBermain(address &root, int radiusPandang, int &profil, SkillNode* Skil
         cout << "======== PERMainan CAMPUS - RUANGAN " << ruanganAktif << " ========" << endl;
         cout << "Posisi: " << x << ", " << y << endl;
         
-        // --- Menampilkan Inventori ---
-        cout << "Item: ";
         // --- Menampilkan Inventori ---
         cout << "Item: ";
         cout << "Pecahan Kode"; // Logic item kunci sudah dihapus
@@ -453,13 +373,6 @@ void mulaiBermain(address &root, int radiusPandang, int &profil, SkillNode* Skil
             break;
         case 'd':
             langkahX++;
-            break;
-        case 'k':
-            if (playerLevel >= 2){
-                // menuSkillTree(SkillRoot); SANG PEMBUAT EROR
-            } else {
-                pesanObj = "SKill tree terkunci....(Kill The BEAST to unlock)";
-            } 
             break;
         case 'x':
             masihBermain = false;

@@ -1,10 +1,8 @@
 #ifndef GAMEPLAY_H
 #define GAMEPLAY_H
 #include "bstNode.h"
-#include "database.h"
 #include <cstdlib>
 #include <conio.h>
-#include "Skilltree/Skilltree.h"
 
 
 // --gameplay.h--
@@ -100,8 +98,7 @@ void inputTembok(address &root);
 
 // --gameplay.h--
 // untuk memulai gamenya
-void mulaiBermain(address &root, int radiusPandang, SkillNode* SkillRoot);
-void mulaiBermain(address &root, int radiusPandang, int &profil, SkillNode* rootSkill); 
+void mulaiBermain(address &root, int radiusPandang);
 
 // --gameplay.h--
 // untuk memilih profil yang akan dimainkan
