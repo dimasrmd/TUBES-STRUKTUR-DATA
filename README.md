@@ -37,13 +37,14 @@ Berikut beberapa fitur yang ada didalam game **The Game: Bizzare Night at Campus
 ***
 
 ## CARA RUN
+1. Untuk mencompile code:
 >g++ *.cpp Database/sqlite3.o -o main
->./main
 
-atau
-
+Jika mengalami error menggunakan perintah diatas, coba gunakan perintah ini:
 > g++ (ls *.cpp).name Database/sqlite3.o -o main
-> ./main
+
+2. Jika sudah muncul `main.exe`, jalankan kode dibawah:
+>./main
 
 <p align = "center"> 🛠️ MASIH DALAM PENGEMBANGAN (ON-GOING) </p>
 
