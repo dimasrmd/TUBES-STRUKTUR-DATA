@@ -1,6 +1,5 @@
 #include "bstNode.h"
 
-
 address createNode(int objectX, int objectY, string namaObject, string pesanObject, bool statusDilewati) {
     address node = new Node;
     node->x = objectX;
