@@ -217,21 +217,21 @@ void inisialisasiPetaPerpustakaan(address &root) {
 void buatLorongKampus(address &root) {
     root = NIL;
     
-    // Lorong panjang sempit: 40 karakter panjang, lebar 3 (1 jalan tengah + 2 tembok samping)
-    // Koordinat X: -11 (pintu perpustakaan) hingga 29 (pintu ujung lorong)
+    // Lorong panjang sempit: 50 karakter panjang, lebar 3 (1 jalan tengah + 2 tembok samping)
+    // Koordinat X: -11 (pintu perpustakaan) hingga 39 (pintu ujung lorong)
     // Koordinat Y: -1 (tembok bawah), 0 (jalan), 1 (tembok atas)
     
     // INSERT PINTU di ujung kiri (pintu perpustakaan - bisa dibuka)
     root = insert(root, -11, 0, "PintuPerpustakaan", "Pintu menuju Perpustakaan.", false);
     
     // INSERT PINTU di ujung kanan (pintu terkunci)
-    root = insert(root, 29, 0, "PintuUjung", "Pintu terkunci rapat.", true);
+    root = insert(root, 39, 0, "PintuUjung", "Pintu terkunci rapat.", true);
     
-    // Tembok atas lorong (Y = 1, dari X = -11 hingga X = 29)
-    buatNodeTembok(root, -11, 1, 29, 1);
+    // Tembok atas lorong (Y = 1, dari X = -11 hingga X = 39)
+    buatNodeTembok(root, -11, 1, 39, 1);
     
-    // Tembok bawah lorong (Y = -1, dari X = -11 hingga X = 29)
-    buatNodeTembok(root, -11, -1, 29, -1);
+    // Tembok bawah lorong (Y = -1, dari X = -11 hingga X = 39)
+    buatNodeTembok(root, -11, -1, 39, -1);
 }
 
 void pindahKeRuangan(address &root, int &x, int &y, int tujuan) {
@@ -417,7 +417,7 @@ void menuProfil(int &profil) {
 
 void mulaiBermain(address &root, int radiusPandang, int &profil, SkillNode* SkillRoot) {
     int playerLevel = 150;
-    sqlite3* data;
+    sqlite3* data;z
     
     // Open database before loading data
     if (sqlite3_open("dataPemain.db", &data) != SQLITE_OK) {
