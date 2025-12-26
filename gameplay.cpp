@@ -399,6 +399,7 @@ void menuProfil(int &profil) {
         cout << "2. Buat Profil Baru" << endl;
         cout << "-------------------------------------" << endl;
         cout << "> ";
+        cin.ignore();
         cin >> pilihanMenu;
         
         if (pilihanMenu == 2) {
@@ -417,14 +418,12 @@ void menuProfil(int &profil) {
 
 void mulaiBermain(address &root, int radiusPandang, int &profil, SkillNode* SkillRoot) {
     int playerLevel = 150;
-    sqlite3* data;z
-    
-    // Open database before loading data
+    sqlite3* data;
     if (sqlite3_open("dataPemain.db", &data) != SQLITE_OK) {
         cout << "Gagal membuka database saat mulai bermain!" << endl;
         return;
     }
-    
+
     int x; 
     int y;
     ambilData(data, profil, x, y, kunciDimiliki, ruanganAktif);
