@@ -1,5 +1,6 @@
 #include "gameplay.h"
 #include "pesanObjek.h"
+#include "lorongFrames.h"
 #include "Skilltree/Skilltree.h"
 // --gameplay.h--
 // variabel global kunci
@@ -86,6 +87,47 @@ void tampilkanArtClue(int nomorClue) {
     
     cout << "\n(Anda menemukan petunjuk!)\n";
     _getch();
+}
+
+// Fungsi untuk menampilkan animasi first-person walking
+void firstPersonWalking(int &playerX, int &playerY) {
+    // Array pointer ke semua frame
+    const char* frames[17] = {
+        lorongFrame1, lorongFrame2, lorongFrame3, lorongFrame4, lorongFrame5,
+        lorongFrame6, lorongFrame7, lorongFrame8, lorongFrame9, lorongFrame10,
+        lorongFrame11, lorongFrame12, lorongFrame13, lorongFrame14, lorongFrame15,
+        lorongFrame16, lorongFrame17
+    };
+    
+    int currentFrame = 0;
+    char input;
+    
+    // Tampilkan frame pertama (tanpa instruksi)
+    system("cls");
+    cout << frames[currentFrame] << endl;
+    
+    while (currentFrame < 16) {  // 0-16 = 17 frames
+        input = _getch();
+        
+        // Hanya terima input 'W' atau 'w'
+        if (input == 'w' || input == 'W') {
+            currentFrame++;
+            
+            // Tampilkan frame berikutnya (tanpa instruksi)
+            system("cls");
+            cout << frames[currentFrame] << endl;
+        }
+    }
+    
+    // Tunggu input terakhir untuk keluar dari frame terakhir
+    _getch();
+    
+    // Setelah animasi selesai, teleport player ke koordinat (37, 0)
+    // 2 karakter di sebelah kiri pintu yang ada di (39, 0)
+    playerX = 37;
+    playerY = 0;
+    
+    // Langsung kembali ke gameplay tanpa pesan
 }
 
 string cariNamaObj(address root, int x, int y) {
@@ -223,6 +265,9 @@ void buatLorongKampus(address &root) {
     
     // INSERT PINTU di ujung kiri (pintu perpustakaan - bisa dibuka)
     root = insert(root, -11, 0, "PintuPerpustakaan", "Pintu menuju Perpustakaan.", false);
+    
+    // INSERT TRIGGER POINT untuk first-person walking di koordinat (10, 0)
+    root = insert(root, 10, 0, "TriggerLorongFP", "Lorong ini sangat panjang, rasanya sangat tidak nyaman...", false);
     
     // INSERT PINTU di ujung kanan (pintu terkunci)
     root = insert(root, 39, 0, "PintuUjung", "Pintu terkunci rapat.", true);
@@ -515,6 +560,29 @@ void mulaiBermain(address &root, int radiusPandang, int &profil, SkillNode* Skil
         if (namaObjekLangkah == "BukuClue2") { tampilkanArtClue(2); pesanObj = "Ketemu lagi, aku harus cari sisanya.."; }
         if (namaObjekLangkah == "BukuClue3") { tampilkanArtClue(3); pesanObj = "Ini dia, aku hanya butuh satu digit lagi.."; }
         if (namaObjekLangkah == "BukuClue4") { tampilkanArtClue(4); pesanObj = "Terakhir, sekarang sudah lengkap untuk membuka password pintu."; }
+
+        // --- Interaksi TRIGGER LORONG FIRST PERSON ---
+        if (ruanganAktif == 2 && namaObjekLangkah == "TriggerLorongFP") {
+            // Tampilkan pesan trigger
+            system("cls");
+            cout << "Lorong ini sangat panjang, rasanya sangat tidak nyaman..." << endl;
+            cout << "\nTekan tombol apapun untuk melanjutkan..." << endl;
+            _getch();
+            
+            // Aktifkan first-person walking animation
+            firstPersonWalking(x, y);
+            
+            // Update langkahX dan langkahY agar tidak ada konflik
+            langkahX = x;
+            langkahY = y;
+            
+            // Hapus trigger point agar tidak bisa diaktifkan lagi
+            ubahPropertiNode(root, 10, 0, true, "");
+            
+            pesanObj = "Syukurlah ada pintu diujung sini";
+            continue; // Skip movement check
+        }
+
 
         // --- Interaksi PANEL (PASSWORD) ---
         if (ruanganAktif == 1 && namaObjekLangkah == "Panel") {
