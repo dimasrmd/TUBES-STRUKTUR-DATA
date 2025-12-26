@@ -216,26 +216,22 @@ void inisialisasiPetaPerpustakaan(address &root) {
 
 void buatLorongKampus(address &root) {
     root = NIL;
-    const int BATAS = 12;
-
-    // INSERT PINTU-PIINTU SEBELUM MENAMBAHKAN TEMBOK agar tidak tertindih
-    // Pintu menuju Perpustakaan (di sisi kiri)
-    root = insert(root, -BATAS, 0, "PintuPerpustakaan", "Pintu menuju Perpustakaan kecil.", false); // bisa dilewati
-    // Pintu ke ruang kelas di sisi kanan (tertutup untuk contoh)
-    root = insert(root, BATAS, 0, "PintuRuangKelas", "Pintu menuju Ruang Kelas A. Terkunci.", true); // tertutup
-
-    // Dinding luar lorong
-    buatNodeTembok(root, -BATAS, -BATAS, BATAS, -BATAS);
-    buatNodeTembok(root, -BATAS, BATAS, BATAS, BATAS);
-    buatNodeTembok(root, -BATAS, -BATAS, -BATAS, BATAS);
-    buatNodeTembok(root, BATAS, -BATAS, BATAS, BATAS);
-
-    // Beberapa dekorasi / objek di lorong
-    root = insert(root, -3, 1, "Poster", "Poster acara kampus terpampang.", false);
-    root = insert(root, 4, -1, "Tempat Sampah", "Tempat sampah kosong.", false);
-
-    // Pesan titik spawn/intro
-    root = insert(root, 0, 2, "PesanLorong", "Anda sekarang berada di lorong kampus. Ada pintu ke ruang kelas di sebelah kanan.", false);
+    
+    // Lorong panjang sempit: 50 karakter panjang, lebar 3 (1 jalan tengah + 2 tembok samping)
+    // Koordinat X: -11 (pintu perpustakaan) hingga 39 (pintu ujung lorong)
+    // Koordinat Y: -1 (tembok bawah), 0 (jalan), 1 (tembok atas)
+    
+    // INSERT PINTU di ujung kiri (pintu perpustakaan - bisa dibuka)
+    root = insert(root, -11, 0, "PintuPerpustakaan", "Pintu menuju Perpustakaan.", false);
+    
+    // INSERT PINTU di ujung kanan (pintu terkunci)
+    root = insert(root, 39, 0, "PintuUjung", "Pintu terkunci rapat.", true);
+    
+    // Tembok atas lorong (Y = 1, dari X = -11 hingga X = 39)
+    buatNodeTembok(root, -11, 1, 39, 1);
+    
+    // Tembok bawah lorong (Y = -1, dari X = -11 hingga X = 39)
+    buatNodeTembok(root, -11, -1, 39, -1);
 }
 
 void pindahKeRuangan(address &root, int &x, int &y, int tujuan) {
