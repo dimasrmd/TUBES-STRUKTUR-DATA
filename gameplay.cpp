@@ -3,7 +3,6 @@
 #include "lorongFrames.h"
 #include "Skilltree/Skilltree.h"
 
-bool kunciDimiliki = false;
 int ruanganAktif = 1;
 int profil = 0; 
 int totalProfil = 0; 
@@ -469,7 +468,7 @@ void mulaiBermain(address &root, int radiusPandang, int &profil, SkillNode* Skil
     int y;
     int trg_Lorong;
     int aksesPerpustakaanTerbuka;
-    ambilData(data, profil, x, y, kunciDimiliki, ruanganAktif, trg_Lorong, aksesPerpustakaanTerbuka);
+    ambilData(data, profil, x, y, ruanganAktif, trg_Lorong, aksesPerpustakaanTerbuka);
     sqlite3_close(data); // Close after getting data
 
     if (ruanganAktif == 1) inisialisasiPetaPerpustakaan(root);
@@ -535,7 +534,7 @@ void mulaiBermain(address &root, int radiusPandang, int &profil, SkillNode* Skil
             } 
             break;
         case 'x':
-            updateDataPemain(data, profil, x, y, ruanganAktif, kunciDimiliki, trg_Lorong, aksesPerpustakaanTerbuka);
+            updateDataPemain(data, profil, x, y, ruanganAktif, trg_Lorong, aksesPerpustakaanTerbuka);
             masihBermain = false;
         default:
             break;
@@ -662,19 +661,6 @@ void mulaiBermain(address &root, int radiusPandang, int &profil, SkillNode* Skil
                 continue;
             } else {
                 pesanObj = "Akses Ditolak! Kode salah.";
-            }
-        }
-
-
-        // --- Interaksi Umum: Kunci ---
-        if (namaObjekLangkah == "Kunci") {
-            if (!kunciDimiliki) {
-                kunciDimiliki = true;
-                pesanObj = "Anda mengambil Kunci Emas! Pintu perpustakaan sekarang bisa dibuka!";
-                // jika ingin buka pintu perpustakaan otomatis
-                // ubahPropertiNode(root, 7, 0, false, "Pintu terbuka! Keluar!");
-            } else {
-                pesanObj = "Anda sudah memiliki kunci.";
             }
         }
 

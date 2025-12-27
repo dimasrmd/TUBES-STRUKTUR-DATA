@@ -25,7 +25,6 @@ void buatDatabase(sqlite3* data) {
                         "USERNAME TEXT NOT NULL, " // nyimpen username khsusus
                         "X INT NOT NULL, " // nyimpen posisi x terakhir
                         "Y INT NOT NULL, " // nyimpen y terakhir
-                        "KUNCI BOOL NOT NULL, " // nyimpen kunci terakhir
                         "RUANGAN_AKTIF INT NOT NULL, " // nyimpen ruangan terakhir
                         "WAKTU_LOGIN TEXT NOT NULL);"; // nyimpen ruangan terakhir           
     sqlite3_exec(data, createTablePemain.c_str(), NULL, 0, &pesan); // buat tabelnya
@@ -44,17 +43,15 @@ void buatDatabase(sqlite3* data) {
 void insertDataPemain(sqlite3* data, string usn, int &profil) {
     int X = 0; // agar saat mulai berada di posisi x adalah 0
     int Y = 0; // agar saat mulai berada di posisi y adalah 0
-    bool kunci = false; // default belum punya kunci
     int ruanganAktif = 1; // 1 untuk perpustakaan (default kalo baru buat akun)
     char* pesanData; // untuk nyimpen feedback dari database nya
     string waktu = ambilWaktu();
 
     // jangan lupa kalo mau buat querry yang non-string jadiin string dulu
-    string querry = "INSERT INTO pemain (USERNAME, X, Y, KUNCI, RUANGAN_AKTIF, WAKTU_LOGIN) VALUES ('"
+    string querry = "INSERT INTO pemain (USERNAME, X, Y, RUANGAN_AKTIF, WAKTU_LOGIN) VALUES ('"
                     + usn + "', " 
                     + to_string(X) + ", " 
                     + to_string(Y) + ", " 
-                    + to_string(kunci) + ", " 
                     + to_string(ruanganAktif) + ", '"
                     + waktu + "');";
 
@@ -85,13 +82,13 @@ void insertDataPemain(sqlite3* data, string usn, int &profil) {
     }
 }
 
-void ambilData(sqlite3* data, int profil, int &x, int &y, bool &kunci, int &ruanganAktif, int &trg_lorong, int &aksesPerpus) {
+void ambilData(sqlite3* data, int profil, int &x, int &y, int &ruanganAktif, int &trg_lorong, int &aksesPerpus) {
     sqlite3_stmt* statement;
     
     // 1. Susun SQL SELECT
     // Kita minta data X, Y, KUNCI, dan RUANGAN_AKTIF khusus untuk ID (profil) tersebut
     // string query = "SELECT X, Y, KUNCI, RUANGAN_AKTIF FROM pemain WHERE ID = " + to_string(profil) + ";";
-    string query = "SELECT p.X, p.Y, p.KUNCI, p.RUANGAN_AKTIF, pp.INTERAKSI_LORONG, pp.AKSES_PERPUS from progress_player AS pp "
+    string query = "SELECT p.X, p.Y, p.RUANGAN_AKTIF, pp.INTERAKSI_LORONG, pp.AKSES_PERPUS from progress_player AS pp "
                     "INNER JOIN pemain AS p ON pp.ID_PEMAIN = p.ID "
                     "WHERE p.ID = " + to_string(profil) + ";";
 
@@ -114,10 +111,9 @@ void ambilData(sqlite3* data, int profil, int &x, int &y, bool &kunci, int &ruan
         
         // SQLite menyimpan bool sebagai integer (0 atau 1). 
         // C++ otomatis paham kalau 0=false, 1=true.
-        kunci = sqlite3_column_int(statement, 2);
-        ruanganAktif = sqlite3_column_int(statement, 3);
-        trg_lorong = sqlite3_column_int(statement, 4);
-        aksesPerpus = sqlite3_column_int(statement, 5);
+        ruanganAktif = sqlite3_column_int(statement, 2);
+        trg_lorong = sqlite3_column_int(statement, 3);
+        aksesPerpus = sqlite3_column_int(statement, 4);
         
         // Debugging (Opsional: Cek apakah data benar-benar terambil)
         // cout << "Data loaded: Posisi(" << x << "," << y << ")" << endl;
@@ -221,7 +217,7 @@ bool cekIdPemain(int idCari) {
     return ketemu;
 }
 
-void updateDataPemain(sqlite3* data, int idPemain, int x, int y, int ruanganAktif, bool kunci, int trg_lorong, int aksesPerpus) {
+void updateDataPemain(sqlite3* data, int idPemain, int x, int y, int ruanganAktif, int trg_lorong, int aksesPerpus) {
     char* pesanError;
     string waktu = ambilWaktu();
 
@@ -231,7 +227,6 @@ void updateDataPemain(sqlite3* data, int idPemain, int x, int y, int ruanganAkti
                         + to_string(x) 
                         + ", Y = " + to_string(y)
                         + ", RUANGAN_AKTIF = " + to_string(ruanganAktif)
-                        + ", KUNCI = " + to_string(kunci)
                         + ", WAKTU_LOGIN = '" + waktu
                         + "' WHERE ID = " + to_string(idPemain) + ";";
         

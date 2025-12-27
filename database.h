@@ -22,11 +22,11 @@ void insertDataPemain(sqlite3* data, string usn, int &profil);
 
 // --database.h--
 // > fungsi untuk memasukkan data ke database
-void ambilData(sqlite3* data, int profil, int &x, int &y, bool &kunci, int &ruanganAktif, int &trg_lorong, int &aksesPerpus);
+void ambilData(sqlite3* data, int profil, int &x, int &y,  int &ruanganAktif, int &trg_lorong, int &aksesPerpus);
 
 // --file database.h--
 // Fungsi untuk update data
-void updateDataPemain(sqlite3* data, int idPemain, int x, int y, int ruanganAktif, bool kunci, int trg_lorong, int aksesPerpus);
+void updateDataPemain(sqlite3* data, int idPemain, int x, int y, int ruanganAktif, int trg_lorong, int aksesPerpus);
 
 // --file database.h--
 // Fungsi untuk menghitung total data pemain
