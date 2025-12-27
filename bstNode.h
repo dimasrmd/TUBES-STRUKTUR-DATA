@@ -1,33 +1,26 @@
 #ifndef BST_H
 #define BST_H
-
 #define NIL NULL
+
 #include <iostream>
 using namespace std;
-
-// bstNode.h: address menyimpan alamat node
-typedef struct Node *address;
-
-// bstNode.h: struktur dari node
-struct Node {
+typedef struct Node *address; // bstNode.h: address menyimpan alamat node
+struct infoNode { // bstNode.h: struktur info node
     int x, y;
-    string nama;
-    bool tembus;
-    string pesan;
+    string nama, pesan;
+    bool solid;
+};
+
+struct Node { // bstNode.h: struktur dari node
+    infoNode info;
     address left, right;
 };
 
-// bstNode.h: Membuat node baru
-address createNode(int objectX, int objectY, 
-    string namaObject, string pesanObject, 
-    bool statusDilewati);
-
-// bstNode.h: Memasukkan data baru ke bst
-address insert(address root, int x, int y, 
-    string namaObj, string pesanObj, 
-    bool statusDilewati);
-
-// bstNode.h: mencari node khsusus
-address cariNode(address root, int x, int y);
+address createNode(infoNode info); // bstNode.h: Membuat node baru
+address insert(address root, infoNode info); // bstNode.h: Memasukkan data baru ke bst
+address insert(address root, int x, int y, string namaObj, string pesanObj, bool solid); // bstNode.h: Memasukkan data baru ke bst
+address cariNode(address root, int x, int y); // bstNode.h: mencari node khsusus
+address findMin(address root);
+address deleteNode(address root, int x, int y);
 
 #endif

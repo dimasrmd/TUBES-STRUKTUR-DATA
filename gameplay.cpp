@@ -2,55 +2,45 @@
 #include "pesanObjek.h"
 #include "lorongFrames.h"
 #include "Skilltree/Skilltree.h"
-// --gameplay.h--
-// variabel global kunci
 
-// --- DEFINISI VARIABEL GLOBAL ---
 bool kunciDimiliki = false;
-
-// variabel global status pintu perpustakaan
-bool aksesPerpustakaanTerbuka = false;
-
-// --gameplay.h--
-// variabel global info ruangan
-// 1 = Perpustakaan, 2 = Lorong Kampus
 int ruanganAktif = 1;
-int profil = 0;       // Inisialisasi defalut
-int totalProfil = 0;  // Inisialisasi defalut
-// -----------------------------------------------------
+int profil = 0; 
+int totalProfil = 0; 
+
 
 bool apakahTembok(address root, int x, int y) {
     if (root == NIL) return false;
-    if (root->x == x && root->y == y) return root->tembus; // jika dilewati true => penghalang
+    if (root->info.x == x && root->info.y == y) return root->info.solid; // jika dilewati true => penghalang
 
-    if (x < root->x) return apakahTembok(root->left, x, y);
-    else if(x > root->x) return apakahTembok(root->right, x, y);
+    if (x < root->info.x) return apakahTembok(root->left, x, y);
+    else if(x > root->info.x) return apakahTembok(root->right, x, y);
     else {
-        if (y < root->y) return apakahTembok(root->left, x, y);
+        if (y < root->info.y) return apakahTembok(root->left, x, y);
         else return apakahTembok(root->right, x, y);
     }
 }
 
 bool apakahObject(address root, int posisiX, int posisiY) {
     if (root == NIL) return false;
-    if (root->x == posisiX && root->y == posisiY) return true;
+    if (root->info.x == posisiX && root->info.y == posisiY) return true;
 
-    if (posisiX < root->x) return apakahObject(root->left, posisiX, posisiY);
-    else if(posisiX> root->x) return apakahObject(root->right, posisiX, posisiY);
+    if (posisiX < root->info.x) return apakahObject(root->left, posisiX, posisiY);
+    else if(posisiX> root->info.x) return apakahObject(root->right, posisiX, posisiY);
     else {
-        if (posisiY < root->y) return apakahObject(root->left, posisiX, posisiY);
+        if (posisiY < root->info.y) return apakahObject(root->left, posisiX, posisiY);
         else return apakahObject(root->right, posisiX, posisiY);
     }
 }
 
 string cekPesanObj(address root, int x, int y) {
     if (root == NIL) return "";
-    if (root->x == x && root->y == y) return root->pesan;
+    if (root->info.x == x && root->info.y == y) return root->info.pesan;
 
-    if (x < root->x) return cekPesanObj(root->left, x, y);
-    else if(x> root->x) return cekPesanObj(root->right, x, y);
+    if (x < root->info.x) return cekPesanObj(root->left, x, y);
+    else if(x> root->info.x) return cekPesanObj(root->right, x, y);
     else {
-        if (y < root->y) return cekPesanObj(root->left, x, y);
+        if (y < root->info.y) return cekPesanObj(root->left, x, y);
         else return cekPesanObj(root->right, x, y);
     }
 }
@@ -58,8 +48,8 @@ string cekPesanObj(address root, int x, int y) {
 void ubahPropertiNode(address root, int x, int y, bool statusBaruDilewati, string pesanBaru) {
     address node = cariNode(root, x, y);
     if (node != NIL) {
-        node->tembus = statusBaruDilewati;
-        node->pesan = pesanBaru;
+        node->info.solid = statusBaruDilewati;
+        node->info.pesan = pesanBaru;
     }
 }
 
@@ -132,7 +122,7 @@ void firstPersonWalking(int &playerX, int &playerY) {
 
 string cariNamaObj(address root, int x, int y) {
     address node = cariNode(root, x, y);
-    if (node != NIL) return node->nama;
+    if (node != NIL) return node->info.nama;
     return "";
 }
 
@@ -256,7 +246,7 @@ void inisialisasiPetaPerpustakaan(address &root) {
     root = insert(root, 4, 0, "Lukisan", "Sebuah karya seni misterius.", false);
 }
 
-void buatLorongKampus(address &root) {
+void buatLorongKampus(address &root, int trg_lorong) {
     root = NIL;
     
     // Lorong panjang sempit: 50 karakter panjang, lebar 3 (1 jalan tengah + 2 tembok samping)
@@ -266,8 +256,10 @@ void buatLorongKampus(address &root) {
     // INSERT PINTU di ujung kiri (pintu perpustakaan - bisa dibuka)
     root = insert(root, -11, 0, "PintuPerpustakaan", "Pintu menuju Perpustakaan.", false);
     
-    // INSERT TRIGGER POINT untuk first-person walking di koordinat (10, 0)
-    root = insert(root, 10, 0, "TriggerLorongFP", "Lorong ini sangat panjang, rasanya sangat tidak nyaman...", false);
+    if (trg_lorong == 0) {
+        // INSERT TRIGGER POINT untuk first-person walking di koordinat (10, 0)
+        root = insert(root, 10, 0, "TriggerLorongFP", "Lorong ini sangat panjang, rasanya sangat tidak nyaman...", false);
+    }
     
     // INSERT PINTU di ujung kanan (pintu terkunci)
     root = insert(root, 39, 0, "PintuUjung", "Pintu terkunci rapat.", true);
@@ -279,15 +271,15 @@ void buatLorongKampus(address &root) {
     buatNodeTembok(root, -11, -1, 39, -1);
 }
 
-void pindahKeRuangan(address &root, int &x, int &y, int tujuan) {
+void pindahKeRuangan(address &root, int &x, int &y, int tujuan, int trg_lorong) {
     ruanganAktif = tujuan;
     if (tujuan == 1) {
         inisialisasiPetaPerpustakaan(root);
         x = 6; y = 0;
     } else if (tujuan == 2) {
-        buatLorongKampus(root);
+        buatLorongKampus(root, trg_lorong);
         // Spawn point di lorong (kiri agak masuk)
-        x = -11; y = 0;
+        x = -10; y = 0;
     }
 }
 
@@ -396,9 +388,10 @@ void buatUsername(int &profil) {
     sqlite3_close(data);
 }
 
-void menuProfil(int &profil) {
+int menuProfil(int &profil) {
     sqlite3* data;
-    int pilihanMenu;
+    int tempProfil = 0; // untuk memilih menu & pilih id player
+    bool idPlayer; // untuk mengecek id player ada atau tidak
 
     if(sqlite3_open("dataPemain.db", &data) == SQLITE_OK){
         // simpan hasilnya ke variabel global totalProfil
@@ -406,20 +399,20 @@ void menuProfil(int &profil) {
         
         sqlite3_close(data); // Tutup lagi
     }
-    system("cls");
-    cout << "==================================" << endl;
-    cout << "         PEMBUATAN PROFIL    " << endl;
-    cout << "==================================" << endl;
     if (totalProfil == 0) {
         do {
+            system("cls");
+            cout << "==================================" << endl;
+            cout << "         PEMBUATAN PROFIL    " << endl;
+            cout << "==================================" << endl;
             cout << "Tidak ada profil yang sudah dibuat!" << endl;
             cout << "1. Buat akun baru" << endl;
             cout << "2. kembali" << endl;
             cout << "-------------------------------------" << endl;
             cout << "> ";
             cin.ignore();
-            cin >> pilihanMenu;
-            switch (pilihanMenu)
+            cin >> tempProfil;
+            switch (tempProfil)
             {
             case 1:
                 buatUsername(profil);
@@ -428,37 +421,40 @@ void menuProfil(int &profil) {
             case 2:
                 cout << "Tekan apapun untuk lanjut...";
                 getch();
-                break;
+                return 0; // atinya dia tidak bisa bermain karena memilih exit
             default:
                 break;
             }
-        } while (pilihanMenu > 2); // akan ulang terus kalo inputnya selain 1 dan 2
+        } while (tempProfil > 2); // akan ulang terus kalo inputnya selain 1 dan 2
     } else { // bakal munculin semua profil yang ada
+        system("cls");
         if(sqlite3_open("dataPemain.db", &data) == SQLITE_OK){
             tampilkanDaftarPemain(data);
             sqlite3_close(data);
         }
-        
-        cout << "PILIH OPSI:" << endl;
-        cout << "1. Pilih Profil (Masukkan ID)" << endl;
-        cout << "2. Buat Profil Baru" << endl;
-        cout << "-------------------------------------" << endl;
-        cout << "> ";
+        cout << "[0] untuk buat ID baru | Pilih ID: "; 
         cin.ignore();
-        cin >> pilihanMenu;
+        cin >> tempProfil;
         
-        if (pilihanMenu == 2) {
+        if (tempProfil == 0) {
              buatUsername(profil);
              totalProfil++;
+             return 1;
+        }
+        idPlayer = cekIdPemain(tempProfil);
+        if (idPlayer) {
+            cout << "Profil ID " << tempProfil << " terpilih." << endl;
+            profil = tempProfil;
+            cout << "Tekan apapun untuk lanjut...";
+            getch();
         } else {
-             // Asumsi input langsung ID
-             cout << "Masukkan ID Profil yang ingin dimainkan: ";
-             cin >> profil;
-             cout << "Profil ID " << profil << " terpilih." << endl;
-             cout << "Tekan apapun untuk lanjut...";
-             getch();
+            cout << "Profil ID " << tempProfil << " tidak ada." << endl;
+            cout << "Tekan apapun untuk lanjut...";
+            getch();
+            return 0;
         }
     }
+    return 1; // artinya dia bisa masuk ke fungsi mulaiBermain
 }
 
 void mulaiBermain(address &root, int radiusPandang, int &profil, SkillNode* SkillRoot) {
@@ -471,23 +467,31 @@ void mulaiBermain(address &root, int radiusPandang, int &profil, SkillNode* Skil
 
     int x; 
     int y;
-    ambilData(data, profil, x, y, kunciDimiliki, ruanganAktif);
+    int trg_Lorong;
+    int aksesPerpustakaanTerbuka;
+    ambilData(data, profil, x, y, kunciDimiliki, ruanganAktif, trg_Lorong, aksesPerpustakaanTerbuka);
     sqlite3_close(data); // Close after getting data
+
+    if (ruanganAktif == 1) inisialisasiPetaPerpustakaan(root);
+    else if (ruanganAktif == 2) buatLorongKampus(root, trg_Lorong);
+
+    // if (trg_Lorong == 0) root = insert(root, 10, 0, "TriggerLorongFP", "Lorong ini sangat panjang, rasanya sangat tidak nyaman...", false);
     
     // Pastikan spawn sesuai ruangan awal
-    if (ruanganAktif == 1) { x = 0; y = 0; }
-    else if (ruanganAktif == 2) { x = -10; y = 0; }
+    // if (ruanganAktif == 1) { x = 0; y = 0; }
+    // else if (ruanganAktif == 2) { x = -10; y = 0; }
 
     bool masihBermain = true;
     char pilihanBermain;
-    string pesanObj;
+    string pesanObj, namaRuangan;
     do {
         system("cls");
-        cout << "======== PERMainan CAMPUS - RUANGAN " << ruanganAktif << " ========" << endl;
+        if (ruanganAktif == 1) namaRuangan = "PERPUSTAKAAN";
+        else if (ruanganAktif == 2) namaRuangan = "LORONG";
+        cout << "======== PERMainan CAMPUS - RUANGAN " << namaRuangan << " ========" << endl;
+        cout << "ID: " << profil << endl << endl;
         cout << "Posisi: " << x << ", " << y << endl;
-        
-        // --- Menampilkan Inventori ---
-        cout << "Item: ";
+    
         // --- Menampilkan Inventori ---
         cout << "Item: ";
         cout << "Pecahan Kode"; // Logic item kunci sudah dihapus
@@ -531,6 +535,7 @@ void mulaiBermain(address &root, int radiusPandang, int &profil, SkillNode* Skil
             } 
             break;
         case 'x':
+            updateDataPemain(data, profil, x, y, ruanganAktif, kunciDimiliki, trg_Lorong, aksesPerpustakaanTerbuka);
             masihBermain = false;
         default:
             break;
@@ -539,17 +544,8 @@ void mulaiBermain(address &root, int radiusPandang, int &profil, SkillNode* Skil
         // Ambil pesan & nama objek di langkah target (jika ada)
         pesanObj = cekPesanObj(root, langkahX, langkahY);
         string namaObjekLangkah = cariNamaObj(root, langkahX, langkahY);
-
-        // --- Interaksi TEMPAT SAMPAH di ruangan 2 ---
-        if (ruanganAktif == 2 && namaObjekLangkah == "Tempat Sampah") {
-            tampilkanTempatSampah();   // <--- menampilkan ASCII
-            pesanObj = "Kamu melihat sesuatu... tapi tempat sampahnya kosong.";
-        }
-
-        // --- Interaksi LUKISAN di ruangan 1 ---
-        // (Dihapus karena diganti Meja)
         
-        // --- Interaksi LUKISAN di ruangan 1 ---
+        // --- Interaksi Suasana di ruangan 1 ---
         if (ruanganAktif == 1 && namaObjekLangkah == "Lukisan") {
             tampilkanArtPerpustakaan();
             pesanObj = "Perpustakaan sudah kosong, seram sekali.";
@@ -575,9 +571,12 @@ void mulaiBermain(address &root, int radiusPandang, int &profil, SkillNode* Skil
             // Update langkahX dan langkahY agar tidak ada konflik
             langkahX = x;
             langkahY = y;
-            
-            // Hapus trigger point agar tidak bisa diaktifkan lagi
-            ubahPropertiNode(root, 10, 0, true, "");
+            if (trg_Lorong == 0) {
+                // Hapus trigger point agar tidak bisa diaktifkan lagi
+                // ubahPropertiNode(root, 10, 0, true, "");
+                deleteNode(root, 10, 0);
+                trg_Lorong = 1; // artinya sudah pernah ke trigger
+            }
             
             pesanObj = "Syukurlah ada pintu diujung sini";
             continue; // Skip movement check
@@ -587,7 +586,7 @@ void mulaiBermain(address &root, int radiusPandang, int &profil, SkillNode* Skil
         // --- Interaksi PANEL (PASSWORD) ---
         if (ruanganAktif == 1 && namaObjekLangkah == "Panel") {
             // Cek jika sudah terbuka
-            if (aksesPerpustakaanTerbuka) {
+            if (aksesPerpustakaanTerbuka == 1) {
                 // Langsung skip ke logika buka pintu
                 // Kita gunakan trik 'goto' atau sekadar set inputKode = "4826" (simulasi)
                 // Tapi lebih rapi kita handle di bawah atau duplikasi logika pindah
@@ -596,10 +595,10 @@ void mulaiBermain(address &root, int radiusPandang, int &profil, SkillNode* Skil
                 cout << "Status: Pintu sudah TERBUKA." << endl;
                 cout << "Tekan tombol apa saja untuk keluar." << endl;
                 _getch();
-                 pindahKeRuangan(root, langkahX, langkahY, 2);
-                 x = langkahX;
-                 y = langkahY;
-                 continue;
+                pindahKeRuangan(root, langkahX, langkahY, 2, trg_Lorong);
+                x = langkahX;
+                y = langkahY;
+                continue;
             }
 
             system("cls");
@@ -639,25 +638,25 @@ void mulaiBermain(address &root, int radiusPandang, int &profil, SkillNode* Skil
 
             if (cancelInput) {
                  pesanObj = "Input dibatalkan.";
-            } else if (aksesPerpustakaanTerbuka) {
+            } else if (aksesPerpustakaanTerbuka == 1) {
                  // Jika sudah terbuka sebelumnya, langsung lewat
                  cout << "\nAKSES DITERIMA (Tersimpan). Pintu terbuka!" << endl;
                  cout << "Tekan tombol apa saja..." << endl;
                  _getch();
                  
                   // pindah ke ruangan 2 (Lorong)
-                 pindahKeRuangan(root, langkahX, langkahY, 2);
+                 pindahKeRuangan(root, langkahX, langkahY, 2, trg_Lorong);
                  x = langkahX;
                  y = langkahY;
                  continue;
             } else if (inputKode == "4826") {
-                aksesPerpustakaanTerbuka = true; // Simpan status terbuka
+                aksesPerpustakaanTerbuka = 1; // Simpan status terbuka
                 cout << "\nAKSES DITERIMA. Pintu terbuka!" << endl;
                 cout << "Tekan tombol apa saja..." << endl;
                 _getch();
                 
                  // pindah ke ruangan 2 (Lorong)
-                pindahKeRuangan(root, langkahX, langkahY, 2);
+                pindahKeRuangan(root, langkahX, langkahY, 2, trg_Lorong);
                 x = langkahX;
                 y = langkahY;
                 continue;
@@ -691,14 +690,14 @@ void mulaiBermain(address &root, int radiusPandang, int &profil, SkillNode* Skil
                 cout << "Tekan tombol apa saja untuk melanjutkan." << endl;
                 _getch();
 
-                pindahKeRuangan(root, langkahX, langkahY, 1);
+                pindahKeRuangan(root, langkahX, langkahY, 1, trg_Lorong);
                 x = langkahX;
                 y = langkahY;
                 continue;
             } else if (ruanganAktif == 2 && namaObjekLangkah == "PintuRuangKelas") {
                 // contoh pintu ruang kelas yang terkunci
                 address nodePintuKelas = cariNode(root, langkahX, langkahY);
-                if (nodePintuKelas != NIL && nodePintuKelas->tembus == true) {
+                if (nodePintuKelas != NIL && nodePintuKelas->info.solid == true) {
                     pesanObj = "Pintu ruang kelas terkunci.";
                 } else {
                     // jika dibuka : bisa buat pindah ke ruangan lain
