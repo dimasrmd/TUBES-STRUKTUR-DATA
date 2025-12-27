@@ -1,3 +1,4 @@
+#include <windows.h> // Untuk Sleep() - cutscene timing (harus di atas untuk avoid byte conflict)
 #include "gameplay.h"
 #include "pesanObjek.h"
 #include "lorongFrames.h"
@@ -89,6 +90,30 @@ void tampilkanArtClue(int nomorClue) {
     _getch();
 }
 
+// Fungsi untuk cutscene membuka pintu (auto-play)
+void doorOpeningCutscene() {
+    // Array pointer ke semua frame cutscene (23 frames)
+    const char* cutsceneFrames[23] = {
+        doorFrame1, doorFrame2, doorFrame3, doorFrame4, doorFrame5,
+        doorFrame6, doorFrame7, doorFrame8, doorFrame9, doorFrame10,
+        doorFrame11, doorFrame12, doorFrame13, doorFrame14, doorFrame15,
+        doorFrame16, doorFrame17, doorFrame18, doorFrame19, doorFrame20,
+        doorFrame21, doorFrame22, doorFrame23
+    };
+    
+    // Play semua frame dengan durasi berbeda
+    for (int i = 0; i < 23; i++) {
+        system("cls");
+        cout << cutsceneFrames[i] << endl;
+        
+        if (i < 20) {
+            Sleep(300); // Frame 1-20: 300ms (0.3 detik)
+        } else {
+            Sleep(3000); // Frame 21-23: 3000ms (3 detik)
+        }
+    }
+}
+
 // Fungsi untuk menampilkan animasi first-person walking
 void firstPersonWalking(int &playerX, int &playerY) {
     // Array pointer ke semua frame
@@ -119,10 +144,17 @@ void firstPersonWalking(int &playerX, int &playerY) {
         }
     }
     
-    // Tunggu input terakhir untuk keluar dari frame terakhir
-    _getch();
+    // Setelah frame 17, tunggu player tekan W lagi untuk trigger cutscene
+    while (true) {
+        input = _getch();
+        if (input == 'w' || input == 'W') {
+            // Trigger cutscene membuka pintu
+            doorOpeningCutscene();
+            break;
+        }
+    }
     
-    // Setelah animasi selesai, teleport player ke koordinat (37, 0)
+    // Setelah cutscene selesai, teleport player ke koordinat (37, 0)
     // 2 karakter di sebelah kiri pintu yang ada di (39, 0)
     playerX = 37;
     playerY = 0;
