@@ -9,13 +9,19 @@ int main () {
     address root = NIL;
     int pilihanMenu;
     int radiusPandang = 5;
+    SkillNode* skillRoot = nullptr;
+    CharacterStats* playerStats = new CharacterStats();
 
     // inisialisasi database
     buatDatabase(databasePemain);
 
     // Inisialisasi ruangan awal (Perpustakaan)
-    pindahKeRuangan(root, /*playerX*/ *(new int(0)), /*playerY*/ *(new int(0)), 1);
+    int tempX = 0, tempY = 0;
+    pindahKeRuangan(root, tempX, tempY, 1);
     // NOTE: kita akan mengatur spawn pada mulaiBermain sehingga konstruktor di atas sekadar memastikan root terisi
+    
+    // Inisialisasi default skills
+    initializeDefaultSkills(skillRoot);
 
     do {
         system("cls");
@@ -32,7 +38,7 @@ int main () {
         {
         case 1:
             menuProfil(profil);
-            mulaiBermain(root, radiusPandang, profil);
+            mulaiBermain(root, radiusPandang, profil, skillRoot, playerStats);
             break;
         case 2:
             lihatSetting(root, radiusPandang);

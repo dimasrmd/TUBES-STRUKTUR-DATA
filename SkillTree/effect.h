@@ -4,18 +4,39 @@
 #include <string>
 using namespace std;
 
-struct effect{
+enum EffectType {
+    PASSIVE,
+    ACTIVE,
+    TRIGGERED
+};
+
+struct effect {
     string nama;
-    string deskripsi; 
+    string deskripsi;
+    EffectType type;
+    string statAffected;
+    int value;
+    bool isActive;
     effect* next;
 };
 
-// Update parameternya: tambah string deskripsi
-effect* createeffect(string effectname, string desc);
-void addeffect(effect*& head, string effectname, string desc);
+// Deklarasi fungsi effect
+effect* createeffect(string effectname, string desc, 
+                     EffectType type = PASSIVE, 
+                     string statAffected = "", 
+                     int value = 0);
 
-void removeEffect(effect*& head, string effectname);
+void addeffect(effect*& head, string effectname, string desc, 
+               EffectType type = PASSIVE, 
+               string statAffected = "", 
+               int value = 0);
+
+void activateEffect(effect* effectNode);
+void deactivateEffect(effect* effectNode);
+effect* findEffect(effect* head, string effectName);
+
 void displayEffects(effect* head);
+void removeEffect(effect*& head, string effectname);
 void clearAlleffects(effect*& head);
 
 #endif
