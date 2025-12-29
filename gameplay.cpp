@@ -5,7 +5,7 @@
 #include "transisiLorongFrames1.h"
 #include "transisiLorongFrames2.h"
 #include "transisiLorongFrames3.h"
-#include "serpentIntroFrames.h"
+#include "BattleSystem.h"
 
 #include "Skilltree/Skilltree.h"
 // --gameplay.h--
@@ -171,89 +171,6 @@ void transisiCutscene() {
     }
 }
 
-// Fungsi untuk cutscene pengenalan serpent (18 frames)
-void serpentIntroductionCutscene() {
-    // Array pointer ke semua frame (18 frames)
-    const char* introFrames[18] = {
-        serpentIntroFrame1, serpentIntroFrame2, serpentIntroFrame3,
-        serpentIntroFrame4, serpentIntroFrame5, serpentIntroFrame6,
-        serpentIntroFrame7, serpentIntroFrame8, serpentIntroFrame9,
-        serpentIntroFrame10, serpentIntroFrame11, serpentIntroFrame12,
-        serpentIntroFrame13, serpentIntroFrame14, serpentIntroFrame15,
-        serpentIntroFrame16, serpentIntroFrame17, serpentIntroFrame18
-    };
-    
-    // Play semua frame dengan durasi 300ms (0.3 detik) per frame
-    for (int i = 0; i < 18; i++) {
-        system("cls");
-        cout << introFrames[i] << endl;
-        Sleep(300); // 0.3 detik per frame
-    }
-    
-    // Pause setelah frame terakhir - tunggu player tekan enter
-    cout << "\nTekan ENTER untuk lanjut..." << endl;
-    cin.ignore();
-    cin.get();
-    
-    // Setelah cutscene, tampilkan narasi
-    system("cls");
-    cout << "Apa... apa ini?!" << endl;
-    cout << "Naga raksasa... dengan rune aneh yang bercahaya!" << endl;
-    Sleep(2000);
-    
-    cout << "\nTekan tombol apapun untuk lanjut..." << endl;
-    _getch();
-    
-    system("cls");
-    cout << "Tunggu... rune ini..." << endl;
-    cout << "HEAD... DATA... NULL..." << endl;
-    Sleep(2000);
-    
-    cout << "\nTekan tombol apapun untuk lanjut..." << endl;
-    _getch();
-    
-    system("cls");
-    cout << "Ini... LINKED LIST?!" << endl;
-    cout << "Struktur yang kupelajari di mata kuliah Struktur Data!" << endl;
-    Sleep(2000);
-    
-    cout << "\nTekan tombol apapun untuk lanjut..." << endl;
-    _getch();
-    
-    system("cls");
-    cout << "Aku harus mengingat pelajaranku..." << endl;
-    cout << "Jika aku bisa memahami strukturnya..." << endl;
-    cout << "mungkin aku bisa mengalahkannya!" << endl;
-    Sleep(2000);
-    
-    cout << "\nTekan tombol apapun untuk lanjut..." << endl;
-    _getch();
-    
-    // Reminder zoom out sebelum battle (simplified)
-    system("cls");
-    cout << "========================================" << endl;
-    cout << "         BATTLE DIMULAI!               " << endl;
-    cout << "========================================" << endl;
-    cout << endl;
-    cout << "PENTING: Zoom out terminal kamu!" << endl;
-    cout << "(Ctrl + Scroll atau Ctrl + -)" << endl;
-    cout << endl;
-    cout << "Cutscene akan muncul saat battle." << endl;
-    cout << "========================================" << endl;
-    
-    cout << "\nTekan tombol apapun untuk lanjut..." << endl;
-    _getch();
-    
-    // TODO: Temanmu lanjut buat UI quiz di sini
-    system("cls");
-    cout << "[PLACEHOLDER - UI QUIZ AKAN DIBUAT OLEH TEMANMU]" << endl;
-    cout << "\nBattle system dengan 5 benar = menang, 3 salah = kalah" << endl;
-    cout << "\nTekan tombol apapun untuk kembali..." << endl;
-    _getch();
-}
-
-
-
 // Fungsi untuk menampilkan animasi first-person walking
 void firstPersonWalking(int &playerX, int &playerY) {
     // Array pointer ke semua frame
@@ -285,28 +202,30 @@ void firstPersonWalking(int &playerX, int &playerY) {
     }
     
     // Setelah frame 17, tunggu player tekan W lagi untuk trigger cutscene
-    while (true) {
-        input = _getch();
-        if (input == 'w' || input == 'W') {
-            // Trigger cutscene membuka pintu
-            doorOpeningCutscene();
-            
-            // Setelah membuka pintu, trigger cutscene transisi (cahaya terang -> terbangun)
-            transisiCutscene();
-            
-            // Setelah transisi, trigger cutscene pengenalan serpent
-            serpentIntroductionCutscene();
-            break;
-        }
-    }
+while (_kbhit()) _getch(); 
+
+    // --- EVENT LANGSUNG JALAN (TANPA WHILE LAGI) ---
+    // Begitu nyampe ujung (loop jalan kelar), langsung gas event!
     
-    // Setelah cutscene selesai, teleport player ke koordinat (37, 0)
-    // 2 karakter di sebelah kiri pintu yang ada di (39, 0)
+    Sleep(500); // Jeda dikit biar napas
+    
+    // 1. Cutscene Pintu & Transisi
+    doorOpeningCutscene();
+    transisiCutscene();
+    
+    // 2. Cutscene Naga
+    serpentIntroductionCutscene();
+    
+    // 3. Battle Quiz
+    startDragonBattle();
+    
+   
     playerX = 37;
     playerY = 0;
     
-    // Langsung kembali ke gameplay tanpa pesan
+   
 }
+
 
 string cariNamaObj(address root, int x, int y) {
     address node = cariNode(root, x, y);
