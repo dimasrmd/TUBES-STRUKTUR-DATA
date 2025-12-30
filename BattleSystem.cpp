@@ -1,9 +1,16 @@
 #include <windows.h>
 #include "serpentIntroFrames.h"
+#include "orbMeledakFrames1.h"
+#include "orbMeledakFrames2.h"
+#include "headMeledakFrames.h"
+#include "gameOverFrames.h"
 #include "BattleSystem.h"
 #include <iostream>
 #include <conio.h>
 #include <vector>
+#include <algorithm>  // Untuk shuffle
+#include <cstdlib>    // Untuk srand dan rand
+#include <ctime>      // Untuk time (random seed)
 
 using namespace std;
 
@@ -124,7 +131,7 @@ void drawBattleInterface(int lives, int correctCount) {
         if (i < lives) cout << "❤️ ";  // Nyawa penuh
         else           cout << "💀 ";  // Nyawa hilang
     }
-    cout << "                   ║" << endl;
+    cout << "                               ║" << endl;
 
     cout << "   ║                                                      ║" << endl;
 
@@ -134,21 +141,106 @@ void drawBattleInterface(int lives, int correctCount) {
         if (i < correctCount) cout << "💥"; // Node Hancur (Emoji ledakan)
         else                  cout << "🟢"; // Node Utuh (Emoji hijau)
     }
-    cout << "]           ║" << endl;
+    cout << "]                        ║" << endl;
 
     cout << "   ║                                                      ║" << endl;
     cout << "   ╚══════════════════════════════════════════════════════╝" << endl;
     cout << endl;
 }
 
+// Fungsi untuk cutscene orb 1 meledak (19 frames)
+void orb1MeledakCutscene() {
+    const char* orb1Frames[19] = {
+        orb1MeledakFrame1, orb1MeledakFrame2, orb1MeledakFrame3, orb1MeledakFrame4,
+        orb1MeledakFrame5, orb1MeledakFrame6, orb1MeledakFrame7, orb1MeledakFrame8,
+        orb1MeledakFrame9, orb1MeledakFrame10, orb1MeledakFrame11, orb1MeledakFrame12,
+        orb1MeledakFrame13, orb1MeledakFrame14, orb1MeledakFrame15, orb1MeledakFrame16,
+        orb1MeledakFrame17, orb1MeledakFrame18, orb1MeledakFrame19
+    };
+    
+    for (int i = 0; i < 19; i++) {
+        system("cls");
+        cout << orb1Frames[i] << endl;
+        Sleep(200); // 0.2 detik per frame (lebih cepat untuk efek ledakan)
+    }
+}
+
+// Fungsi untuk cutscene orb 2 meledak (20 frames)
+void orb2MeledakCutscene() {
+    const char* orb2Frames[20] = {
+        orb2MeledakFrame1, orb2MeledakFrame2, orb2MeledakFrame3, orb2MeledakFrame4,
+        orb2MeledakFrame5, orb2MeledakFrame6, orb2MeledakFrame7, orb2MeledakFrame8,
+        orb2MeledakFrame9, orb2MeledakFrame10, orb2MeledakFrame11, orb2MeledakFrame12,
+        orb2MeledakFrame13, orb2MeledakFrame14, orb2MeledakFrame15, orb2MeledakFrame16,
+        orb2MeledakFrame17, orb2MeledakFrame18, orb2MeledakFrame19, orb2MeledakFrame20
+    };
+    
+    for (int i = 0; i < 20; i++) {
+        system("cls");
+        cout << orb2Frames[i] << endl;
+        Sleep(200); // 0.2 detik per frame
+    }
+}
+
+// Fungsi untuk cutscene head meledak (29 frames) 
+void headMeledakCutscene() {
+    const char* headFrames[29] = {
+        headMeledakFrame1, headMeledakFrame2, headMeledakFrame3, headMeledakFrame4,
+        headMeledakFrame5, headMeledakFrame6, headMeledakFrame7, headMeledakFrame8,
+        headMeledakFrame9, headMeledakFrame10, headMeledakFrame11, headMeledakFrame12,
+        headMeledakFrame13, headMeledakFrame14, headMeledakFrame15, headMeledakFrame16,
+        headMeledakFrame17, headMeledakFrame18, headMeledakFrame19, headMeledakFrame20,
+        headMeledakFrame21, headMeledakFrame22, headMeledakFrame23, headMeledakFrame24,
+        headMeledakFrame25, headMeledakFrame26, headMeledakFrame27, headMeledakFrame28,
+        headMeledakFrame29
+    };
+    
+    for (int i = 0; i < 29; i++) {
+        system("cls");
+        cout << headFrames[i] << endl;
+        Sleep(200); // 0.2 detik per frame
+    }
+}
+
+// Fungsi untuk cutscene game over (30 frames)
+void gameOverCutscene() {
+    const char* gameOverFrames[30] = {
+        gameOverFrame1, gameOverFrame2, gameOverFrame3, gameOverFrame4,
+        gameOverFrame5, gameOverFrame6, gameOverFrame7, gameOverFrame8,
+        gameOverFrame9, gameOverFrame10, gameOverFrame11, gameOverFrame12,
+        gameOverFrame13, gameOverFrame14, gameOverFrame15, gameOverFrame16,
+        gameOverFrame17, gameOverFrame18, gameOverFrame19, gameOverFrame20,
+        gameOverFrame21, gameOverFrame22, gameOverFrame23, gameOverFrame24,
+        gameOverFrame25, gameOverFrame26, gameOverFrame27, gameOverFrame28,
+        gameOverFrame29, gameOverFrame30
+    };
+    
+    for (int i = 0; i < 30; i++) {
+        system("cls");
+        cout << gameOverFrames[i] << endl;
+        Sleep(200); // 0.2 detik per frame
+    }
+}
+
 // ==========================================
 // 2. FUNGSI BATTLE (QUIZ LOGIC)
 // ==========================================
 void startDragonBattle() {
+    // Seed random number generator (hanya sekali di awal)
+    static bool seeded = false;
+    if (!seeded) {
+        srand(time(0));
+        seeded = true;
+    }
+    
     bool playAgain = true;
     
     do {
         vector<Question> questions = loadQuestions();
+        
+        // SHUFFLE SOAL agar urutan berbeda setiap kali main
+        random_shuffle(questions.begin(), questions.end());
+        
         int lives = 3;
         int correctCount = 0;
         int currentQ = 0;
@@ -193,6 +285,19 @@ void startDragonBattle() {
                 
                 // SCENE 1: NODE PERTAMA HANCUR (2 Benar)
                 if (correctCount == 2) {
+                    // Reminder zoom out
+                    cout << "\n========================================" << endl;
+                    cout << "    CUTSCENE AKAN DITAMPILKAN!         " << endl;
+                    cout << "========================================" << endl;
+                    cout << "\nPASTIKAN terminal sudah di-zoom out!" << endl;
+                    cout << "(Ctrl + Scroll atau Ctrl + -)" << endl;
+                    cout << "\nTekan tombol apapun untuk lanjut..." << endl;
+                    _getch();
+                    
+                    // Play cutscene orb 1 meledak
+                    orb1MeledakCutscene();
+                    
+                    // Text narasi setelah cutscene
                     system("cls");
                     cout << "========================================" << endl;
                     cout << "           !!! CRITICAL HIT !!!         " << endl;
@@ -205,6 +310,19 @@ void startDragonBattle() {
                 } 
                 // SCENE 2: NODE KEDUA HANCUR (4 Benar)
                 else if (correctCount == 4) {
+                    // Reminder zoom out
+                    cout << "\n========================================" << endl;
+                    cout << "    CUTSCENE AKAN DITAMPILKAN!         " << endl;
+                    cout << "========================================" << endl;
+                    cout << "\nPASTIKAN terminal sudah di-zoom out!" << endl;
+                    cout << "(Ctrl + Scroll atau Ctrl + -)" << endl;
+                    cout << "\nTekan tombol apapun untuk lanjut..." << endl;
+                    _getch();
+                    
+                    // Play cutscene orb 2 meledak
+                    orb2MeledakCutscene();
+                    
+                    // Text narasi setelah cutscene
                     system("cls");
                     cout << "========================================" << endl;
                     cout << "           !!! CRITICAL HIT !!!         " << endl;
@@ -239,7 +357,20 @@ void startDragonBattle() {
         // --- END GAME CONDITIONS ---
         system("cls");
         if (correctCount >= 5) {
-            // VICTORY SCENE
+            // Reminder zoom out untuk victory cutscene
+            cout << "\n========================================" << endl;
+            cout << "    CUTSCENE VICTORY AKAN DITAMPILKAN!" << endl;
+            cout << "========================================" << endl;
+            cout << "\nPASTIKAN terminal sudah di-zoom out!" << endl;
+            cout << "(Ctrl + Scroll atau Ctrl + -)" << endl;
+            cout << "\nTekan tombol apapun untuk lanjut..." << endl;
+            _getch();
+            
+            // VICTORY CUTSCENE
+            headMeledakCutscene();
+            
+            // VICTORY TEXT
+            system("cls");
             cout << "========================================" << endl;
             cout << "             VICTORY ACHIEVED           " << endl;
             cout << "========================================" << endl;
@@ -248,7 +379,20 @@ void startDragonBattle() {
             cout << "\n[SYSTEM]: MEMORY LEAK FIXED." << endl;
             Sleep(2000);
         } else {
-            // GAME OVER SCENE
+            // Reminder zoom out untuk game over cutscene
+            cout << "\n========================================" << endl;
+            cout << "   CUTSCENE GAME OVER AKAN DITAMPILKAN!" << endl;
+            cout << "========================================" << endl;
+            cout << "\nPASTIKAN terminal sudah di-zoom out!" << endl;
+            cout << "(Ctrl + Scroll atau Ctrl + -)" << endl;
+            cout << "\nTekan tombol apapun untuk lanjut..." << endl;
+            _getch();
+            
+            // GAME OVER CUTSCENE
+            gameOverCutscene();
+            
+            // GAME OVER TEXT
+            system("cls");
             cout << "========================================" << endl;
             cout << "               GAME OVER                " << endl;
             cout << "========================================" << endl;
