@@ -14,7 +14,11 @@ string ambilWaktu();
 
 // --database.h--
 // > fungsi untuk membuat database
-void buatDatabase(sqlite3* data);
+void buatDatabasePemain(sqlite3* data);
+
+// --database.h--
+// > fungsi untuk membuat database
+void buatDatabaseDeveloper(sqlite3* data);
 
 // --database.h--
 // > fungsi untuk memasukkan data ke database
@@ -40,4 +44,15 @@ void tampilkanDaftarPemain(sqlite3* data);
 // Fungsi untuk mengecek id yang dicari
 bool cekIdPemain(int idCari);
 
+// --file database.h--
+// Fungsi untuk mengecek id yang dicari
+bool cekDupeNama(string cariNama);
+
+// --file database.h--
+// Fungsi untuk input akun developer
+void insertAccDeveloper(string username, string password);
+
+// --file database.h--
+// Fungsi untuk mengecek akun developer
+bool cekAccDeveloper(string username, string password);
 #endif

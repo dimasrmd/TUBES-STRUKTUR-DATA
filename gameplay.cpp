@@ -282,6 +282,102 @@ void pindahKeRuangan(address &root, int &x, int &y, int tujuan, int trg_lorong) 
     }
 }
 
+bool keamananPass(string pass) {
+    bool adaSimbol = false;
+    bool adaHurufKecil = false;
+    bool adaHurufBesar = false;
+    bool adaNomor = false;
+
+    if (pass.length() < 8) {
+        return false;
+    }
+
+    for (char c : pass) {
+        if (isupper(c)) adaHurufBesar = true;
+        else if (islower(c)) adaHurufKecil = true;
+        else if (ispunct(c)) adaSimbol = true;
+        else if (isdigit(c)) adaNomor = true;
+    }
+
+    return adaSimbol && adaHurufBesar && adaHurufKecil && adaNomor;
+} 
+
+bool authDeveloper(){
+    string keyWord;
+    cout << "Sebutkan kata kunci nya: ";
+    cin.ignore();
+    getline(cin, keyWord);
+    if (keyWord != "aku cinta bahlil") return false;
+    cout << "\n[SYSTEM] Kata kunci diterima!..."; _getch();
+
+    string usn, pass;
+    int choise;
+    char ch;
+    bool ada = false;
+    do {
+        system("cls");
+        cout << setfill('=') << setw(10) << "" << endl;
+        cout << setfill(' ');
+        cout << "1. Daftar\n2. Login\n3. Keluar\n";
+        cout << setfill('=') << setw(10) << "" << endl;
+        cout << setfill(' ');
+        cout << "Pilih: "; cin >> choise;
+        switch (choise)
+        {
+        case 1:
+            system("cls");
+            cout << setfill('=') << setw(8) << "" << " BUAT AKUN " << setfill('=') << setw(8) << "" << endl;
+            cout << setfill(' ');
+            cout << "Username: "; cin >> usn;
+            cout << "Password: "; cin >> pass;
+            if (keamananPass(pass) == false) {
+                cout << "Password minimal ada simbol, nomor, huruf besar dan kecil, dan 8 karakter";
+                _getch();
+            } else {
+                insertAccDeveloper(usn, pass);
+                cout << "Akun berhasil dibuat! Tekan untuk lanjut..."; _getch();
+            }
+            break;
+        case 2:
+            usn = "";
+            pass = "";
+            system("cls");
+            cout << setfill('=') << setw(8) << "" << " LOGIN AKUN " << setfill('=') << setw(8) << "" << endl;
+            cout << setfill(' ');
+            cout << "Username: "; cin >> usn;
+            cout << "Password: ";
+            while (true) {
+                ch = _getch();
+                if (ch == 13) break; // tombol enter
+                else if (ch == 8) { // tombol backspace
+                    if (!pass.empty()) {
+                        pass.pop_back();
+                        cout << "\b \b";
+                    }
+                }
+                else {
+                    pass.push_back(ch);
+                    cout << "*";
+                }
+            }
+            cout << endl << setfill('=') << setw(28) << ""  << endl;
+            cout << setfill(' ');
+            ada = cekAccDeveloper(usn, pass);
+
+            if (ada) {
+                cout << "\n[SYSTEM] Login berhasil, tekan untuk lanjut...";
+            } else {
+                cout << "\n[SYSTEM] Login gagal, tekan untuk lanjut...";
+            }
+            _getch();
+            break;
+        default:
+            break;
+        }
+    } while (choise != 3 && ada == false);
+    return ada;
+}
+
 void lihatSetting(address &root, int &radiusPandang) {
     int pilihanSetting;
     do {
@@ -302,7 +398,7 @@ void lihatSetting(address &root, int &radiusPandang) {
             cin >> radiusPandang;
             break;
         case 2:
-            menuDeveloper(root);
+            if (authDeveloper()) menuDeveloper(root);
             break;
         default:
             break;
@@ -362,7 +458,7 @@ void inputTembok(address &root) {
     buatNodeTembok(root, xAwal, yAwal, xAkhir, yAkhir);
 }
 
-void buatUsername(int &profil) {
+int buatUsername(int &profil) {
     sqlite3* data;
     string usn;
 
@@ -371,7 +467,7 @@ void buatUsername(int &profil) {
     int status = sqlite3_open("dataPemain.db", &data);
     if (status != SQLITE_OK) {
         cout << "Gagal membuka database!" << endl;
-        return;
+        return 0;
     }
     // ---------------------------------------------
     
@@ -379,12 +475,22 @@ void buatUsername(int &profil) {
     cin.ignore();
     getline(cin, usn);
     if (usn.empty()) {
-        cout << "Username tidak boleh kosong!" << endl;
+        cout << "Username tidak boleh kosong!..." << endl;
         sqlite3_close(data); // Tutup dulu sebelum return
-        return;
+        _getch();
+        return 0;
     }
+    sqlite3_close(data); // kenapa di close? karena di cekDupenama ada open, open ketemu open = error
+    if (cekDupeNama(usn)) {
+        cout << "\n[SYSTEM]: Username " << usn << " sudah dibuat, gunakan username lain!\n";
+        cout << "Tekan apapun untuk kembali ke menu...";
+        _getch();
+        return 0;
+    }
+    sqlite3_open("dataPemain.db", &data);
     insertDataPemain(data, usn, profil); // buat sekaligus memakai usn nya
     sqlite3_close(data);
+    return 1;
 }
 
 int menuProfil(int &profil) {
@@ -415,7 +521,7 @@ int menuProfil(int &profil) {
             {
             case 1:
                 buatUsername(profil);
-                totalProfil++;
+                return 1;
                 break;
             case 2:
                 cout << "Tekan apapun untuk lanjut...";
@@ -434,12 +540,22 @@ int menuProfil(int &profil) {
         cout << "[0] untuk buat ID baru | Pilih ID: "; 
         cin.ignore();
         cin >> tempProfil;
-        
-        if (tempProfil == 0) {
-             buatUsername(profil);
-             totalProfil++;
-             return 1;
+        if (cin.fail()) {
+            cout << "Input salah! Harap masukkan angka." << endl;
+            
+            // 1. Reset status error di cin agar bisa dipakai lagi
+            cin.clear(); 
+            
+            // 2. Buang sisa input "sampah" (huruf tadi) dari memori buffer
+            // numeric_limits...max() artinya "buang sebanyak mungkin karakter sampai ketemu Enter"
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); 
+            return 0;
         }
+        
+        if (tempProfil == 0 && buatUsername(profil) == 0) return 0; // kalo dupe nama
+        else if (tempProfil == 0) tempProfil = profil;
+        
+        // profil = tempProfil;
         idPlayer = cekIdPemain(tempProfil);
         if (idPlayer) {
             cout << "Profil ID " << tempProfil << " terpilih." << endl;

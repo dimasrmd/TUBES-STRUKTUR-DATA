@@ -5,8 +5,9 @@
 #include <cstdlib>
 #include <conio.h>
 #include <iomanip>
+#include <limits>
+#include <cctype>
 #include "Skilltree/Skilltree.h"
-
 
 /*gameplay.h
 **Fungsinya: kasih tau udah punya kunci atau belom di ruangan perpuastakaan
@@ -93,6 +94,10 @@ void buatLorongKampus(address &root, int trg_lorong);
 */
 void pindahKeRuangan(address &root, int &x, int &y, int tujuan, int trg_lorong);
 
+/*gameplay.h
+**Fungsinya: melihat setting
+*/
+bool authDeveloper();
 /*gameplay.h
 **Fungsinya: melihat setting
 */

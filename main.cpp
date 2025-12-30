@@ -6,6 +6,7 @@ using namespace std;
 
 int main () {
     sqlite3* databasePemain; // untuk menghubungkan ke database
+    sqlite3* databaseDeveloper; // untuk menghubungkan ke database
     address root = NIL;
     SkillNode rootSkill;
     int pilihanMenu;
@@ -13,7 +14,8 @@ int main () {
 
     
     // inisialisasi database
-    buatDatabase(databasePemain);
+    buatDatabasePemain(databasePemain);
+    buatDatabaseDeveloper(databaseDeveloper);
     
     // Inisialisasi ruangan awal (Perpustakaan)
     pindahKeRuangan(root, /*playerX*/ *(new int(0)), /*playerY*/ *(new int(0)), 1, *new int(0));

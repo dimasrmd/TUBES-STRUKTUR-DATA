@@ -12,7 +12,7 @@ string ambilWaktu() {
     return string(buffer);
 }
 
-void buatDatabase(sqlite3* data) {
+void buatDatabasePemain(sqlite3* data) {
     char* pesan; // wadah untuk pesan dari database
     if (sqlite3_open("dataPemain.db", &data) != SQLITE_OK) {  
         // untuk inisialisasi database dan memastikan database dapat dibuka
@@ -38,6 +38,19 @@ void buatDatabase(sqlite3* data) {
                                 // ON DELTE CASCADE, kalau ada id di tabel pemain terhapus, maka data yang tersambung
                                 // ke tabel progress juga terhapus
     sqlite3_exec(data, createTableProgress.c_str(), NULL, 0, &pesan);
+}
+
+void buatDatabaseDeveloper(sqlite3* data) {
+    char* pesan;
+    if (sqlite3_open("dataDeveloper.db", &data) != SQLITE_OK) {
+        return;
+    }
+    
+    string querryAkun = "CREATE TABLE IF NOT EXISTS akun_developer("
+                        "ID INTEGER PRIMARY KEY AUTOINCREMENT, "
+                        "USERNAME TEXT NOT NULL, "
+                        "PASSWORD TEXT NOT NULL);";
+    sqlite3_exec(data, querryAkun.c_str(), NULL, 0, &pesan);
 }
 
 void insertDataPemain(sqlite3* data, string usn, int &profil) {
@@ -217,6 +230,38 @@ bool cekIdPemain(int idCari) {
     return ketemu;
 }
 
+bool cekDupeNama(string cariNama) {
+    sqlite3* data;
+    sqlite3_stmt* statement;
+    bool ketemu = false; // Anggap default-nya tidak ketemu
+    int test;
+    // 1. Buka Database
+    if (sqlite3_open("dataPemain.db", &data) == SQLITE_OK) {
+        // 2. Query sederhana: Coba ambil ID-nya saja
+        string query = "SELECT USERNAME FROM pemain WHERE USERNAME = '" + cariNama + "' COLLATE NOCASE;";
+
+        // Kita tampung kode error-nya
+        int rc = sqlite3_prepare_v2(data, query.c_str(), -1, &statement, NULL);
+
+        if (rc == SQLITE_OK) { 
+            if (sqlite3_step(statement) == SQLITE_ROW) {
+                ketemu = true;
+            }
+        } else {
+            // --- INI YANG KITA BUTUHKAN ---
+            cout << "QUERY GAGAL!" << endl;
+            cout << "Isi Query: " << query << endl; // Cek apakah stringnya aneh?
+            cout << "Pesan Error SQLite: " << sqlite3_errmsg(data) << endl; // Jawaban kenapa error
+            cin >> test;
+        }
+        sqlite3_finalize(statement);
+    }
+
+    
+    sqlite3_close(data);
+    return ketemu;
+}
+
 void updateDataPemain(sqlite3* data, int idPemain, int x, int y, int ruanganAktif, int trg_lorong, int aksesPerpus) {
     char* pesanError;
     string waktu = ambilWaktu();
@@ -254,4 +299,40 @@ void updateDataPemain(sqlite3* data, int idPemain, int x, int y, int ruanganAkti
     } else {
         cout << "Gagal membuka database untuk menyimpan!" << endl;
     }
+}
+
+void insertAccDeveloper(string usn, string pass) {
+    sqlite3* data;
+    char* pesan;
+    sqlite3_open("dataDeveloper.db", &data);
+    
+    string querryInsert = "INSERT INTO akun_developer(USERNAME, PASSWORD) VALUES ('"
+                        + usn + "', '"
+                        + pass + "');";
+
+    int status = sqlite3_exec(data, querryInsert.c_str(), NULL, 0, &pesan);
+    if (status != SQLITE_OK) {
+        cout << "Gagal input akun, kode: " << pesan;
+        sqlite3_free(pesan);
+    }
+    sqlite3_close(data);
+}
+
+bool cekAccDeveloper(string usn, string pass) {
+    sqlite3* data;
+    sqlite3_stmt* statement;
+    bool ada = false;
+    sqlite3_open("dataDeveloper.db", &data);
+
+    string querry = "SELECT * from akun_developer WHERE USERNAME = '" + usn + "' AND PASSWORD = '" + pass + "';";
+
+    if (sqlite3_prepare_v2(data, querry.c_str(), -1, &statement, NULL) == SQLITE_OK) {
+        if (sqlite3_step(statement) == SQLITE_ROW) {
+            ada = true;
+        }
+
+        sqlite3_finalize(statement);
+        sqlite3_close(data);
+    }
+    return ada;
 }
