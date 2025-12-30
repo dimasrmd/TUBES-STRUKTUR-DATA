@@ -22,7 +22,7 @@ vector<Question> loadQuestions() {
 // 1. FUNGSI CUTSCENE INTRO (NAGA MUNCUL)
 // ==========================================
 void serpentIntroductionCutscene() {
-    // Array frame animasi naga dari file headerw
+    // Array frame animasi naga dari file header
     const char* introFrames[18] = {
         serpentIntroFrame1, serpentIntroFrame2, serpentIntroFrame3,
         serpentIntroFrame4, serpentIntroFrame5, serpentIntroFrame6,
@@ -39,16 +39,64 @@ void serpentIntroductionCutscene() {
         Sleep(300); // Speed animasi
     }
     
-    // Pause sebentar setelah naga muncul full
-    Sleep(1000);
-    cout << "\n[INFO]: Tekan ENTER untuk menghadapi naga..." << endl;
-    _getch();
-
-    // Narasi Singkat
+    // Pause setelah frame terakhir - tunggu player tekan ENTER
+    cout << "\nTekan ENTER untuk lanjut..." << endl;
+    cin.ignore();
+    cin.get();
+    
+    // === NARASI MONOLOG KARAKTER (4 BAGIAN) ===
+    
+    // Bagian 1
     system("cls");
-    cout << "LINKED LIST DRAGON MENGHALANGI JALANMU!" << endl;
-    cout << "Hancurkan Node-nya dengan pengetahuanmu!" << endl;
+    cout << "Apa... apa ini?!" << endl;
+    cout << "Naga raksasa... dengan rune aneh yang bercahaya!" << endl;
     Sleep(2000);
+    
+    cout << "\nTekan tombol apapun untuk lanjut..." << endl;
+    _getch();
+    
+    // Bagian 2
+    system("cls");
+    cout << "Tunggu... rune ini..." << endl;
+    cout << "HEAD... DATA... NULL..." << endl;
+    Sleep(2000);
+    
+    cout << "\nTekan tombol apapun untuk lanjut..." << endl;
+    _getch();
+    
+    // Bagian 3
+    system("cls");
+    cout << "Ini... LINKED LIST?!" << endl;
+    cout << "Struktur yang kupelajari di mata kuliah Struktur Data!" << endl;
+    Sleep(2000);
+    
+    cout << "\nTekan tombol apapun untuk lanjut..." << endl;
+    _getch();
+    
+    // Bagian 4
+    system("cls");
+    cout << "Aku harus mengingat pelajaranku..." << endl;
+    cout << "Jika aku bisa memahami strukturnya..." << endl;
+    cout << "mungkin aku bisa mengalahkannya!" << endl;
+    Sleep(2000);
+    
+    cout << "\nTekan tombol apapun untuk lanjut..." << endl;
+    _getch();
+    
+    // === REMINDER ZOOM OUT SEBELUM BATTLE ===
+    system("cls");
+    cout << "========================================" << endl;
+    cout << "         BATTLE DIMULAI!               " << endl;
+    cout << "========================================" << endl;
+    cout << endl;
+    cout << "PENTING: Zoom out terminal kamu!" << endl;
+    cout << "(Ctrl + Scroll atau Ctrl + -)" << endl;
+    cout << endl;
+    cout << "Cutscene akan muncul saat battle." << endl;
+    cout << "========================================" << endl;
+    
+    cout << "\nTekan tombol apapun untuk lanjut..." << endl;
+    _getch();
 }
 
 void drawBattleInterface(int lives, int correctCount) {
