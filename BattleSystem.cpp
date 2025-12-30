@@ -15,6 +15,17 @@ vector<Question> loadQuestions() {
     q.push_back({"Dalam Circular Linked List, pointer 'next' node terakhir menunjuk ke...?", "NULL", "Node tengah", "Node pertama (Head)", "Dirinya sendiri", 'C'});
     q.push_back({"Teknik paling efisien menemukan node TENGAH dalam satu kali penelusuran?", "Hitung total bagi dua", "Dua pointer (Slow & Fast)", "Rekursif", "Salin ke Array", 'B'});
     q.push_back({"Operasi manakah yang memiliki kompleksitas waktu O(1) pada Singly Linked List?", "Menambah node di awal (Prepend)", "Menghapus node berdasarkan nilai", "Mencari nilai (Search)", "Menghapus node di akhir", 'A'});
+    q.push_back({"Apa yang terjadi jika kita tidak memperbarui pointer 'head' saat menyisipkan node baru di posisi paling depan?", "Node baru akan otomatis terhubung ke node terakhir", "List akan mengalami kebocoran memori (memory leak)", "Node baru tidak akan dianggap sebagai bagian dari list saat traversal dari awal", "Program akan langsung berhenti (crash)", 'C'});
+    q.push_back({"Algoritma Floyd's Cycle-Finding (sering disebut algoritma Kura-kura dan Kelinci) digunakan untuk mendeteksi apa pada Linked List?", "Node yang memiliki nilai duplikat", "Keberadaan siklus (loop) di dalam list", "Panjang total dari list", "Node yang tidak terhubung ke head", 'B'});
+    q.push_back({"Berapa banyak pointer yang perlu diubah untuk menghapus node di tengah-tengah pada Doubly Linked List?", "1", "2", "3", "4", 'B'});
+    q.push_back({"Apa kelemahan utama Linked List dibandingkan dengan Array?", "Ukurannya tetap (fixed size)", "Tidak mendukung akses acak (random access) berdasarkan indeks", "Proses penyisipan elemen selalu lambat", "Memerlukan blok memori yang harus berurutan (contiguously)", 'B'});
+    q.push_back({"Jika Anda ingin mengimplementasikan struktur data Stack menggunakan Linked List, di posisi mana operasi Push dan Pop paling efisien dilakukan?", "Di bagian akhir (Tail)", "Di bagian awal (Head)", "Di posisi acak", "Di bagian tengah", 'B'});
+    q.push_back({"Kondisi manakah yang menunjukkan bahwa sebuah Singly Linked List kosong?", "head.next == NULL", "head == NULL", "head.data == 0", "head.data == NULL", 'B'});
+    q.push_back({"Mengapa Doubly Linked List membutuhkan memori lebih banyak daripada Singly Linked List?", "Karena menyimpan data dua kali lipat", "Karena setiap node menyimpan dua pointer (prev dan next)", "Karena memerlukan node dummy di setiap sisipan", "Karena ukurannya selalu dua kali lipat dari Singly Linked List", 'B'});
+    q.push_back({"Apa risiko utama saat melakukan operasi penghapusan node pada Linked List dalam bahasa pemrograman yang tidak memiliki Garbage Collection (seperti C++)?", "Stack Overflow", "Segmentation Fault saat akses berikutnya", "Kebocoran memori (Memory Leak) jika memori node tidak dibebaskan", "Data otomatis terhapus secara permanen dari hardisk", 'C'});
+    q.push_back({"Operasi manakah yang membutuhkan penelusuran (traversal) seluruh list pada Singly Linked List?", "Mendapatkan elemen pertama", "Menghapus elemen setelah node tertentu yang sudah diketahui", "Membalikkan urutan seluruh list (Reverse)", "Mengubah nilai data pada node head", 'C'});
+    q.push_back({"Apa fungsi dari 'Dummy Node' atau 'Sentinel Node' dalam implementasi Linked List?", "Untuk menyimpan cadangan data jika list rusak", "Menyederhanakan kode dengan menghindari pengecekan kondisi khusus (seperti list kosong atau operasi di head)", "Mempercepat proses pencarian data hingga 50%", "Menghubungkan dua linked list yang berbeda secara otomatis", 'B'});
+    
     return q;
 }
 
@@ -134,116 +145,142 @@ void drawBattleInterface(int lives, int correctCount) {
 // 2. FUNGSI BATTLE (QUIZ LOGIC)
 // ==========================================
 void startDragonBattle() {
-    vector<Question> questions = loadQuestions();
-    int lives = 3;
-    int correctCount = 0;
-    int currentQ = 0;
+    bool playAgain = true;
+    
+    do {
+        vector<Question> questions = loadQuestions();
+        int lives = 3;
+        int correctCount = 0;
+        int currentQ = 0;
 
-    // Loop Battle
-    while (lives > 0 && correctCount < 5) {
-        // Tampilkan UI Battle yang cantik
-        drawBattleInterface(lives, correctCount);
+        // Loop Battle
+        while (lives > 0 && correctCount < 5) {
+            // Tampilkan UI Battle yang cantik
+            drawBattleInterface(lives, correctCount);
 
-        // Tampilkan Soal (Looping jika soal habis)
-        int soalIndex = currentQ % questions.size();
+            // Tampilkan Soal (Looping jika soal habis)
+            int soalIndex = currentQ % questions.size();
+            
+            cout << "[SOAL #" << (correctCount + 1) << "]" << endl;
+            cout << questions[soalIndex].soal << endl << endl;
+            cout << "A. " << questions[soalIndex].opsiA << endl;
+            cout << "B. " << questions[soalIndex].opsiB << endl;
+            cout << "C. " << questions[soalIndex].opsiC << endl;
+            cout << "D. " << questions[soalIndex].opsiD << endl << endl;
+            cout << ">> JAWABAN: ";
+
+            // Bersihkan input buffer sebelum menunggu jawab
+            while (_kbhit()) _getch();
+            
+            char jawab = toupper(_getch());
+            cout << jawab << endl << endl;
+            
+            // Validasi input - hanya terima A, B, C, atau D
+            if (jawab != 'A' && jawab != 'B' && jawab != 'C' && jawab != 'D') {
+                cout << "[INVALID] Inputmu tidak valid! Hanya A, B, C, atau D yang diterima." << endl;
+                cout << "Tekan apapun untuk coba lagi..." << endl;
+                _getch();
+                continue; // Ulangi soal yang sama
+            }
+
+            // --- CEK JAWABAN ---
+            if (jawab == questions[soalIndex].jawabanBenar) {
+                correctCount++;
+                cout << "\n[BENAR] Syntax Valid!" << endl;
+                Sleep(500); // Jeda dikit biar gak kaget
+                
+                // --- SCENE KHUSUS SAAT NODE HANCUR ---
+                
+                // SCENE 1: NODE PERTAMA HANCUR (2 Benar)
+                if (correctCount == 2) {
+                    system("cls");
+                    cout << "========================================" << endl;
+                    cout << "           !!! CRITICAL HIT !!!         " << endl;
+                    cout << "========================================" << endl;
+                    cout << "\nKamu berhasil menghapus pointer node pertama!" << endl;
+                    cout << "Tubuh naga mulai memendek..." << endl;
+                    cout << "\n[SYSTEM]: Node Data 1 -> DELETED." << endl;
+                    cout << "\nTekan sembarang tombol..." << endl;
+                    _getch();
+                } 
+                // SCENE 2: NODE KEDUA HANCUR (4 Benar)
+                else if (correctCount == 4) {
+                    system("cls");
+                    cout << "========================================" << endl;
+                    cout << "           !!! CRITICAL HIT !!!         " << endl;
+                    cout << "========================================" << endl;
+                    cout << "\nSatu lagi node hancur!" << endl;
+                    cout << "Naga meraung kesakitan, tubuhnya tinggal kepala!" << endl;
+                    cout << "\n[SYSTEM]: Node Data 2 -> DELETED." << endl;
+                    cout << "\nTekan sembarang tombol..." << endl;
+                    _getch();
+                } 
+                // SCENE 3: MENANG (5 Benar)
+                else if (correctCount == 5) {
+                    break; // Keluar loop, lanjut ke End Game
+                } 
+                else {
+                    // Kalo bener biasa (1 atau 3)
+                    cout << "Serangan masuk! Lanjut!" << endl;
+                    Sleep(1000);
+                }
+                currentQ++; 
+
+            } else {
+                lives--;
+                cout << "\n[SALAH] Segmentation Fault!" << endl;
+                cout << "Jawaban yang benar adalah: [" << questions[soalIndex].jawabanBenar << "]" << endl;
+                cout << "Kamu terkena damage! Nyawa tersisa: " << lives << " / 3" << endl;
+                Sleep(2000);
+                currentQ++; // Tetap ganti soal
+            }
+        }
+
+        // --- END GAME CONDITIONS ---
+        system("cls");
+        if (correctCount >= 5) {
+            // VICTORY SCENE
+            cout << "========================================" << endl;
+            cout << "             VICTORY ACHIEVED           " << endl;
+            cout << "========================================" << endl;
+            cout << "\n[HEAD] Naga meledak berkeping-keping!" << endl;
+            cout << "Struktur data telah berhasil dibersihkan." << endl;
+            cout << "\n[SYSTEM]: MEMORY LEAK FIXED." << endl;
+            Sleep(2000);
+        } else {
+            // GAME OVER SCENE
+            cout << "========================================" << endl;
+            cout << "               GAME OVER                " << endl;
+            cout << "========================================" << endl;
+            cout << "\nKamu gagal me-management pointer." << endl;
+            cout << "Naga itu memakanmu..." << endl;
+            Sleep(2000);
+        }
         
-        cout << "[SOAL #" << (correctCount + 1) << "]" << endl;
-        cout << questions[soalIndex].soal << endl << endl;
-        cout << "A. " << questions[soalIndex].opsiA << endl;
-        cout << "B. " << questions[soalIndex].opsiB << endl;
-        cout << "C. " << questions[soalIndex].opsiC << endl;
-        cout << "D. " << questions[soalIndex].opsiD << endl << endl;
-        cout << ">> JAWABAN: ";
-
-        // Bersihkan input buffer sebelum menunggu jawab
+        // === PLAY AGAIN PROMPT ===
+        cout << "\n\n========================================" << endl;
+        cout << "         PLAY AGAIN?                    " << endl;
+        cout << "========================================" << endl;
+        cout << "\n[Y] YES - Coba lagi melawan naga" << endl;
+        cout << "[N] NO  - Lanjut ke area berikutnya" << endl;
+        cout << "\n>> Pilihan: ";
+        
+        // Bersihkan buffer
         while (_kbhit()) _getch();
         
-        char jawab = toupper(_getch());
-        cout << jawab << endl << endl;
+        char choice = toupper(_getch());
+        cout << choice << endl;
         
-        // Validasi input - hanya terima A, B, C, atau D
-        if (jawab != 'A' && jawab != 'B' && jawab != 'C' && jawab != 'D') {
-            cout << "[INVALID] Inputmu tidak valid! Hanya A, B, C, atau D yang diterima." << endl;
-            cout << "Tekan apapun untuk coba lagi..." << endl;
-            _getch();
-            continue; // Ulangi soal yang sama
-        }
-
-        // --- CEK JAWABAN ---
-        if (jawab == questions[soalIndex].jawabanBenar) {
-            correctCount++;
-            cout << "\n[BENAR] Syntax Valid!" << endl;
-            Sleep(500); // Jeda dikit biar gak kaget
-            
-            // --- SCENE KHUSUS SAAT NODE HANCUR ---
-            
-            // SCENE 1: NODE PERTAMA HANCUR (2 Benar)
-            if (correctCount == 2) {
-                system("cls");
-                cout << "========================================" << endl;
-                cout << "           !!! CRITICAL HIT !!!         " << endl;
-                cout << "========================================" << endl;
-                cout << "\nKamu berhasil menghapus pointer node pertama!" << endl;
-                cout << "Tubuh naga mulai memendek..." << endl;
-                cout << "\n[SYSTEM]: Node Data 1 -> DELETED." << endl;
-                cout << "\nTekan sembarang tombol..." << endl;
-                _getch();
-            } 
-            // SCENE 2: NODE KEDUA HANCUR (4 Benar)
-            else if (correctCount == 4) {
-                system("cls");
-                cout << "========================================" << endl;
-                cout << "           !!! CRITICAL HIT !!!         " << endl;
-                cout << "========================================" << endl;
-                cout << "\nSatu lagi node hancur!" << endl;
-                cout << "Naga meraung kesakitan, tubuhnya tinggal kepala!" << endl;
-                cout << "\n[SYSTEM]: Node Data 2 -> DELETED." << endl;
-                cout << "\nTekan sembarang tombol..." << endl;
-                _getch();
-            } 
-            // SCENE 3: MENANG (5 Benar)
-            else if (correctCount == 5) {
-                break; // Keluar loop, lanjut ke End Game
-            } 
-            else {
-                // Kalo bener biasa (1 atau 3)
-                cout << "Serangan masuk! Lanjut!" << endl;
-                Sleep(1000);
-            }
-            currentQ++; 
-
+        if (choice == 'Y') {
+            playAgain = true;
+            system("cls");
+            cout << "\nMemulai ulang battle..." << endl;
+            Sleep(1000);
         } else {
-            lives--;
-            cout << "\n[SALAH] Segmentation Fault!" << endl;
-            cout << "Jawaban yang benar adalah: [" << questions[soalIndex].jawabanBenar << "]" << endl;
-            cout << "Kamu terkena damage! Nyawa tersisa: " << lives << " / 3" << endl;
-            Sleep(2000);
-            currentQ++; // Tetap ganti soal
+            playAgain = false;
+            cout << "\nMelanjutkan perjalanan..." << endl;
+            Sleep(1000);
         }
-    }
-
-    // --- END GAME CONDITIONS ---
-    system("cls");
-    if (correctCount >= 5) {
-        // VICTORY SCENE
-        cout << "========================================" << endl;
-        cout << "             VICTORY ACHIEVED           " << endl;
-        cout << "========================================" << endl;
-        cout << "\n[HEAD] Naga meledak berkeping-keping!" << endl;
-        cout << "Struktur data telah berhasil dibersihkan." << endl;
-        cout << "\n[SYSTEM]: MEMORY LEAK FIXED." << endl;
-        Sleep(2000);
-    } else {
-        // GAME OVER SCENE
-        cout << "========================================" << endl;
-        cout << "               GAME OVER                " << endl;
-        cout << "========================================" << endl;
-        cout << "\nKamu gagal me-management pointer." << endl;
-        cout << "Naga itu memakanmu..." << endl;
-        Sleep(2000);
-    }
-    
-    cout << "\nTekan tombol apapun untuk lanjut..." << endl;
-    while (_kbhit()) _getch(); // Bersihkan buffer
-    _getch();
+        
+    } while (playAgain);
 }
