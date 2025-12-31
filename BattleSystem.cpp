@@ -3,6 +3,7 @@
 #include "orbMeledakFrames1.h"
 #include "orbMeledakFrames2.h"
 #include "headMeledakFrames.h"
+#include "nullFrames.h"
 #include "gameOverFrames.h"
 #include "BattleSystem.h"
 #include <iostream>
@@ -222,6 +223,23 @@ void gameOverCutscene() {
     }
 }
 
+// Fungsi untuk cutscene NULL jiwa beterbangan (20 frames)
+void nullJiwaCutscene() {
+    const char* nullFrames[20] = {
+        nullFrame1, nullFrame2, nullFrame3, nullFrame4,
+        nullFrame5, nullFrame6, nullFrame7, nullFrame8,
+        nullFrame9, nullFrame10, nullFrame11, nullFrame12,
+        nullFrame13, nullFrame14, nullFrame15, nullFrame16,
+        nullFrame17, nullFrame18, nullFrame19, nullFrame20
+    };
+    
+    for (int i = 0; i < 20; i++) {
+        system("cls");
+        cout << nullFrames[i] << endl;
+        Sleep(200); // 0.2 detik per frame
+    }
+}
+
 // ==========================================
 // 2. FUNGSI BATTLE (QUIZ LOGIC)
 // ==========================================
@@ -368,6 +386,9 @@ void startDragonBattle() {
             
             // VICTORY CUTSCENE
             headMeledakCutscene();
+            
+            // NULL JIWA CUTSCENE
+            nullJiwaCutscene();
             
             // VICTORY TEXT
             system("cls");
