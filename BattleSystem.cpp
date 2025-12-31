@@ -5,6 +5,7 @@
 #include "headMeledakFrames.h"
 #include "nullFrames.h"
 #include "gameOverFrames.h"
+#include "pintuMunculFrames.h"
 #include "BattleSystem.h"
 #include <iostream>
 #include <conio.h>
@@ -16,7 +17,7 @@
 
 using namespace std;
 
-// --- LOAD SOAL (Sama seperti sebelumnya) ---
+// --- LOAD SOAL ---
 vector<Question> loadQuestions() {
     vector<Question> q;
     q.push_back({"Kompleksitas waktu terburuk menghapus elemen TERAKHIR Singly Linked List (hanya punya head)?", "O(1)", "O(log n)", "O(n)", "O(n log n)", 'C'});
@@ -241,6 +242,68 @@ void nullJiwaCutscene() {
     }
 }
 
+// Fungsi untuk cutscene pintu muncul (29 frames)
+void pintuMunculCutscene() {
+    const char* pintuFrames[29] = {
+        pintuFrame1, pintuFrame2, pintuFrame3, pintuFrame4,
+        pintuFrame5, pintuFrame6, pintuFrame7, pintuFrame8,
+        pintuFrame9, pintuFrame10, pintuFrame11, pintuFrame12,
+        pintuFrame13, pintuFrame14, pintuFrame15, pintuFrame16,
+        pintuFrame17, pintuFrame18, pintuFrame19, pintuFrame20,
+        pintuFrame21, pintuFrame22, pintuFrame23, pintuFrame24,
+        pintuFrame25, pintuFrame26, pintuFrame27, pintuFrame28,
+        pintuFrame29
+    };
+    
+    for (int i = 0; i < 29; i++) {
+        system("cls");
+        cout << pintuFrames[i] << endl;
+        Sleep(200); // 0.2 detik per frame
+    }
+}
+
+// Fungsi untuk menampilkan ending sequence setelah victory
+void victoryEndingSequence() {
+    // 1. Display null frames (black screen)
+    nullJiwaCutscene();
+    
+    // 2. Display monologue
+    system("cls");
+    cout << "\n\n";
+    cout << "\n\nAkhirnya... naga itu sudah tidak ada lagi." << endl;
+    Sleep(2000);
+    cout << "\nAku bisa merasakan beban di pundakku" << endl;
+    cout << "sedikit berkurang..." << endl;
+    Sleep(2000);
+    cout << "\nTapi..." << endl;
+    Sleep(1500);
+    cout << "\nAku merasa... ini belum berakhir." << endl;
+    Sleep(2000);
+    
+    // 3. Display pintu muncul cutscene
+    cout << "\nPASTIKAN terminal sudah di-zoom out!" << endl;
+    cout << "(Ctrl + Scroll atau Ctrl + -)" << endl;
+    cout << "\nTekan tombol apapun untuk lanjut..." << endl;
+    _getch();
+    
+    pintuMunculCutscene();
+    
+    // 5. Display "Chapter 1: Single Linked List - CLEARED"
+    system("cls");
+    cout << "\n\n\n\n\n\n";
+    cout << "========================================" << endl;
+    cout << "   Chapter 1: Single Linked List       " << endl;
+    cout << "              - CLEARED -               " << endl;
+    cout << "========================================" << endl;
+    Sleep(3000);
+    
+    // 6. Display "TO BE CONTINUED..."
+    system("cls");
+    cout << "\n\n\n\n\n\n\n\n";
+    cout << "           TO BE CONTINUED..." << endl;
+    Sleep(3000);
+}
+
 // ==========================================
 // 2. FUNGSI BATTLE (QUIZ LOGIC)
 // ==========================================
@@ -308,9 +371,6 @@ void startDragonBattle() {
                 // SCENE 1: NODE PERTAMA HANCUR (2 Benar)
                 if (correctCount == 2) {
                     // Reminder zoom out
-                    cout << "\n========================================" << endl;
-                    cout << "    CUTSCENE AKAN DITAMPILKAN!         " << endl;
-                    cout << "========================================" << endl;
                     cout << "\nPASTIKAN terminal sudah di-zoom out!" << endl;
                     cout << "(Ctrl + Scroll atau Ctrl + -)" << endl;
                     cout << "\nTekan tombol apapun untuk lanjut..." << endl;
@@ -333,9 +393,6 @@ void startDragonBattle() {
                 // SCENE 2: NODE KEDUA HANCUR (4 Benar)
                 else if (correctCount == 4) {
                     // Reminder zoom out
-                    cout << "\n========================================" << endl;
-                    cout << "    CUTSCENE AKAN DITAMPILKAN!         " << endl;
-                    cout << "========================================" << endl;
                     cout << "\nPASTIKAN terminal sudah di-zoom out!" << endl;
                     cout << "(Ctrl + Scroll atau Ctrl + -)" << endl;
                     cout << "\nTekan tombol apapun untuk lanjut..." << endl;
@@ -380,9 +437,6 @@ void startDragonBattle() {
         system("cls");
         if (correctCount >= 5) {
             // Reminder zoom out untuk victory cutscene
-            cout << "\n========================================" << endl;
-            cout << "    CUTSCENE VICTORY AKAN DITAMPILKAN!" << endl;
-            cout << "========================================" << endl;
             cout << "\nPASTIKAN terminal sudah di-zoom out!" << endl;
             cout << "(Ctrl + Scroll atau Ctrl + -)" << endl;
             cout << "\nTekan tombol apapun untuk lanjut..." << endl;
@@ -403,11 +457,11 @@ void startDragonBattle() {
             cout << "Struktur data telah berhasil dibersihkan." << endl;
             cout << "\n[SYSTEM]: MEMORY LEAK FIXED." << endl;
             Sleep(2000);
+            
+            // Display victory ending sequence
+            victoryEndingSequence();
         } else {
             // Reminder zoom out untuk game over cutscene
-            cout << "\n========================================" << endl;
-            cout << "   CUTSCENE GAME OVER AKAN DITAMPILKAN!" << endl;
-            cout << "========================================" << endl;
             cout << "\nPASTIKAN terminal sudah di-zoom out!" << endl;
             cout << "(Ctrl + Scroll atau Ctrl + -)" << endl;
             cout << "\nTekan tombol apapun untuk lanjut..." << endl;
