@@ -4,107 +4,129 @@
 #include "database.h"
 #include <cstdlib>
 #include <conio.h>
+#include <iomanip>
+#include <limits>
+#include <cctype>
 #include "Skilltree/Skilltree.h"
 
+/*gameplay.h
+**Fungsinya: kasih tau udah punya kunci atau belom di ruangan perpuastakaan
+*/
+extern bool kunciDimiliki;
 
-// --gameplay.h--
-// variabel global kunci
-extern bool kunciDimiliki; // pake extern karena buat nunjukin kalo isi dari variabelnya 
-
-// --gameplay.h--
-// variabel global info ruangan
-// 1 = Perpustakaan, 2 = Lorong Kampus
+/*gameplay.h
+**Fungsinya: Indikator untuk ruangan yang sedang ditempati
+*/
 extern int ruanganAktif;
 
-// --gameplay.h--
-// untuk memilih profil yang akan dimainkan
+/*gameplay.h
+**Fungsinya: sebagai pilihan dalam pemilihan user
+*/
 extern int profil; 
 
-// --gameplay.h--
-// variabel menghitung jumlah profil yang dibuat
-extern int totalProfil;
-
-// --gameplay.h--
-// untuk mengecek apakah koordinat tertentu tembok
+/*gameplay.h
+**Fungsinya: mengecek tembok berdasarkan solid atau tidak
+*/
 bool apakahTembok(address root, int x, int y);
 
-// --gameplay.h--
-// untuk mengecek apakah koordinat tertentu objek
+/*gameplay.h
+**Fungsinya: Indikator untuk ruangan yang sedang ditempati
+*/
 bool apakahObject(address root, int x, int y);
 
-// --gameplay.h--
-// untuk mengecek pesan pada objek koordinat tertentu
+/*gameplay.h
+**Fungsinya: Indikator untuk pesan objek, return pesannya
+*/
 string cekPesanObj(address root, int x, int y);
 
-// --gameplay.h--
-// mengubah properti dari node
-void ubahPropertiNode(address root, int x, int y, 
-    bool statusBaruDilewati, string pesanBaru);
+/*gameplay.h
+**Fungsinya: mengubah variabel solid suatu node
+*/
+void ubahPropertiNode(address root, int x, int y, bool statusBaruDilewati, string pesanBaru);
     
-// --gameplay.h--
-// function untuk menampilkan obejk tempat sampah
+/*gameplay.h
+**Fungsinya: menampilkan ASCII tempat sampah
+*/
 void tampilkanTempatSampah();
 
-// menampilkan art di perpustakaan
+/*gameplay.h
+**Fungsinya: menampilkan ASCII perpustakaan
+*/
 void tampilkanArtPerpustakaan();
 
-// menampilkan art clue
+/*gameplay.h
+**Fungsinya: menampilkan ASCII buku sesuai dengan nomor clue
+*/
 void tampilkanArtClue(int nomorClue);
-
-
-    
-// --gameplay.h--
-// mencari nama objek dan mengembalikan variabel tipe string
+   
+/*gameplay.h
+**Fungsinya: mencari nama objek di tree, return nama objek
+*/
 string cariNamaObj(address root, int x, int y);
 
-// --gameplay.h--
-// membuat peta, x dan y adalah posisi dari player
-void gambarPeta(address root, int x, 
-    int y, int radiusPandang);
+/*gameplay.h
+**Fungsinya: menggambar peta tergantung posisi player dan radius pandang
+*/
+void gambarPeta(address root, int x, int y, int radiusPandang);
     
-// --gameplay.h--
-// untuk developer mode membuat tembok
+/*gameplay.h
+**Fungsinya: membuat tembok
+*/
 void buatNodeTembok(address &root, int xAwal, int yAwal, int xAkhir, int yAkhir);
 
-// --gameplay.h--
-// untuk membuat rak buku
+/*gameplay.h
+**Fungsinya: membuat rak buku pada perpustakaan
+*/
 void buatRakBuku(address &root, int xAwal, int yAwal, int xAkhir, int yAkhir, string pesan);
 
-// --gameplay.h--
-// Membuat ruangan perpustakaan
+/*gameplay.h
+**Fungsinya: pembuatan root baru dimana semua objek baru di perpus
+*/
 void inisialisasiPetaPerpustakaan(address &root);
 
-// --gameplay.h--
-// Membuat lorong kampus
-void buatLorongKampus(address &root);
+/*gameplay.h
+**Fungsinya: membuat root baru untuk lorong dan objek barunya
+*/
+void buatLorongKampus(address &root, int trg_lorong);
 
-// --gameplay.h--
-// Membuat lorong kampus
-void pindahKeRuangan(address &root, int &x, int &y, int tujuan);
+/*gameplay.h
+**Fungsinya: berpindah ruangan tergantung tujuannya dan mengembalikan posisi player di setiap ruangan
+*/
+void pindahKeRuangan(address &root, int &x, int &y, int tujuan, int trg_lorong);
 
-// --gameplay.h--
-// Buat liat Setting
+/*gameplay.h
+**Fungsinya: melihat setting
+*/
+bool authDeveloper();
+/*gameplay.h
+**Fungsinya: melihat setting
+*/
 void lihatSetting(address &root, int &radiusPandang);
 
-// --gameplay.h--
-// input objek atau buat objek baru
+/*gameplay.h
+**Fungsinya: input objek tambahan
+*/
 void inputObject(address &root);
 
-// --gameplay.h--
-// yang developer developer aja
+/*gameplay.h
+**Fungsinya: masuk ke menu developer
+*/
 void menuDeveloper(address &root);
 
-// --gameplay.h
-// untuk input tembok manual
+/*gameplay.h
+**Fungsinya: input tembok
+*/
 void inputTembok(address &root);  
 
-// --gameplay.h--
-// untuk memulai gamenya
-void mulaiBermain(address &root, int radiusPandang, SkillNode* SkillRoot);
+/*gameplay.h
+**Fungsinya: THE GAME 
+*/
 void mulaiBermain(address &root, int radiusPandang, int &profil, SkillNode* rootSkill); 
+// void mulaiBermain(address &root, int radiusPandang, SkillNode* SkillRoot);
 
-// --gameplay.h--
-// untuk memilih profil yang akan dimainkan
-void menuProfil(int &profil);
+/*gameplay.h
+**Fungsinya: masuk ke menu profil
+*/
+int menuProfil(int &profil);
 
 #endif

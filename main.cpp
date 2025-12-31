@@ -7,19 +7,23 @@ using namespace std;
 
 int main () {
     sqlite3* databasePemain; // untuk menghubungkan ke database
+    sqlite3* databaseDeveloper; // untuk menghubungkan ke database
     address root = NIL;
     SkillNode rootSkill;
     int pilihanMenu;
     int radiusPandang = 5;
 
+    
     // inisialisasi database
-    buatDatabase(databasePemain);
-
+    buatDatabasePemain(databasePemain);
+    buatDatabaseDeveloper(databaseDeveloper);
+    
     // Inisialisasi ruangan awal (Perpustakaan)
-    pindahKeRuangan(root, /*playerX*/ *(new int(0)), /*playerY*/ *(new int(0)), 1);
+    pindahKeRuangan(root, /*playerX*/ *(new int(0)), /*playerY*/ *(new int(0)), 1, *new int(0));
     // NOTE: kita akan mengatur spawn pada mulaiBermain sehingga konstruktor di atas sekadar memastikan root terisi
-
+    
     do {
+        int extProfil = 0; // indikator exit di menu profil pas belom punya username
         system("cls");
         cout << "=========================" << endl;
         cout << "      RENDERING GAME      " << endl;
@@ -33,8 +37,8 @@ int main () {
         switch (pilihanMenu)
         {
         case 1:
-            menuProfil(profil);
-            mulaiBermain(root, radiusPandang, profil, &rootSkill);
+            extProfil = menuProfil(profil);
+            if (extProfil != 0) mulaiBermain(root, radiusPandang, profil, &rootSkill);
             break;
         case 2:
             lihatSetting(root, radiusPandang);
