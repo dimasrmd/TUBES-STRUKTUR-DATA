@@ -104,24 +104,14 @@ bool authDeveloper();
 void lihatSetting(address &root, int &radiusPandang);
 
 /*gameplay.h
-**Fungsinya: input objek tambahan
-*/
-void inputObject(address &root);
-
-/*gameplay.h
 **Fungsinya: masuk ke menu developer
 */
 void menuDeveloper(address &root);
 
 /*gameplay.h
-**Fungsinya: input tembok
-*/
-void inputTembok(address &root);  
-
-/*gameplay.h
 **Fungsinya: THE GAME 
 */
-void mulaiBermain(address &root, int radiusPandang, int &profil, SkillNode* rootSkill); 
+void mulaiBermain(address &root, int radiusPandang, int &profil, SkillNode* rootSkill, bool developer); 
 // void mulaiBermain(address &root, int radiusPandang, SkillNode* SkillRoot);
 
 /*gameplay.h

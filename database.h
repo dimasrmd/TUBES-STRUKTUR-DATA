@@ -2,9 +2,11 @@
 #define DATABASE_H
 
 #include "Database/sqlite3.h"
+#include "bstNode.h"
 #include <iostream>
 #include <iomanip>
 #include <ctime>
+#include <conio.h>
 
 using namespace std;
 
@@ -55,4 +57,16 @@ void insertAccDeveloper(string username, string password);
 // --file database.h--
 // Fungsi untuk mengecek akun developer
 bool cekAccDeveloper(string username, string password);
+
+// --file database.h--
+// Fungsi untuk membuat tembok
+void inputTembok();
+
+// --file database.h--
+// Fungsi untuk membuat tembok
+void inputObject();
+
+// --file database.h--
+// Fungsi untuk membuat tembok
+void loadRuangan(int ruangan, address &root);
 #endif

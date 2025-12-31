@@ -1,4 +1,5 @@
 #include "database.h"
+#include "bstNode.h"
 
 string ambilWaktu() {
     time_t waktu = time(0);
@@ -51,6 +52,16 @@ void buatDatabaseDeveloper(sqlite3* data) {
                         "USERNAME TEXT NOT NULL, "
                         "PASSWORD TEXT NOT NULL);";
     sqlite3_exec(data, querryAkun.c_str(), NULL, 0, &pesan);
+    
+    string querryObjek = "CREATE TABLE IF NOT EXISTS objek("
+                        "ID INTEGER PRIMARY KEY AUTOINCREMENT, "
+                        "NAMA TEXT NOT NULL, "
+                        "RUANGAN INT NOT NULL, "
+                        "KOORDINAT_X INT NOT NULL, "
+                        "KOORDINAT_Y INT NOT NULL, "
+                        "PESAN_OBJEK TEXT NOT NULL, "
+                        "SOLID INT NOT NULL);";
+    sqlite3_exec(data, querryObjek.c_str(), NULL, 0, &pesan);
 }
 
 void insertDataPemain(sqlite3* data, string usn, int &profil) {
@@ -95,6 +106,83 @@ void insertDataPemain(sqlite3* data, string usn, int &profil) {
     }
 }
 
+void inputTembok() {
+    sqlite3* data;
+    if (sqlite3_open("dataDeveloper.db", &data) != SQLITE_OK) {
+        cout << "Gagal membuka database! tekan untuk lanjut..." << endl; _getch();
+        return;
+    }
+
+    int ruangan, koordinatX, koordinatY;
+    string pesan = "AWAS! Ada tembok, tidak bisa lewat!";
+    string nama = "Tembok";
+    int solid = 1;
+    char* errorPesan;
+    system("cls");
+    cout << setfill('=') << setw(10) << "" << " INPUT TEMBOK " << setw(10) << "" << endl;
+    cout << setfill(' ');
+    cout << "Ruangan = "; cin >> ruangan;
+    cout << "Koordiant x = "; cin >> koordinatX;
+    cout << "Koordiant y = "; cin >> koordinatY;
+
+    string querryInput = "INSERT INTO objek (NAMA, RUANGAN, KOORDINAT_X, KOORDINAT_Y, PESAN_OBJEK, SOLID) VALUES ('"
+                        + nama + "', "
+                        + to_string(ruangan) + ", "
+                        + to_string(koordinatX) + ", "
+                        + to_string(koordinatY) + ", '"
+                        + pesan + "', "
+                        + to_string(solid) + ");";
+    
+    int status = sqlite3_exec(data, querryInput.c_str(), NULL, 0, &errorPesan);
+    if (status != SQLITE_OK) {
+        cout << "Gagal membuat objek tembok! tekan untuk lanjut..." << errorPesan; _getch();
+        sqlite3_free(errorPesan);
+    } else {
+        cout << "Berhasil menambahkan tembok di ruangan " << ruangan << ", dengan koordinat (" << koordinatX << ", " << koordinatY << ")! tekan untuk lanjut..."; _getch(); 
+    }
+
+    sqlite3_close(data);
+}
+
+void inputObject() {
+    sqlite3* data;
+    if (sqlite3_open("dataDeveloper.db", &data) != SQLITE_OK) {
+        cout << "Gagal membuka database! tekan untuk lanjut..."; _getch();
+        return;
+    }
+
+    int ruangan, koordinatX, koordinatY, solid;
+    string pesan, nama;
+    char* errorPesan;
+    system("cls");
+    cout << setfill('=') << setw(10) << "" << " INPUT OBJEK " << setw(10) << "" << endl;
+    cout << setfill(' ');
+    cout << "Ruangan = "; cin >> ruangan;
+    cout << "Nama Objek = "; cin >> nama;
+    cout << "Koordiant x = "; cin >> koordinatX;
+    cout << "Koordiant y = "; cin >> koordinatY;
+    cout << "Solid [0] untuk tidak | [1] untuk ya = "; cin >> solid;
+    cout << "Pesan = "; cin.ignore(); getline(cin, pesan);
+
+    string querryInput = "INSERT INTO objek (NAMA, RUANGAN, KOORDINAT_X, KOORDINAT_Y, PESAN_OBJEK, SOLID) VALUES ('"
+                        + nama + "', "
+                        + to_string(ruangan) + ", "
+                        + to_string(koordinatX) + ", "
+                        + to_string(koordinatY) + ", '"
+                        + pesan + "', "
+                        + to_string(solid) + ");";
+    
+    int status = sqlite3_exec(data, querryInput.c_str(), NULL, 0, &errorPesan);
+    if (status != SQLITE_OK) {
+        cout << "Gagal membuat objek! tekan untuk lanjut..." << errorPesan; _getch();
+        sqlite3_free(errorPesan);
+    } else {
+        cout << "Berhasil menambahkan objek di ruangan " << ruangan << ", dengan koordinat (" << koordinatX << ", " << koordinatY << ")! tekan untuk lanjut..."; _getch(); 
+    }
+
+    sqlite3_close(data);
+}
+
 void ambilData(sqlite3* data, int profil, int &x, int &y, int &ruanganAktif, int &trg_lorong, int &aksesPerpus) {
     sqlite3_stmt* statement;
     
@@ -136,6 +224,38 @@ void ambilData(sqlite3* data, int profil, int &x, int &y, int &ruanganAktif, int
     }
 
     // 5. Bersihkan (Finalize)
+    sqlite3_finalize(statement);
+}
+
+void loadRuangan(int ruangan, address &root) {
+    sqlite3* data;
+    sqlite3_stmt* statement;
+    infoNode info;
+    if (sqlite3_open("datadeveloper.db", &data) != SQLITE_OK) {
+        cout << "Gagal memuat database! tekan lanjut..."; _getch();
+        return;
+    }
+
+    string querry = "SELECT NAMA, KOORDINAT_X, KOORDINAT_Y, PESAN_OBJEK, SOLID FROM objek WHERE RUANGAN = "
+                    + to_string(ruangan) + ";";
+
+    if (sqlite3_prepare_v2(data, querry.c_str(), -1, &statement, NULL) == SQLITE_OK) {
+
+        while (sqlite3_step(statement) == SQLITE_ROW) {
+            info.nama = (const char*)sqlite3_column_text(statement, 0);
+            info.x = sqlite3_column_int(statement, 1);
+            info.y = sqlite3_column_int(statement, 2);
+            info.pesan = (const char*)sqlite3_column_text(statement, 3);
+
+            int apakahSolid = sqlite3_column_int(statement, 4);
+            info.solid = (apakahSolid == 1);
+
+            root = insert(root, info);
+        }
+    } else {
+        cout << "Gagal memuat objek tambahan " << sqlite3_errmsg(data) << "! tekan untuk lanjut..."; _getch();
+    }
+
     sqlite3_finalize(statement);
 }
 

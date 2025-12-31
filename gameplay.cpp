@@ -281,6 +281,8 @@ void inisialisasiPetaPerpustakaan(address &root) {
     root = NIL;
     const int BATAS = 7; 
 
+    loadRuangan(1, root);
+    
     // INSERT PINTU SEBELUM TEMBOK supaya tidak tertimpa tembok
     root = insert(root, BATAS, 0, "Pintu", "Pintu terkunci. Temukan Kunci!", true);
 
@@ -342,6 +344,8 @@ void inisialisasiPetaPerpustakaan(address &root) {
 
 void buatLorongKampus(address &root, int trg_lorong) {
     root = NIL;
+
+    loadRuangan(2, root);
     
     // Lorong panjang sempit: 50 karakter panjang, lebar 3 (1 jalan tengah + 2 tembok samping)
     // Koordinat X: -11 (pintu perpustakaan) hingga 39 (pintu ujung lorong)
@@ -400,7 +404,7 @@ bool keamananPass(string pass) {
 bool authDeveloper(){
     string keyWord;
     cout << "Sebutkan kata kunci nya: ";
-    cin.ignore();
+    // cin.ignore();
     getline(cin, keyWord);
     if (keyWord != "aku cinta bahlil") return false;
     cout << "\n[SYSTEM] Kata kunci diterima!..."; _getch();
@@ -481,10 +485,9 @@ void lihatSetting(address &root, int &radiusPandang) {
         cout << "         SETTING       " << endl;
         cout << "=========================" << endl;
         cout << "1. Mengubah jarak pandang. (Saat ini " << radiusPandang << " m)" << endl;
-        cout << "2. Developer Mode" << endl;
-        cout << "3. Keluar" << endl;
+        cout << "2. Keluar" << endl;
         cout << "-------------------------" << endl;
-        cout << "Pilih menu (1-3): ";
+        cout << "Pilih menu (1-2): ";
         cin >> pilihanSetting;
         switch (pilihanSetting)
         {
@@ -492,20 +495,14 @@ void lihatSetting(address &root, int &radiusPandang) {
             cout << "Masukkan radius yang diinginkan: ";
             cin >> radiusPandang;
             break;
-        case 2:
-            if (authDeveloper()) menuDeveloper(root);
-            break;
         default:
             break;
         }
-    } while (pilihanSetting != 3);
-}
-
-void inputObject(address &root) {
-    root = insert(root, 0, -2, "Bunga", "NIH BUNGA BUAT KAMU", false); 
+    } while (pilihanSetting != 2);
 }
 
 void menuDeveloper(address &root) {
+    sqlite3* data;
     int pililihanDeveloper;
     do {
         system("cls");
@@ -521,36 +518,15 @@ void menuDeveloper(address &root) {
         switch (pililihanDeveloper)
         {
         case 1:
-            inputTembok(root);
+            inputTembok();
             break;
         case 2:     
-            inputObject(root);
+            inputObject();
             break;
         default:
             break;
         }
     } while (pililihanDeveloper != 3);
-}
-
-// Fungsi developer kecil untuk menambah tembok/object (tetap ada jika ingin)
-void inputTembok(address &root) {
-    int xAwal, xAkhir, yAwal, yAkhir, temp;
-    system("cls");
-    cout << "=========================" << endl;
-    cout << "      PEMBUATAN TEMBOK    " << endl;
-    cout << "=========================" << endl;
-    cout << "Input xAwal: ";
-    cin >> xAwal;
-    cout << "Input yAwal: ";
-    cin >> yAwal;
-    cout << "Input xAkhir: ";
-    cin >> xAkhir;
-    cout << "Input yAkhir: ";
-    cin >> yAkhir;
-    if (xAwal > xAkhir) { temp = xAwal; xAwal = xAkhir; xAkhir = temp; }
-    if (yAwal > yAkhir) { temp = yAwal; yAwal = yAkhir; yAkhir = temp; }
-
-    buatNodeTembok(root, xAwal, yAwal, xAkhir, yAkhir);
 }
 
 int buatUsername(int &profil) {
@@ -667,9 +643,10 @@ int menuProfil(int &profil) {
     return 1; // artinya dia bisa masuk ke fungsi mulaiBermain
 }
 
-void mulaiBermain(address &root, int radiusPandang, int &profil, SkillNode* SkillRoot) {
+void mulaiBermain(address &root, int radiusPandang, int &profil, SkillNode* SkillRoot, bool developer) {
     int playerLevel = 150;
     sqlite3* data;
+
     if (sqlite3_open("dataPemain.db", &data) != SQLITE_OK) {
         cout << "Gagal membuka database saat mulai bermain!" << endl;
         return;
@@ -679,8 +656,12 @@ void mulaiBermain(address &root, int radiusPandang, int &profil, SkillNode* Skil
     int y;
     int trg_Lorong;
     int aksesPerpustakaanTerbuka;
-    ambilData(data, profil, x, y, ruanganAktif, trg_Lorong, aksesPerpustakaanTerbuka);
-    sqlite3_close(data); // Close after getting data
+    if (!developer) {
+        ambilData(data, profil, x, y, ruanganAktif, trg_Lorong, aksesPerpustakaanTerbuka);
+        sqlite3_close(data); // Close after getting data
+    } else {
+        x = 0; y= 0; trg_Lorong = 0; aksesPerpustakaanTerbuka = 1; ruanganAktif = 1; profil = -1;
+    }
 
     if (ruanganAktif == 1) inisialisasiPetaPerpustakaan(root);
     else if (ruanganAktif == 2) buatLorongKampus(root, trg_Lorong);

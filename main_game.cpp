@@ -38,7 +38,7 @@ int main () {
         {
         case 1:
             extProfil = menuProfil(profil);
-            if (extProfil != 0) mulaiBermain(root, radiusPandang, profil, &rootSkill);
+            if (extProfil != 0) mulaiBermain(root, radiusPandang, profil, &rootSkill, false);
             break;
         case 2:
             lihatSetting(root, radiusPandang);

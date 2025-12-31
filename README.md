@@ -36,20 +36,21 @@ Berikut beberapa fitur yang ada didalam game **The Game: Bizzare Night at Campus
 
 ***
 
-## CARA RUN
+## CARA COMPILE 🚀
+### COMPILE GAME.EXE
+```bash
+g++ (ls *.cpp | ? {$_.Name -ne 'main_developer.cpp'}).name -o game.exe -lsqlite3;
 ```
-g++ *.cpp Database/sqlite3.o -o main
-```
-```
-./main
+```bash
+./game
 ```
 
-atau
+### COMPILE DEVELOPER.EXE
+```bash
+g++ (ls *.cpp | ? {$_.Name -ne 'main_game.cpp'}).name -o developer.exe -lsqlite3;
 ```
-g++ (ls *.cpp).name Database/sqlite3.o -o main
-```
-```
-./main
+```bash
+./developer
 ```
 
 <p align = "center"> 🛠️ MASIH DALAM PENGEMBANGAN (ON-GOING) </p>
