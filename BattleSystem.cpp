@@ -10,6 +10,7 @@
 #include <conio.h>
 #include <vector>
 #include <algorithm>  // Untuk shuffle
+#include <random>  // Untuk shuffle
 #include <cstdlib>    // Untuk srand dan rand
 #include <ctime>      // Untuk time (random seed)
 
@@ -61,7 +62,7 @@ void serpentIntroductionCutscene() {
     // Pause setelah frame terakhir - tunggu player tekan ENTER
     cout << "\nTekan ENTER untuk lanjut..." << endl;
     cin.ignore();
-    cin.get();
+    cin.get(); // untuk membaca 1 karakter saja
     
     // === NARASI MONOLOG KARAKTER (4 BAGIAN) ===
     
@@ -132,7 +133,7 @@ void drawBattleInterface(int lives, int correctCount) {
         if (i < lives) cout << "❤️ ";  // Nyawa penuh
         else           cout << "💀 ";  // Nyawa hilang
     }
-    cout << "                               ║" << endl;
+    cout << "                                  ║" << endl;
 
     cout << "   ║                                                      ║" << endl;
 
@@ -255,9 +256,12 @@ void startDragonBattle() {
     
     do {
         vector<Question> questions = loadQuestions();
+        random_device indikatorAcak;
+        mt19937 g(indikatorAcak());
         
         // SHUFFLE SOAL agar urutan berbeda setiap kali main
-        random_shuffle(questions.begin(), questions.end());
+        // random_shuffle(questions.begin(), questions.end());
+        shuffle(questions.begin(), questions.end(), g);
         
         int lives = 3;
         int correctCount = 0;
@@ -271,7 +275,7 @@ void startDragonBattle() {
             // Tampilkan Soal (Looping jika soal habis)
             int soalIndex = currentQ % questions.size();
             
-            cout << "[SOAL #" << (correctCount + 1) << "]" << endl;
+            cout << "[SOAL #" << (currentQ + 1) << "]" << endl; // tadinya correctCount
             cout << questions[soalIndex].soal << endl << endl;
             cout << "A. " << questions[soalIndex].opsiA << endl;
             cout << "B. " << questions[soalIndex].opsiB << endl;
@@ -279,7 +283,7 @@ void startDragonBattle() {
             cout << "D. " << questions[soalIndex].opsiD << endl << endl;
             cout << ">> JAWABAN: ";
 
-            // Bersihkan input buffer sebelum menunggu jawab
+            // Bersihkan input buffer sebelum menunggu jawab (menghapus buffer inputan)
             while (_kbhit()) _getch();
             
             char jawab = toupper(_getch());
