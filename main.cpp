@@ -4,6 +4,7 @@
 
 using namespace std;
 
+
 int main () {
     sqlite3* databasePemain; // untuk menghubungkan ke database
     address root = NIL;

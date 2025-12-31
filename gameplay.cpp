@@ -1,5 +1,12 @@
+#include <windows.h> // Untuk Sleep() - cutscene timing (harus di atas untuk avoid byte conflict)
 #include "gameplay.h"
 #include "pesanObjek.h"
+#include "lorongFrames.h"
+#include "transisiLorongFrames1.h"
+#include "transisiLorongFrames2.h"
+#include "transisiLorongFrames3.h"
+#include "BattleSystem.h"
+
 #include "Skilltree/Skilltree.h"
 // --gameplay.h--
 // variabel global kunci
@@ -87,6 +94,138 @@ void tampilkanArtClue(int nomorClue) {
     cout << "\n(Anda menemukan petunjuk!)\n";
     _getch();
 }
+
+// Fungsi untuk cutscene membuka pintu (auto-play)
+void doorOpeningCutscene() {
+    // Array pointer ke semua frame cutscene (21 frames)
+    const char* cutsceneFrames[21] = {
+        doorFrame1, doorFrame2, doorFrame3, doorFrame4, doorFrame5,
+        doorFrame6, doorFrame7, doorFrame8, doorFrame9, doorFrame10,
+        doorFrame11, doorFrame12, doorFrame13, doorFrame14, doorFrame15,
+        doorFrame16, doorFrame17, doorFrame18, doorFrame19, doorFrame20,
+        doorFrame21
+    };
+    
+    // Play semua frame dengan durasi berbeda
+    for (int i = 0; i < 21; i++) {
+        system("cls");
+        cout << cutsceneFrames[i] << endl;
+        
+        if (i < 20) {
+            Sleep(300); // Frame 1-20: 300ms (0.3 detik)
+        } else {
+            Sleep(5000); // Frame 21 (terakhir): 5000ms (5 detik)
+        }
+    }
+}
+
+// Fungsi untuk cutscene transisi (cahaya terang -> terbangun) - 72 FRAMES TOTAL
+void transisiCutscene() {
+    // PART 1: Frame 1-28 (dari transisiLorongFrames1.h)
+    const char* part1Frames[28] = {
+        transisiFrame1, transisiFrame2, transisiFrame3, transisiFrame4, transisiFrame5,
+        transisiFrame6, transisiFrame7, transisiFrame8, transisiFrame9, transisiFrame10,
+        transisiFrame11, transisiFrame12, transisiFrame13, transisiFrame14, transisiFrame15,
+        transisiFrame16, transisiFrame17, transisiFrame18, transisiFrame19, transisiFrame20,
+        transisiFrame21, transisiFrame22, transisiFrame23, transisiFrame24, transisiFrame25,
+        transisiFrame26, transisiFrame27, transisiFrame28
+    };
+    
+    // PART 2: Frame 29-44 (dari transisiLorongFrames2.h)
+    const char* part2Frames[16] = {
+        transisiFrame29, transisiFrame30, transisiFrame31, transisiFrame32, transisiFrame33,
+        transisiFrame34, transisiFrame35, transisiFrame36, transisiFrame37, transisiFrame38,
+        transisiFrame39, transisiFrame40, transisiFrame41, transisiFrame42, transisiFrame43,
+        transisiFrame44
+    };
+    
+    // PART 3: Frame 45-72 (dari transisiLorongFrames3.h)
+    const char* part3Frames[28] = {
+        transisiFrame45, transisiFrame46, transisiFrame47, transisiFrame48, transisiFrame49,
+        transisiFrame50, transisiFrame51, transisiFrame52, transisiFrame53, transisiFrame54,
+        transisiFrame55, transisiFrame56, transisiFrame57, transisiFrame58, transisiFrame59,
+        transisiFrame60, transisiFrame61, transisiFrame62, transisiFrame63, transisiFrame64,
+        transisiFrame65, transisiFrame66, transisiFrame67, transisiFrame68, transisiFrame69,
+        transisiFrame70, transisiFrame71, transisiFrame72
+    };
+    
+    // Play PART 1 (Frame 1-28) - 300ms per frame
+    for (int i = 0; i < 28; i++) {
+        system("cls");
+        cout << part1Frames[i] << endl;
+        Sleep(300); // 0.3 detik per frame
+    }
+    
+    // Play PART 2 (Frame 29-44) - 300ms per frame
+    for (int i = 0; i < 16; i++) {
+        system("cls");
+        cout << part2Frames[i] << endl;
+        Sleep(300); // 0.3 detik per frame
+    }
+    
+    // Play PART 3 (Frame 45-72) - 300ms per frame
+    for (int i = 0; i < 28; i++) {
+        system("cls");
+        cout << part3Frames[i] << endl;
+        Sleep(300); // 0.3 detik per frame
+    }
+}
+
+// Fungsi untuk menampilkan animasi first-person walking
+void firstPersonWalking(int &playerX, int &playerY) {
+    // Array pointer ke semua frame
+    const char* frames[17] = {
+        lorongFrame1, lorongFrame2, lorongFrame3, lorongFrame4, lorongFrame5,
+        lorongFrame6, lorongFrame7, lorongFrame8, lorongFrame9, lorongFrame10,
+        lorongFrame11, lorongFrame12, lorongFrame13, lorongFrame14, lorongFrame15,
+        lorongFrame16, lorongFrame17
+    };
+    
+    int currentFrame = 0;
+    char input;
+    
+    // Tampilkan frame pertama (tanpa instruksi)
+    system("cls");
+    cout << frames[currentFrame] << endl;
+    
+    while (currentFrame < 16) {  // 0-16 = 17 frames
+        input = _getch();
+        
+        // Hanya terima input 'W' atau 'w'
+        if (input == 'w' || input == 'W') {
+            currentFrame++;
+            
+            // Tampilkan frame berikutnya (tanpa instruksi)
+            system("cls");
+            cout << frames[currentFrame] << endl;
+        }
+    }
+    
+    // Setelah frame 17, tunggu player tekan W lagi untuk trigger cutscene
+while (_kbhit()) _getch(); 
+
+    // --- EVENT LANGSUNG JALAN (TANPA WHILE LAGI) ---
+    // Begitu nyampe ujung (loop jalan kelar), langsung gas event!
+    
+    Sleep(500); // Jeda dikit biar napas
+    
+    // 1. Cutscene Pintu & Transisi
+    doorOpeningCutscene();
+    transisiCutscene();
+    
+    // 2. Cutscene Naga
+    serpentIntroductionCutscene();
+    
+    // 3. Battle Quiz
+    startDragonBattle();
+    
+   
+    playerX = 37;
+    playerY = 0;
+    
+   
+}
+
 
 string cariNamaObj(address root, int x, int y) {
     address node = cariNode(root, x, y);
@@ -223,6 +362,9 @@ void buatLorongKampus(address &root) {
     
     // INSERT PINTU di ujung kiri (pintu perpustakaan - bisa dibuka)
     root = insert(root, -11, 0, "PintuPerpustakaan", "Pintu menuju Perpustakaan.", false);
+    
+    // INSERT TRIGGER POINT untuk first-person walking di koordinat (10, 0)
+    root = insert(root, 10, 0, "TriggerLorongFP", "Lorong ini sangat panjang, rasanya sangat tidak nyaman...", false);
     
     // INSERT PINTU di ujung kanan (pintu terkunci)
     root = insert(root, 39, 0, "PintuUjung", "Pintu terkunci rapat.", true);
@@ -515,6 +657,29 @@ void mulaiBermain(address &root, int radiusPandang, int &profil, SkillNode* Skil
         if (namaObjekLangkah == "BukuClue2") { tampilkanArtClue(2); pesanObj = "Ketemu lagi, aku harus cari sisanya.."; }
         if (namaObjekLangkah == "BukuClue3") { tampilkanArtClue(3); pesanObj = "Ini dia, aku hanya butuh satu digit lagi.."; }
         if (namaObjekLangkah == "BukuClue4") { tampilkanArtClue(4); pesanObj = "Terakhir, sekarang sudah lengkap untuk membuka password pintu."; }
+
+        // --- Interaksi TRIGGER LORONG FIRST PERSON ---
+        if (ruanganAktif == 2 && namaObjekLangkah == "TriggerLorongFP") {
+            // Tampilkan pesan trigger
+            system("cls");
+            cout << "Lorong ini sangat panjang, rasanya sangat tidak nyaman..." << endl;
+            cout << "\nTekan tombol apapun untuk melanjutkan..." << endl;
+            _getch();
+            
+            // Aktifkan first-person walking animation
+            firstPersonWalking(x, y);
+            
+            // Update langkahX dan langkahY agar tidak ada konflik
+            langkahX = x;
+            langkahY = y;
+            
+            // Hapus trigger point agar tidak bisa diaktifkan lagi
+            ubahPropertiNode(root, 10, 0, true, "");
+            
+            pesanObj = "Syukurlah ada pintu diujung sini";
+            continue; // Skip movement check
+        }
+
 
         // --- Interaksi PANEL (PASSWORD) ---
         if (ruanganAktif == 1 && namaObjekLangkah == "Panel") {
