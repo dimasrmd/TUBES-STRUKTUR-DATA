@@ -65,8 +65,6 @@ void tampilkanArtPerpustakaan() {
     _getch();
 }
 
-
-
 void tampilkanArtClue(int nomorClue) {
     system("cls");
     if (nomorClue == 1) cout << artClue1 << endl;
