@@ -7,7 +7,8 @@
 ## 👥 Anggota Kelompok 👥
 > Kelompok kecil yang memiliki keinginan untuk membuat game
 
-| NO | Nama Anggota Kelompok | NIM | GitHUb |
+| NO | Nama Anggota Kelompok | NIM | GitHub |
+|:---:|:---------------------:|:---:|:------:|
 | 1. | Dimas Ramadhani | 103112400065 | [Github - Dimas](https://github.com/dimasrmd) |
 | 2. | Lutfi Shidqi Mardian | 103112400077 | [Github - Lutfi](https://github.com/chickenndrice) |
 | 3. | Abisar Fathir | 103112400068 | [Github - Fathir](https://github.com/Sarrrrrrrrrrrrrr) |
@@ -129,7 +130,7 @@ Masuk ke direktori project.
 ### 1. COMPILE GAME UTAMA (Player)
 Jalan perintah berikut di terminal:
 ```bash
-g++ main_game.cpp gameplay.cpp bstNode.cpp database.cpp BattleSystem.cpp -o game -lsqlite3
+g++ -o game main_game.cpp gameplay.cpp BattleSystem.cpp bstNode.cpp database.cpp SkillTree/Skilltree.cpp SkillTree/effect.cpp -lsqlite3 -std=c++17 -lws2_32;
 ```
 Jalankan program:
 ```bash
@@ -139,7 +140,7 @@ Jalankan program:
 ### 2. COMPILE MODE DEVELOPER (Admin)
 Untuk menjalankan mode developer (menambah/edit objek peta):
 ```bash
-g++ main_developer.cpp gameplay.cpp bstNode.cpp database.cpp BattleSystem.cpp -o developer -lsqlite3
+g++ -o developer main_developer.cpp gameplay.cpp BattleSystem.cpp bstNode.cpp database.cpp SkillTree/Skilltree.cpp SkillTree/effect.cpp -lsqlite3 -std=c++17 -lws2_32;
 ```
 Jalankan program:
 ```bash

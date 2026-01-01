@@ -32,18 +32,17 @@ int main () {
         return 0;
     }
 
-    cout << "\nLogin berhasil! tekan untuk lanjut...";
-    _getch();
     do {
         system("cls");
-        cout << setfill('=') << setw(40) << "" << endl << setfill(' ');
-        cout << "\t	MENU DEVELOPER" << endl;
-        cout << setfill('=') << setw(40) << "" << endl << setfill(' ');
+        cout << setfill('=') << setw(32) << "" << endl << setfill(' ');
+        cout << "\t MENU DEVELOPER" << endl;
+        cout << setfill('=') << setw(32) << "" << endl << setfill(' ');
         cout << "1. Menu Developer (input objek)" << endl;
         cout << "2. Test gameplay" << endl;
         cout << "3. Lihat Setting" << endl;
         cout << "4. Keluar" << endl;
-        cout << setfill('-') << setw(20) << "" << endl << setfill(' ');
+        cout << setfill('-') << setw(32) << "" << endl << setfill(' ');
+        cout << "Pilih menu: ";
         cin >> pilihanMenu;
         switch (pilihanMenu) {
             case 1:
