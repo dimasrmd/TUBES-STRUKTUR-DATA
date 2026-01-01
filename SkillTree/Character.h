@@ -7,11 +7,6 @@
 #include "effect.h"
 using namespace std;
 
-// ❌ HAPUS deklarasi ini (pindah ke effect.h):
-// void removeEffect(effect*& head, string effectname);
-// void displayEffects(effect* head);
-// void clearAlleffects(effect*& head);
-
 struct CharacterStats {
     int intellect;
     int psyche;
@@ -58,7 +53,7 @@ struct CharacterStats {
     }
 };
 
-// ✅ RENAME fungsi-fungsi ini (tambah prefix "character"):
+// RENAME fungsi-fungsi ini (tambah prefix "character"):
 inline void applyCharacterEffect(CharacterStats& stats, string effectType, int value) {
     if (effectType == "HEALTH") {
         stats.health += value;

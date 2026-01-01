@@ -198,12 +198,17 @@ bool firstPersonWalking(int &playerX, int &playerY, CharacterStats& playerStats,
     
     Sleep(500); // Jeda dikit biar napas
     
-    // 1. Cutscene Pintu & Transisi
-    doorOpeningCutscene();
-    transisiCutscene();
-    
-    // 2. Cutscene Naga
-    serpentIntroductionCutscene();
+    cout << "SKIPPPPP? ";
+    cin.ignore();
+    char apa = toupper(cin.get());
+    if (apa != 'Y') {
+        // 1. Cutscene Pintu & Transisi
+        doorOpeningCutscene();
+        transisiCutscene();
+        
+        // 2. Cutscene Naga
+        serpentIntroductionCutscene();
+    }
     
     // 3. Battle Quiz
     bool kembaliMenu = startDragonBattle(playerStats, skillRoot);
@@ -929,15 +934,15 @@ bool bukaMenuSkillGameplay(CharacterStats* playerStats, SkillNode* skillRoot) {
         cin.ignore();
         
         if (pilihan == 1) {
-            system("cls");
-            cout << "\n╔════════════════════════════════════════╗" << endl;
-            cout << "║  CHARACTER STATUS                      ║" << endl;
-            cout << "╠════════════════════════════════════════╣" << endl;
-            cout << "║ Nama: Protagonist                      ║" << endl;
-            cout << "║ Health: " << playerStats->health << "/" << playerStats->maxHealth << "                        ║" << endl;
-            cout << "║ Skill Points: " << playerStats->availableSkillPoints << "                     ║" << endl;
-            cout << "║ Battle Points: " << playerStats->battleSkillPoints << "/" << playerStats->maxBattleSkillPoints << "                    ║" << endl;
-            cout << "╚════════════════════════════════════════╝" << endl;
+            system("cls");  
+            cout << "+" << setfill('-') << setw(48) << "" << "+" << endl; cout << setfill(' ');
+            cout << "| " << left << setw(46) << "CHARACTER STATUS" << " |" << endl;
+            cout << "+" << setfill('-') << setw(48) << "" << "+" << endl; cout << setfill(' ');
+            cout << "| " << left << setw(46) << "Nama: Protragonist" << " |" << endl;
+            cout << "| " << left << setw(46) << "Health: " + to_string(playerStats->health) +  "/" + to_string(playerStats->maxHealth) << " |" << endl;
+            cout << "| " << left << setw(46) << "Skill Points: " + to_string(playerStats->availableSkillPoints) << " |" << endl;
+            cout << "| " << left << setw(46) << "Battle Points: " + to_string(playerStats->battleSkillPoints) + "/" + to_string(playerStats->maxBattleSkillPoints) << " |" << endl;
+            cout << "+" << setfill('-') << setw(48) << "" << "+" << endl; cout << setfill(' ');
             cout << "\nTekan tombol apapun untuk melanjutkan...";
             _getch();
         }

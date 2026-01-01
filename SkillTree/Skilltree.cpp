@@ -180,14 +180,14 @@ bool menuSkillTree(SkillNode* root, CharacterStats* playerStats) {
         
         if (hasil) {
             system("cls");
-            cout << "\n╔════════════════════════════════════════╗" << endl;
-            cout << "║ [SKILL]: " << hasil->data.namaSkill << endl;
-            cout << "║ Category: " << hasil->data.kategori << endl;
-            cout << "║ Current Level: " << hasil->data.level << "/3" << endl;
-            cout << "╠════════════════════════════════════════╣" << endl;
-            cout << "║ EFFECTS:" << endl;
+            cout << "+" << setfill('-') << setw(68) << "" << "+" << endl; cout << setfill(' ');
+            cout << "| " << setw(66) << "[SKILL]: " + hasil->data.namaSkill << " |" << endl; cout << setfill(' ');
+            cout << "| " << setw(66) << "Category: " + hasil->data.kategori << " |" << endl; cout << setfill(' ');
+            cout << "| " << setw(66) << "Current Level: " + hasil->data.level << " |" << endl; cout << setfill(' ');
+            cout << "+" << setfill('-') << setw(68) << "" << "+" << endl; cout << setfill(' ');
+            cout << "| " << setw(66) << "EFFECTS: " + hasil->data.level << " |" << endl; cout << setfill(' ');
             displayEffects(hasil->data.effects);
-            cout << "╚════════════════════════════════════════╝" << endl;
+            cout << "+" << setfill('-') << setw(68) << "" << "+" << endl; cout << setfill(' ');
             
             // Upgrade logic
             if (hasil->data.level >= 3) {
@@ -237,11 +237,10 @@ bool displayAvailableLifelines(SkillNode* root, const CharacterStats& playerStat
     system("cls");
     SetConsoleOutputCP(CP_UTF8);
     
-    cout << "\n ╔═══════════════════════════════════════════════════╗" << endl;
+    cout << "\n   ╔═══════════════════════════════════════════════════╗" << endl;
     cout << "   ║     AVAILABLE LIFELINES / SKILLS                  ║" << endl;
     cout << "   ╠═══════════════════════════════════════════════════╣" << endl;
-    cout << "   ║  Skill Points: " << setw(2) << playerStats.battleSkillPoints 
-         << "/" << setw(2) << playerStats.maxBattleSkillPoints << "                                    ║" << endl;
+    cout << "   ║  Skill Points: " << playerStats.battleSkillPoints << "/" << playerStats.maxBattleSkillPoints << setw(32) << " " << "║" << endl;
     cout << "   ╠═══════════════════════════════════════════════════╣" << endl;
     
     int count = 0;
@@ -277,7 +276,7 @@ bool displayLifelinesHelper(SkillNode* root, const CharacterStats& playerStats, 
         // Format dengan padding yang rapi
         // Total lebar konten: 6 (spasi + [X] + spasi) + 28 (nama) + 8 ( (X pt)) = 42
         cout << "   ║  [" << setw(2) << count << "] " << left << setw(maxNameLength) << skillName 
-             << " (" << setw(2) << cost << " pt) ║" << endl;
+             << " (" << setw(2) << cost << " pt)" << setw(8) << " " << "║" << endl;
     }
     
     displayLifelinesHelper(root->right, playerStats, count);

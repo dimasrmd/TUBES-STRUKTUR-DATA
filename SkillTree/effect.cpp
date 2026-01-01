@@ -1,4 +1,5 @@
 #include "effect.h"
+#include <iomanip>
 
 // Fungsi untuk membuat node effect baru
 effect* createeffect(string effectname, string desc, EffectType type, 
@@ -20,7 +21,7 @@ effect* createeffect(string effectname, string desc, EffectType type,
 
 void displayEffects(effect* head) {
     if (head == nullptr) {
-        cout << "  [No Effects]" << endl;
+        cout << "|" << setw(68) << "  [No Effects]" << "|" << endl;
         return;
     }
     
@@ -28,13 +29,21 @@ void displayEffects(effect* head) {
     while (temp != nullptr) {
         string status = temp->isActive ? "[ACTIVE]" : "[INACTIVE]";
         
-        cout << "  • " << temp->nama << " " << status << endl;
-        cout << "    " << temp->deskripsi << endl;
+        // Baris 1: Nama effect + status (sejajar kanan)
+        cout << "|  • " << left << setw(49) << temp->nama 
+             << right << setw(12) << status << "   |" << endl;
+        
+        // Baris 2: Deskripsi
+        cout << "|     " << left << setw(70) << temp->deskripsi << " |" << endl;
     
+        // Baris 3: Effect value (jika ada)
         if (temp->statAffected != "" && temp->value != 0) {
-            cout << "    Effect: " << temp->statAffected << " ";
-            if (temp->value > 0) cout << "+";
-            cout << temp->value << endl;
+            string effectText = "Effect: ";
+            effectText += temp->statAffected + " ";
+            if (temp->value > 0) effectText += "+";
+            effectText += to_string(temp->value);
+            
+            cout << "|     " << left << setw(59) << effectText << " |" << endl;
         }
         
         temp = temp->next;
