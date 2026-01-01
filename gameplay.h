@@ -7,7 +7,6 @@
 #include <iomanip>
 #include <limits>
 #include <cctype>
-#include "Skilltree/Skilltree.h"
 
 /*gameplay.h
 **Fungsinya: kasih tau udah punya kunci atau belom di ruangan perpuastakaan
@@ -111,7 +110,7 @@ void menuDeveloper(address &root);
 /*gameplay.h
 **Fungsinya: THE GAME 
 */
-void mulaiBermain(address &root, int radiusPandang, int &profil, SkillNode* rootSkill, bool developer); 
+void mulaiBermain(address &root, int radiusPandang, int &profil, bool developer); 
 // void mulaiBermain(address &root, int radiusPandang, SkillNode* SkillRoot);
 
 /*gameplay.h

@@ -9,7 +9,6 @@ int main () {
     sqlite3* databasePemain; // untuk menghubungkan ke database
     sqlite3* databaseDeveloper; // untuk menghubungkan ke database
     address root = NIL;
-    SkillNode rootSkill;
     int pilihanMenu;
     int radiusPandang = 5;
 
@@ -38,7 +37,7 @@ int main () {
         {
         case 1:
             extProfil = menuProfil(profil);
-            if (extProfil != 0) mulaiBermain(root, radiusPandang, profil, &rootSkill, false);
+            if (extProfil != 0) mulaiBermain(root, radiusPandang, profil, false);
             break;
         case 2:
             lihatSetting(root, radiusPandang);

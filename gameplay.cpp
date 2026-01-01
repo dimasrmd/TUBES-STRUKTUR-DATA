@@ -1,13 +1,11 @@
 #include <windows.h> // Untuk Sleep() - cutscene timing (harus di atas untuk avoid byte conflict)
 #include "gameplay.h"
-#include "pesanObjek.h"
-#include "lorongFrames.h"
-#include "transisiLorongFrames1.h"
-#include "transisiLorongFrames2.h"
-#include "transisiLorongFrames3.h"
+#include "Assets/pesanObjek.h"
+#include "Assets/lorongFrames.h"
+#include "Assets/transisiLorongFrames1.h"
+#include "Assets/transisiLorongFrames2.h"
+#include "Assets/transisiLorongFrames3.h"
 #include "BattleSystem.h"
-
-#include "Skilltree/Skilltree.h"
 
 int ruanganAktif = 1;
 int profil = 0; 
@@ -643,8 +641,7 @@ int menuProfil(int &profil) {
     return 1; // artinya dia bisa masuk ke fungsi mulaiBermain
 }
 
-void mulaiBermain(address &root, int radiusPandang, int &profil, SkillNode* SkillRoot, bool developer) {
-    int playerLevel = 150;
+void mulaiBermain(address &root, int radiusPandang, int &profil, bool developer) {
     sqlite3* data;
 
     if (sqlite3_open("dataPemain.db", &data) != SQLITE_OK) {
@@ -698,7 +695,6 @@ void mulaiBermain(address &root, int radiusPandang, int &profil, SkillNode* Skil
 
         cout << "\n>Gunakan x untuk keluar ke menu\n";
         cout << ">Gunakan (w/a/s/d) untuk bergerak\n";
-        cout << ">K untuk Inventori\n";
         cout << "input: ";
         pilihanBermain = static_cast<char>(_getch());
         
@@ -717,13 +713,6 @@ void mulaiBermain(address &root, int radiusPandang, int &profil, SkillNode* Skil
             break;
         case 'd':
             langkahX++;
-            break;
-        case 'k':
-            if (playerLevel >= 2){
-                // menuSkillTree(SkillRoot); SANG PEMBUAT EROR
-            } else {
-                pesanObj = "SKill tree terkunci....(Kill The BEAST to unlock)";
-            } 
             break;
         case 'x':
             updateDataPemain(data, profil, x, y, ruanganAktif, trg_Lorong, aksesPerpustakaanTerbuka);
