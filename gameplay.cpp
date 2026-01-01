@@ -157,7 +157,7 @@ void transisiCutscene() {
 }
 
 // Fungsi untuk menampilkan animasi first-person walking
-void firstPersonWalking(int &playerX, int &playerY) {
+bool firstPersonWalking(int &playerX, int &playerY) {
     // Array pointer ke semua frame
     const char* frames[17] = {
         lorongFrame1, lorongFrame2, lorongFrame3, lorongFrame4, lorongFrame5,
@@ -187,7 +187,7 @@ void firstPersonWalking(int &playerX, int &playerY) {
     }
     
     // Setelah frame 17, tunggu player tekan W lagi untuk trigger cutscene
-while (_kbhit()) _getch(); 
+    while (_kbhit()) _getch(); 
 
     // --- EVENT LANGSUNG JALAN (TANPA WHILE LAGI) ---
     // Begitu nyampe ujung (loop jalan kelar), langsung gas event!
@@ -202,13 +202,12 @@ while (_kbhit()) _getch();
     serpentIntroductionCutscene();
     
     // 3. Battle Quiz
-    startDragonBattle();
+    bool kembaliMenu = startDragonBattle();
     
-   
+
     playerX = 37;
     playerY = 0;
-    
-   
+    return kembaliMenu;
 }
 
 
@@ -746,7 +745,7 @@ void mulaiBermain(address &root, int radiusPandang, int &profil, bool developer)
             _getch();
             
             // Aktifkan first-person walking animation
-            firstPersonWalking(x, y);
+            masihBermain = !firstPersonWalking(x, y);
             
             // Update langkahX dan langkahY agar tidak ada konflik
             langkahX = x;

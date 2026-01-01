@@ -305,7 +305,7 @@ void victoryEndingSequence() {
 // ==========================================
 // 2. FUNGSI BATTLE (QUIZ LOGIC)
 // ==========================================
-void startDragonBattle() {
+bool startDragonBattle() {
     // Seed random number generator (hanya sekali di awal)
     static bool seeded = false;
     if (!seeded) {
@@ -314,6 +314,7 @@ void startDragonBattle() {
     }
     
     bool playAgain = true;
+    bool kembaliMenu = true;
     
     do {
         vector<Question> questions = loadQuestions();
@@ -497,6 +498,7 @@ void startDragonBattle() {
             
             if (choice == 'Y') {
                 playAgain = true;
+                kembaliMenu = false;
                 system("cls");
                 cout << "\nMemulai ulang battle..." << endl;
                 Sleep(1000);
@@ -508,4 +510,5 @@ void startDragonBattle() {
         }
         
     } while (playAgain);
+    return kembaliMenu;
 }

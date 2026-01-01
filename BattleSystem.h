@@ -22,6 +22,6 @@ struct Question {
 void serpentIntroductionCutscene();
 
 // 2. Battle Quiz (Logika Soal, Nyawa, & Menang/Kalah)
-void startDragonBattle();
+bool startDragonBattle();
 
 #endif
