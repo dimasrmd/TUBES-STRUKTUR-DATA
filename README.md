@@ -93,21 +93,41 @@ struct Node { // bstNode.h: struktur dari node
 ### 📂 Struktur File
 ```
 .
-├── Assets/                 # Header file berisi ASCII Art
-│   ├── lorongFrames.h
-│   ├── serpentIntroFrames.h
-│   └── ... (Art Assets lainnya)
-├── Database/               # Folder penyimpanan file database
-├── bstNode.h               # Header: Definisi pointer dan struct BST
-├── bstNode.cpp             # Source: Implementasi primitif BST (Insert, Search)
-├── database.h              # Header: Definisi fungsi database SQLite
-├── database.cpp            # Source: Implementasi query SQL (Save/Load)
-├── gameplay.h              # Header: Definisi logika game
-├── gameplay.cpp            # Source: Implementasi core loop, render map, interaksi
-├── BattleSystem.h          # Header: Definisi sistem battle
-├── BattleSystem.cpp        # Source: Implementasi mechanics battle & quiz
-├── main_game.cpp           # Main Program (Player Edition)
-└── main_developer.cpp      # Main Program (Developer/Admin Edition)
+├── Assets/                      # Folder berisi ASCII Art untuk animasi dan visual game
+│   ├── lorongFrames.h          # Animasi lorong
+│   ├── serpentIntroFrames.h    # Intro animasi boss naga
+│   ├── gameOverFrames.h        # Animasi game over
+│   ├── headMeledakFrames.h     # Animasi kepala meledak
+│   ├── nullFrames.h            # Frame null/placeholder
+│   ├── orbMeledakFrames1.h     # Animasi orb meledak bagian 1
+│   ├── orbMeledakFrames2.h     # Animasi orb meledak bagian 2
+│   ├── pesanObjek.h            # ASCII art untuk pesan objek
+│   ├── pintuMunculFrames.h     # Animasi pintu muncul
+│   ├── transisiLorongFrames1.h # Transisi lorong bagian 1
+│   ├── transisiLorongFrames2.h # Transisi lorong bagian 2
+│   └── transisiLorongFrames3.h # Transisi lorong bagian 3
+├── Database/                    # Library SQLite untuk sistem database
+│   ├── sqlite3.h               # Header file SQLite
+│   ├── sqlite3.c               # Source code SQLite
+│   └── sqlite3.o               # Object file SQLite (compiled)
+├── SkillTree/                   # Sistem skill tree dan karakter
+│   ├── Character.h             # Header: Definisi struct karakter
+│   ├── Skilltree.h             # Header: Definisi skill tree
+│   ├── Skilltree.cpp           # Source: Implementasi skill tree
+│   ├── effect.h                # Header: Definisi efek skill
+│   ├── effect.cpp              # Source: Implementasi efek skill
+│   └── Utilitas.h              # Header: Fungsi utility untuk skill tree
+├── bstNode.h                    # Header: Definisi pointer dan struct BST
+├── bstNode.cpp                  # Source: Implementasi primitif BST (Insert, Search)
+├── database.h                   # Header: Definisi fungsi database SQLite
+├── database.cpp                 # Source: Implementasi query SQL (Save/Load)
+├── gameplay.h                   # Header: Definisi logika game
+├── gameplay.cpp                 # Source: Implementasi core loop, render map, interaksi
+├── BattleSystem.h               # Header: Definisi sistem battle
+├── BattleSystem.cpp             # Source: Implementasi mechanics battle & quiz
+├── main_game.cpp                # Main Program (Player Edition)
+├── main_developer.cpp           # Main Program (Developer/Admin Edition)
+└──  README.md                    # Dokumentasi proyek (file ini)
 ```
 
 ### Integrasi Database (SQLite)
