@@ -1,4 +1,4 @@
-# 🏰 Campus Mystery: Text-Based Adventure Game
+# 🏰 BIZARRE NIGHT AT CAMPUS: DATA STRUCTURE
 
 > **Status:** ✅ Selesai (Finished)
 > **Bahasa:** C++
@@ -14,15 +14,53 @@
 | 3. | Abisar Fathir | 103112400068 | [Github - Fathir](https://github.com/Sarrrrrrrrrrrrrr) |
 
 ## 📖 Deskripsi Proyek
-**Campus Mystery** adalah game petualangan berbasis teks (console) dengan nuansa horor/misteri. Pemain terjebak di dalam lingkungan kampus (dimulai dari Perpustakaan) dan harus mencari petunjuk, memecahkan teka-teki, dan menemukan jalan keluar.
 
-Proyek ini dibuat untuk mendemonstrasikan implementasi struktur data **Binary Search Tree (BST)** dalam pengelolaan sistem peta (mapping) game, menggantikan penggunaan Array 2D konvensional untuk efisiensi memori pada peta yang luas (sparse matrix).
+### 🌙 Sinopsis
+
+Kamu terbangun di sebuah lorong gelap yang asing. Kepala terasa berat, ingatan kabur. Hal terakhir yang kamu ingat adalah siang itu kamu sedang mempelajari mata kuliah Struktur Data di perpustakaan kampusmu.
+
+Sekarang, kamu terjebak di dalam dimensi aneh yang menyerupai kampusmu—namun berbeda. Lorong-lorong yang seharusnya familiar kini terasa asing dan mencekam. Pintu-pintu terkunci dengan mekanisme misterius. Musuh yang kamu hadapi bukanlah hantu, namun adalah hal yang jauh mengerikan yang selama ini selalu menghantui di belakang kepalamu sebagai seorang Mahasiswa Teknik Informatika.
+
+Mampukah kamu mengalahkan mereka semua dengan apa yang kamu pelajari selama satu semester pada mata kuliah Struktur Data? Pilihan ada di tanganmu.
+
+**BIZARRE NIGHT AT CAMPUS: DATA STRUCTURE** adalah game petualangan horor berbasis teks yang menggabungkan eksplorasi, puzzle-solving, dan pertempuran berbasis pengetahuan. Kamu harus menjelajahi kampus yang terdistorsi ini, memecahkan teka-teki yang tersembunyi, dan menghadapi entitas supernatural yang menghalangi jalanmu.
+
+Namun ada yang aneh... setiap puzzle, setiap pertempuran, semuanya terkait dengan **struktur data**. Seolah-olah dimensi ini dibentuk oleh konsep-konsep pemrograman yang kamu pelajari. Apakah ini hanya kebetulan? Atau ada sesuatu yang lebih dalam di balik semua ini?
+
+### 📜 Plot
+
+Protagonis kita adalah seorang mahasiswa Teknik Informatika semester 3 yang tidak disebutkan namanya. Di siang hari yang cerah, ia menghabiskan waktu berjam-jam di perpustakaan kampus, belajar mati-matian untuk menghadapi ujian Struktur Data esok hari—mata kuliah yang selama ini menjadi momok menakutkan baginya.
+
+Tumpukan buku, catatan yang berantakan, dan layar laptop yang menyala terang menerangi wajahnya yang lelah. Linked List, Binary Tree, Stack, Queue—semua konsep itu berputar-putar di kepalanya hingga ia tidak tahan lagi. Kelelahan mengalahkannya. Kepalanya tertunduk di atas meja, dan ia tertidur.
+
+**Ketika ia membuka mata, semuanya telah berubah.**
+
+Perpustakaan yang tadinya ramai kini sunyi senyap. Lampu-lampu redup, lorong-lorong yang familiar kini terlihat kumuh dan menyeramkan. Ini bukan lagi dunia nyata—ini adalah **mimpi buruknya**. Sebuah manifestasi dari kelelahan mental dan ketakutannya terhadap mata kuliah yang telah menghantuinya sepanjang semester.
+
+Di dalam mimpi ini, struktur data yang ia pelajari menjadi **hidup**. Mereka tidak lagi sekadar konsep abstrak di buku teks, melainkan monster-monster mengerikan yang menghalangi jalannya:
+
+- **The Spectral Serpent** - Naga Linked List yang meliuk-liuk di kegelapan, representasi dari ketakutannya terhadap pointer dan traversal yang rumit.
+- Dan masih banyak lagi monster struktur data yang menanti di chapter-chapter berikutnya...
+
+Satu-satunya cara untuk mengalahkan mereka adalah dengan **menjawab serangkaian soal** yang mereka berikan dalam pertempuran—simbolisme dari usahanya mengingat kembali materi yang telah ia pelajari sebelum tertidur. Setiap jawaban benar adalah serangan, setiap jawaban salah adalah luka yang ia terima.
+
+Mengalahkan satu monster bukan berarti semuanya selesai. Masih banyak bentuk struktur data lain yang perlu ia hadapi sebelum ia dapat terbangun dari mimpi buruknya. 
+
+**Akankah ia berhasil mengalahkan semua ketakutannya dengan pengetahuan yang telah ia pelajari? Atau ia akan terjebak selamanya dalam labirin mimpi buruk ini?**
+
+*To be continued...*
+
+### 🎯 Tujuan Proyek
+
+Di balik cerita yang mencekam, proyek ini dibuat untuk mendemonstrasikan implementasi **Binary Search Tree (BST)** dalam sistem peta game yang efisien. Berbeda dengan array 2D konvensional, BST memungkinkan pengelolaan dunia game yang luas dengan memori yang optimal—hanya menyimpan koordinat yang memiliki objek, bukan seluruh area kosong.
+
+Setiap objek dalam game (tembok, pintu, item) adalah sebuah node dalam tree. Setiap langkah pemain melakukan pencarian di BST untuk menentukan interaksi. Ini adalah demonstrasi nyata bagaimana struktur data yang tepat dapat mengubah cara kita membangun sistem yang kompleks.
 
 ## 🎮 Fitur Utama
 * **Eksplorasi Dunia Terbuka (Sederhana):** Bergerak bebas menggunakan tombol `W`, `A`, `S`, `D`.
 * **Sistem Peta Dinamis:** Peta di-render secara *real-time* berdasarkan radius pandang pemain menggunakan BST.
 * **Interaksi Objek:** Pemain dapat memeriksa objek (seperti buku, lukisan, atau pintu) untuk mendapatkan deskripsi atau petunjuk.
-* **Visualisasi ASCII:** Menggunakan seni ASCII untuk memberikan atmosfer visual pada objek tertentu (seperti buku clue atau pemandangan perpustakaan).
+* **Visualisasi ASCII:** Menggunakan ASCII art untuk memberikan atmosfer visual pada objek tertentu (seperti buku clue atau pemandangan perpustakaan).
 * **Mekanisme Puzzle:** Mencari digit password yang tersembunyi di berbagai lokasi untuk membuka pintu terkunci.
 * **Turn-Based Battle System:** Melawan Boss Naga menggunakan "Knowledge Battle", dimana pemain harus menjawab pertanyaan seputar materi Kuliah (Linked List) untuk menyerang.
 * **Database & Save System:** Menggunakan **SQLite** untuk menyimpan akun pemain, progress permainan (posisi terakhir, status pintu), dan data developer.

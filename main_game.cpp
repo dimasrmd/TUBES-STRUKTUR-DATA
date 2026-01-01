@@ -31,7 +31,7 @@ int main () {
         int extProfil = 0; // indikator exit di menu profil pas belom punya username
         system("cls");
         cout << setfill('=') << setw(50) << " " << endl; setfill(' ');
-        cout << "\tTHE GAME: BIZZARE NIGHT AT CAMPUS      " << endl;
+        cout << "\tBIZARRE NIGHT AT CAMPUS: DATA STRUCTURE      " << endl;
         cout << setfill('=') << setw(50) << " " << endl; setfill(' ');
         cout << "1. Mulai Bermain" << endl;
         cout << "2. Setting" << endl;
