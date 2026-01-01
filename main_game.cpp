@@ -1,6 +1,8 @@
 #include "bstNode.h"
 #include "gameplay.h"
 #include "database.h"
+#include "SkillTree/Skilltree.h"
+#include "SkillTree/Character.h"
 
 using namespace std;
 
@@ -9,6 +11,7 @@ int main () {
     sqlite3* databasePemain; // untuk menghubungkan ke database
     sqlite3* databaseDeveloper; // untuk menghubungkan ke database
     address root = NIL;
+    SkillNode* skillRoot = nullptr; // Skill tree root
     int pilihanMenu;
     int radiusPandang = 5;
 
@@ -16,6 +19,9 @@ int main () {
     // inisialisasi database
     buatDatabasePemain(databasePemain);
     buatDatabaseDeveloper(databaseDeveloper);
+    
+    // Inisialisasi skill tree
+    initializeSkillTree(skillRoot);
     
     // Inisialisasi ruangan awal (Perpustakaan)
     pindahKeRuangan(root, /*playerX*/ *(new int(0)), /*playerY*/ *(new int(0)), 1, *new int(0));
@@ -37,7 +43,7 @@ int main () {
         {
         case 1:
             extProfil = menuProfil(profil);
-            if (extProfil != 0) mulaiBermain(root, radiusPandang, profil, false);
+            if (extProfil != 0) mulaiBermain(root, radiusPandang, profil, false, skillRoot);
             break;
         case 2:
             lihatSetting(root, radiusPandang);

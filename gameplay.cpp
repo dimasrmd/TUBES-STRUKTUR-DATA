@@ -6,6 +6,10 @@
 #include "Assets/transisiLorongFrames2.h"
 #include "Assets/transisiLorongFrames3.h"
 #include "BattleSystem.h"
+#include "SkillTree/Character.h"
+#include "SkillTree/Skilltree.h"
+#include "SkillTree/effect.h"
+#include "SkillTree/Utilitas.h"
 
 int ruanganAktif = 1;
 int profil = 0; 
@@ -157,7 +161,7 @@ void transisiCutscene() {
 }
 
 // Fungsi untuk menampilkan animasi first-person walking
-bool firstPersonWalking(int &playerX, int &playerY) {
+bool firstPersonWalking(int &playerX, int &playerY, CharacterStats& playerStats, SkillNode* skillRoot = nullptr) {
     // Array pointer ke semua frame
     const char* frames[17] = {
         lorongFrame1, lorongFrame2, lorongFrame3, lorongFrame4, lorongFrame5,
@@ -202,7 +206,7 @@ bool firstPersonWalking(int &playerX, int &playerY) {
     serpentIntroductionCutscene();
     
     // 3. Battle Quiz
-    bool kembaliMenu = startDragonBattle();
+    bool kembaliMenu = startDragonBattle(playerStats, skillRoot);
     
 
     playerX = 37;
@@ -217,7 +221,11 @@ string cariNamaObj(address root, int x, int y) {
     return "";
 }
 
-void gambarPeta(address root, int posisiX, int posisiY, int radiusPandang) {
+void gambarPeta(address root, int posisiX, int posisiY, int radiusPandang, const CharacterStats& playerStats) {
+    // Display character health bar
+    displayCharacterHealthBar(playerStats);
+    cout << endl;
+    
     for (int y = posisiY + radiusPandang; y >= posisiY - radiusPandang; y--) {
         for (int x = posisiX - radiusPandang; x <= posisiX + radiusPandang; x++) {
             
@@ -640,7 +648,7 @@ int menuProfil(int &profil) {
     return 1; // artinya dia bisa masuk ke fungsi mulaiBermain
 }
 
-void mulaiBermain(address &root, int radiusPandang, int &profil, bool developer) {
+void mulaiBermain(address &root, int radiusPandang, int &profil, bool developer, SkillNode* skillRoot) {
     sqlite3* data;
 
     if (sqlite3_open("dataPemain.db", &data) != SQLITE_OK) {
@@ -658,6 +666,9 @@ void mulaiBermain(address &root, int radiusPandang, int &profil, bool developer)
     } else {
         x = 0; y= 0; trg_Lorong = 0; aksesPerpustakaanTerbuka = 1; ruanganAktif = 1; profil = -1;
     }
+
+    // Initialize Character Stats
+    CharacterStats playerStats;
 
     if (ruanganAktif == 1) inisialisasiPetaPerpustakaan(root);
     else if (ruanganAktif == 2) buatLorongKampus(root, trg_Lorong);
@@ -687,12 +698,13 @@ void mulaiBermain(address &root, int radiusPandang, int &profil, bool developer)
         
         cout << "P: Player, #: Tembok, *: Objek, =: Pintu" << endl << endl;
 
-        gambarPeta(root, x, y, radiusPandang);
+        gambarPeta(root, x, y, radiusPandang, playerStats);
         
         cout << "\n>Pesan: " << pesanObj;
         pesanObj = ""; // reset pesan
 
         cout << "\n>Gunakan x untuk keluar ke menu\n";
+        cout << ">Gunakan k untuk buka menu skill\n";
         cout << ">Gunakan (w/a/s/d) untuk bergerak\n";
         cout << "input: ";
         pilihanBermain = static_cast<char>(_getch());
@@ -712,6 +724,12 @@ void mulaiBermain(address &root, int radiusPandang, int &profil, bool developer)
             break;
         case 'd':
             langkahX++;
+            break;
+        case 'k':
+        case 'K':
+            // Buka menu skill
+            bukaMenuSkillGameplay(&playerStats, skillRoot);
+            continue; // Skip movement check
             break;
         case 'x':
             updateDataPemain(data, profil, x, y, ruanganAktif, trg_Lorong, aksesPerpustakaanTerbuka);
@@ -745,7 +763,7 @@ void mulaiBermain(address &root, int radiusPandang, int &profil, bool developer)
             _getch();
             
             // Aktifkan first-person walking animation
-            masihBermain = !firstPersonWalking(x, y);
+            masihBermain = !firstPersonWalking(x, y, playerStats, skillRoot);
             
             // Update langkahX dan langkahY agar tidak ada konflik
             langkahX = x;
@@ -879,4 +897,80 @@ void mulaiBermain(address &root, int radiusPandang, int &profil, bool developer)
         } 
 
     } while (masihBermain);
+}
+
+// ===== SKILL MENU IN GAMEPLAY =====
+bool bukaMenuSkillGameplay(CharacterStats* playerStats, SkillNode* skillRoot) {
+    if (playerStats == nullptr) {
+        cout << "Error: Player stats tidak ditemukan!" << endl;
+        _getch();
+        return false;
+    }
+
+    int pilihan = 0;
+    while(true) {
+        system("cls");
+        horrorGlitch("=== SKILL MENU ===");
+        
+        cout << "\nNama Karakter: [Protagonist]" << endl;
+        cout << "Health: " << playerStats->health << "/" << playerStats->maxHealth << endl;
+        cout << "Skill Points: " << playerStats->availableSkillPoints << endl;
+        cout << "Battle Skill Points: " << playerStats->battleSkillPoints << "/" << playerStats->maxBattleSkillPoints << endl;
+        
+        cout << "\n================================" << endl;
+        cout << "[1] Lihat Status Karakter" << endl;
+        cout << "[2] Lihat Semua Skill" << endl;
+        cout << "[3] Lihat Skill Battle (Lifeline)" << endl;
+        cout << "[4] Kembali ke Permainan" << endl;
+        cout << "================================" << endl;
+        cout << ">> Pilihan: ";
+        
+        cin >> pilihan;
+        cin.ignore();
+        
+        if (pilihan == 1) {
+            system("cls");
+            cout << "\n╔════════════════════════════════════════╗" << endl;
+            cout << "║  CHARACTER STATUS                      ║" << endl;
+            cout << "╠════════════════════════════════════════╣" << endl;
+            cout << "║ Nama: Protagonist                      ║" << endl;
+            cout << "║ Health: " << playerStats->health << "/" << playerStats->maxHealth << "                        ║" << endl;
+            cout << "║ Skill Points: " << playerStats->availableSkillPoints << "                     ║" << endl;
+            cout << "║ Battle Points: " << playerStats->battleSkillPoints << "/" << playerStats->maxBattleSkillPoints << "                    ║" << endl;
+            cout << "╚════════════════════════════════════════╝" << endl;
+            cout << "\nTekan tombol apapun untuk melanjutkan...";
+            _getch();
+        }
+        else if (pilihan == 2) {
+            // Lihat semua skill (Mind Palace)
+            if (skillRoot != nullptr) {
+                menuSkillTree(skillRoot, playerStats);
+            } else {
+                cout << "\n[!] Skill tree tidak tersedia!" << endl;
+                cout << "Tekan tombol apapun untuk melanjutkan...";
+                _getch();
+            }
+        }
+        else if (pilihan == 3) {
+            // Lihat skill battle (Lifeline)
+            if (skillRoot != nullptr) {
+                displayAvailableLifelines(skillRoot, *playerStats);
+                cout << "\nTekan tombol apapun untuk melanjutkan...";
+                _getch();
+            } else {
+                cout << "\n[!] Skill tree tidak tersedia!" << endl;
+                cout << "Tekan tombol apapun untuk melanjutkan...";
+                _getch();
+            }
+        }
+        else if (pilihan == 4) {
+            break;
+        }
+        else {
+            cout << "[!] Pilihan tidak valid!" << endl;
+            _getch();
+        }
+    }
+    
+    return true;
 }

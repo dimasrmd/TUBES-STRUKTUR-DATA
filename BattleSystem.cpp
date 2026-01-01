@@ -7,8 +7,15 @@
 #include "Assets/gameOverFrames.h"
 #include "Assets/pintuMunculFrames.h"
 #include "BattleSystem.h"
+#include "SkillTree/Character.h"
+#include "SkillTree/Skilltree.h"
+#include "SkillTree/effect.h"
+#include "SkillTree/Utilitas.h"
 #include <iostream>
 #include <conio.h>
+#include <cstdlib>
+#include <ctime>
+#include <vector>
 #include <vector>
 #include <algorithm>  // Untuk shuffle
 #include <random>  // Untuk shuffle
@@ -16,6 +23,9 @@
 #include <ctime>      // Untuk time (random seed)
 
 using namespace std;
+
+// Forward declaration
+SkillNode* findLifelineByIndexHelper(SkillNode* node, int& idx, int target);
 
 // --- LOAD SOAL ---
 vector<Question> loadQuestions() {
@@ -149,6 +159,28 @@ void drawBattleInterface(int lives, int correctCount) {
     cout << "   ║                                                      ║" << endl;
     cout << "   ╚══════════════════════════════════════════════════════╝" << endl;
     cout << endl;
+}
+
+// Display Character Health Bar untuk gameplay (dengan heart emoji) - sama seperti battle (3 hearts)
+void displayCharacterHealthBar(const CharacterStats& playerStats) {
+    // Pastikan terminal support emoji (UTF-8)
+    SetConsoleOutputCP(CP_UTF8);
+    
+    cout << "   ╔═════════════════════════════════════════╗" << endl;
+    cout << "   ║  HP : ";
+    
+    // Display hearts untuk health - selalu 3 hearts seperti di battle
+    for (int i = 0; i < 3; i++) {
+        if (i < playerStats.health) {
+            cout << "❤️  ";  // Full heart
+        } else {
+            cout << "💀  ";  // Nyawa hilang
+        }
+    }
+    
+    cout << "║" << endl;
+    cout << "   ║  Level: " << playerStats.playerLevel << "  Exp: " << playerStats.totalExp << "/100              ║" << endl;
+    cout << "   ╚═════════════════════════════════════════╝" << endl;
 }
 
 // Fungsi untuk cutscene orb 1 meledak (19 frames)
@@ -305,13 +337,16 @@ void victoryEndingSequence() {
 // ==========================================
 // 2. FUNGSI BATTLE (QUIZ LOGIC)
 // ==========================================
-bool startDragonBattle() {
+ bool startDragonBattle(CharacterStats& playerStats, SkillNode* skillRoot) {
     // Seed random number generator (hanya sekali di awal)
     static bool seeded = false;
     if (!seeded) {
         srand(time(0));
         seeded = true;
     }
+    
+    // Reset battle skill points untuk battle baru
+    resetBattleSkillPoints(playerStats);
     
     bool playAgain = true;
     bool kembaliMenu = true;
@@ -328,21 +363,299 @@ bool startDragonBattle() {
         int lives = 3;
         int correctCount = 0;
         int currentQ = 0;
+        
+        // Track skill yang digunakan dalam soal ini
+        string activeSkill = "";
+        bool skillUsedThisTurn = false;
 
         // Loop Battle
         while (lives > 0 && correctCount < 5) {
             // Tampilkan UI Battle yang cantik
             drawBattleInterface(lives, correctCount);
+            
+            // Reset skill usage untuk soal baru
+            skillUsedThisTurn = false;
+            activeSkill = "";
+            
+            // Tampilkan Skill Menu Option
+            cout << "\n[MENU BATTLE]" << endl;
+            cout << "A - Jawab Pertanyaan" << endl;
+            cout << "S - Lihat Lifeline/Skill" << endl;
+            cout << ">> Pilihan (A/S): ";
+            
+            char battleMenuChoice = toupper(_getch());
+            cout << battleMenuChoice << endl << endl;
+            
+            if (battleMenuChoice == 'S') {
+                if (skillRoot != nullptr) {
+                    displayAvailableLifelines(skillRoot, playerStats);
+                    cout << "\n>> Pilih Skill (0 untuk skip): ";
+                    
+                    // Bersihkan input buffer
+                    while (_kbhit()) _getch();
+                    
+                    int skillChoice = 0;
+                    char skillInput = _getch();
+                    cout << skillInput << endl;
+                    
+                    // Convert char ke int
+                    if (skillInput >= '0' && skillInput <= '9') {
+                        skillChoice = skillInput - '0';
+                    } else {
+                        skillChoice = -1; // Invalid input
+                    }
+                    
+                    if (skillChoice > 0) {
+                        // Find dan apply skill
+                        SkillNode* selectedSkill = nullptr;
+                        int count = 0;
+                        selectedSkill = findLifelineByIndexHelper(skillRoot, count, skillChoice);
+                        
+                        if (selectedSkill != nullptr) {
+                            // Cek apakah punya skill point cukup
+                            if (playerStats.battleSkillPoints >= selectedSkill->data.skillPointCost) {
+                                playerStats.battleSkillPoints -= selectedSkill->data.skillPointCost;
+                                
+                                cout << "\n╔════════════════════════════════════════╗" << endl;
+                                cout << "║ [✓] " << selectedSkill->data.namaSkill << " DIAKTIFKAN!" << endl;
+                                cout << "╠════════════════════════════════════════╣" << endl;
+                                
+                                // Apply ACTIVE effects dari skill
+                                effect* eff = selectedSkill->data.effects;
+                                while (eff != nullptr) {
+                                    if (eff->type == ACTIVE) {
+                                        // Convert ke uppercase untuk match dengan Character.h expectations
+                                        string effectTypeUpper = eff->statAffected;
+                                        for (auto& c : effectTypeUpper) c = toupper(c);
+                                        applyCharacterEffect(playerStats, effectTypeUpper, eff->value);
+                                        
+                                        // Tampilkan inner dialogue
+                                        cout << "║ " << eff->nama << endl;
+                                        cout << "║" << endl;
+                                        cout << "║ " << eff->deskripsi << endl;
+                                    }
+                                    eff = eff->next;
+                                }
+                                
+                                cout << "║" << endl;
+                                cout << "║ Sisa Skill Points: " << playerStats.battleSkillPoints << "/" << playerStats.maxBattleSkillPoints << endl;
+                                cout << "╚════════════════════════════════════════╝" << endl;
+                                
+                                // Mark skill sebagai digunakan untuk soal ini
+                                activeSkill = selectedSkill->data.namaSkill;
+                                skillUsedThisTurn = true;
+                                
+                                // Setelah skill diaktifkan, langsung lanjut ke soal
+                                cout << "\nTekan tombol apapun untuk melihat soal...";
+                                _getch();
+                                // Tidak ada continue, langsung lanjut ke bagian soal di bawah
+                            } else {
+                                cout << "\n[!] Skill Points tidak cukup!" << endl;
+                                cout << "Dibutuhkan: " << selectedSkill->data.skillPointCost << endl;
+                                cout << "Punya: " << playerStats.battleSkillPoints << endl;
+                                cout << "\nTekan tombol apapun untuk kembali ke menu...";
+                                _getch();
+                                continue; // Kembali ke menu battle
+                            }
+                        } else {
+                            cout << "\n[!] Skill tidak ditemukan!" << endl;
+                            cout << "\nTekan tombol apapun untuk kembali ke menu...";
+                            _getch();
+                            continue; // Kembali ke menu battle
+                        }
+                    } else {
+                        // Jika skillChoice == 0 (skip), kembali ke menu
+                        continue;
+                    }
+                } else {
+                    cout << "[!] Skill tidak tersedia..." << endl;
+                    cout << "Tekan apapun untuk lanjut...";
+                    _getch();
+                    continue;
+                }
+            }
+            
+            // Jika tidak pilih S, lanjut ke soal
 
             // Tampilkan Soal (Looping jika soal habis)
             int soalIndex = currentQ % questions.size();
             
             cout << "[SOAL #" << (currentQ + 1) << "]" << endl; // tadinya correctCount
             cout << questions[soalIndex].soal << endl << endl;
-            cout << "A. " << questions[soalIndex].opsiA << endl;
-            cout << "B. " << questions[soalIndex].opsiB << endl;
-            cout << "C. " << questions[soalIndex].opsiC << endl;
-            cout << "D. " << questions[soalIndex].opsiD << endl << endl;
+            
+            // ===== SKILL EFFECTS DISPLAY =====
+            if (skillUsedThisTurn) {
+                cout << "┌──────────────────────────────────────┐" << endl;
+                cout << "│ [SKILL EFFECT AKTIF]                 │" << endl;
+                cout << "│ Skill: " << activeSkill << endl;
+                cout << "└──────────────────────────────────────┘" << endl;
+                
+                // Apply skill effects sesuai dengan skill yang digunakan
+                if (activeSkill == "Analytical Mind") {
+                    cout << "\n[💡 ANALYTICAL MIND] Eliminasi jawaban salah:" << endl;
+                    // Show 2 wrong answers
+                    vector<char> wrongAnswers;
+                    for (char opt : {'A', 'B', 'C', 'D'}) {
+                        if (opt != questions[soalIndex].jawabanBenar) {
+                            wrongAnswers.push_back(opt);
+                        }
+                    }
+                    // Shuffle dan tampilkan 2 jawaban salah
+                    shuffle(wrongAnswers.begin(), wrongAnswers.end(), g);
+                    cout << "  ✗ Jawaban " << wrongAnswers[0] << " - PASTI SALAH" << endl;
+                    if (wrongAnswers.size() > 1) {
+                        cout << "  ✗ Jawaban " << wrongAnswers[1] << " - PASTI SALAH" << endl;
+                    }
+                }
+                else if (activeSkill == "Memory Recall") {
+                    cout << "\n[🧠 MEMORY RECALL] Ingatan soal serupa:" << endl;
+                    cout << "  💭 Soal ini pernah muncul dengan konteks serupa..." << endl;
+                    cout << "  💭 Yang benar adalah pilihan yang paling LOGIS secara umum" << endl;
+                }
+                else if (activeSkill == "Intuition Strike") {
+                    cout << "\n[⚡ INTUITION STRIKE] Firasat kuat:" << endl;
+                    cout << "  ⚠️  OTAK: 'Aku YAKIN jawaban yang benar adalah [" << questions[soalIndex].jawabanBenar << "]!'" << endl;
+                }
+                else if (activeSkill == "Clear Mind") {
+                    cout << "\n[🧘 CLEAR MIND] Tenang dan fokus:" << endl;
+                    cout << "  ✓ Kecemasan hilang, pikiran jernih" << endl;
+                    cout << "  ✓ Eliminasi pilihan yang tidak logis" << endl;
+                }
+                else if (activeSkill == "Focused Concentration") {
+                    cout << "\n[🎯 FOCUSED CONCENTRATION] Total fokus:" << endl;
+                    cout << "  ✓ Perhatian penuh pada soal ini" << endl;
+                    cout << "  ✓ Semua distraksi hilang - cukup waktumu" << endl;
+                }
+                cout << endl;
+            }
+            
+            // --- DISPLAY OPSI BERDASARKAN SKILL YANG DIPAKAI ---
+            if (skillUsedThisTurn && activeSkill == "Analytical Mind") {
+                // Analytical Mind: Tampilkan 2 pilihan (1 benar + 1 salah random)
+                vector<char> wrongAnswers;
+                if (questions[soalIndex].jawabanBenar != 'A') wrongAnswers.push_back('A');
+                if (questions[soalIndex].jawabanBenar != 'B') wrongAnswers.push_back('B');
+                if (questions[soalIndex].jawabanBenar != 'C') wrongAnswers.push_back('C');
+                if (questions[soalIndex].jawabanBenar != 'D') wrongAnswers.push_back('D');
+                
+                srand(time(0));
+                char shownWrong = wrongAnswers[rand() % wrongAnswers.size()];
+                
+                // Tampilkan jawaban benar dan 1 jawaban salah
+                if (questions[soalIndex].jawabanBenar == 'A') {
+                    cout << "A. " << questions[soalIndex].opsiA << endl;
+                } else if (shownWrong == 'A') {
+                    cout << "A. " << questions[soalIndex].opsiA << endl;
+                }
+                if (questions[soalIndex].jawabanBenar == 'B') {
+                    cout << "B. " << questions[soalIndex].opsiB << endl;
+                } else if (shownWrong == 'B') {
+                    cout << "B. " << questions[soalIndex].opsiB << endl;
+                }
+                if (questions[soalIndex].jawabanBenar == 'C') {
+                    cout << "C. " << questions[soalIndex].opsiC << endl;
+                } else if (shownWrong == 'C') {
+                    cout << "C. " << questions[soalIndex].opsiC << endl;
+                }
+                if (questions[soalIndex].jawabanBenar == 'D') {
+                    cout << "D. " << questions[soalIndex].opsiD << endl;
+                } else if (shownWrong == 'D') {
+                    cout << "D. " << questions[soalIndex].opsiD << endl;
+                }
+            }
+            else if (skillUsedThisTurn && activeSkill == "Memory Recall") {
+                // Memory Recall: Tampilkan semua tapi hint yang benar dengan [✓]
+                cout << "A. " << questions[soalIndex].opsiA;
+                if (questions[soalIndex].jawabanBenar == 'A') cout << " [✓ INGAT INI]";
+                cout << endl;
+                
+                cout << "B. " << questions[soalIndex].opsiB;
+                if (questions[soalIndex].jawabanBenar == 'B') cout << " [✓ INGAT INI]";
+                cout << endl;
+                
+                cout << "C. " << questions[soalIndex].opsiC;
+                if (questions[soalIndex].jawabanBenar == 'C') cout << " [✓ INGAT INI]";
+                cout << endl;
+                
+                cout << "D. " << questions[soalIndex].opsiD;
+                if (questions[soalIndex].jawabanBenar == 'D') cout << " [✓ INGAT INI]";
+                cout << endl;
+            }
+            else if (skillUsedThisTurn && activeSkill == "Intuition Strike") {
+                // Intuition Strike: Tampilkan hanya jawaban yang benar LANGSUNG!
+                cout << "\n╔════════════════════════════════════════╗" << endl;
+                cout << "║ ⚡ JAWABAN YANG BENAR TERBONGKAR! ⚡  ║" << endl;
+                cout << "║                                        ║" << endl;
+                cout << "║  OTAK MU MEMAKSA: '" << questions[soalIndex].jawabanBenar << "'  ║" << endl;
+                cout << "║                                        ║" << endl;
+                if (questions[soalIndex].jawabanBenar == 'A') {
+                    cout << "║  A. " << questions[soalIndex].opsiA << "  ║" << endl;
+                } else if (questions[soalIndex].jawabanBenar == 'B') {
+                    cout << "║  B. " << questions[soalIndex].opsiB << "  ║" << endl;
+                } else if (questions[soalIndex].jawabanBenar == 'C') {
+                    cout << "║  C. " << questions[soalIndex].opsiC << "  ║" << endl;
+                } else {
+                    cout << "║  D. " << questions[soalIndex].opsiD << "  ║" << endl;
+                }
+                cout << "╚════════════════════════════════════════╝" << endl;
+            }
+            else if (skillUsedThisTurn && activeSkill == "Clear Mind") {
+                // Clear Mind: Tampilkan 3 pilihan (semua kecuali 1 salah random)
+                vector<char> wrongAnswers;
+                if (questions[soalIndex].jawabanBenar != 'A') wrongAnswers.push_back('A');
+                if (questions[soalIndex].jawabanBenar != 'B') wrongAnswers.push_back('B');
+                if (questions[soalIndex].jawabanBenar != 'C') wrongAnswers.push_back('C');
+                if (questions[soalIndex].jawabanBenar != 'D') wrongAnswers.push_back('D');
+                
+                srand(time(0));
+                char hiddenWrong = wrongAnswers[rand() % wrongAnswers.size()];
+                
+                cout << "A. " << questions[soalIndex].opsiA << (('A' != hiddenWrong) ? "" : " [TERSEMBUNYI]") << endl;
+                cout << "B. " << questions[soalIndex].opsiB << (('B' != hiddenWrong) ? "" : " [TERSEMBUNYI]") << endl;
+                cout << "C. " << questions[soalIndex].opsiC << (('C' != hiddenWrong) ? "" : " [TERSEMBUNYI]") << endl;
+                cout << "D. " << questions[soalIndex].opsiD << (('D' != hiddenWrong) ? "" : " [TERSEMBUNYI]") << endl;
+            }
+            else if (skillUsedThisTurn && activeSkill == "Focused Concentration") {
+                // Focused Concentration: Tampilkan 2 pilihan (1 benar + 1 salah random)
+                vector<char> wrongAnswers;
+                if (questions[soalIndex].jawabanBenar != 'A') wrongAnswers.push_back('A');
+                if (questions[soalIndex].jawabanBenar != 'B') wrongAnswers.push_back('B');
+                if (questions[soalIndex].jawabanBenar != 'C') wrongAnswers.push_back('C');
+                if (questions[soalIndex].jawabanBenar != 'D') wrongAnswers.push_back('D');
+                
+                srand(time(0));
+                char shownWrong = wrongAnswers[rand() % wrongAnswers.size()];
+                
+                // Tampilkan jawaban benar dan 1 jawaban salah
+                if (questions[soalIndex].jawabanBenar == 'A') {
+                    cout << "A. " << questions[soalIndex].opsiA << endl;
+                } else if (shownWrong == 'A') {
+                    cout << "A. " << questions[soalIndex].opsiA << endl;
+                }
+                if (questions[soalIndex].jawabanBenar == 'B') {
+                    cout << "B. " << questions[soalIndex].opsiB << endl;
+                } else if (shownWrong == 'B') {
+                    cout << "B. " << questions[soalIndex].opsiB << endl;
+                }
+                if (questions[soalIndex].jawabanBenar == 'C') {
+                    cout << "C. " << questions[soalIndex].opsiC << endl;
+                } else if (shownWrong == 'C') {
+                    cout << "C. " << questions[soalIndex].opsiC << endl;
+                }
+                if (questions[soalIndex].jawabanBenar == 'D') {
+                    cout << "D. " << questions[soalIndex].opsiD << endl;
+                } else if (shownWrong == 'D') {
+                    cout << "D. " << questions[soalIndex].opsiD << endl;
+                }
+            }
+            else {
+                // Normal display semua 4 opsi
+                cout << "A. " << questions[soalIndex].opsiA << endl;
+                cout << "B. " << questions[soalIndex].opsiB << endl;
+                cout << "C. " << questions[soalIndex].opsiC << endl;
+                cout << "D. " << questions[soalIndex].opsiD << endl;
+            }
+            cout << endl;
             cout << ">> JAWABAN: ";
 
             // Bersihkan input buffer sebelum menunggu jawab (menghapus buffer inputan)
@@ -351,9 +664,15 @@ bool startDragonBattle() {
             char jawab = toupper(_getch());
             cout << jawab << endl << endl;
             
+            // Convert angka ke huruf (1->A, 2->B, 3->C, 4->D)
+            if (jawab == '1') jawab = 'A';
+            else if (jawab == '2') jawab = 'B';
+            else if (jawab == '3') jawab = 'C';
+            else if (jawab == '4') jawab = 'D';
+            
             // Validasi input - hanya terima A, B, C, atau D
             if (jawab != 'A' && jawab != 'B' && jawab != 'C' && jawab != 'D') {
-                cout << "[INVALID] Inputmu tidak valid! Hanya A, B, C, atau D yang diterima." << endl;
+                cout << "[INVALID] Inputmu tidak valid! Gunakan A/B/C/D atau 1/2/3/4" << endl;
                 cout << "Tekan apapun untuk coba lagi..." << endl;
                 _getch();
                 continue; // Ulangi soal yang sama

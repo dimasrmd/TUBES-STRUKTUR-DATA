@@ -2,6 +2,8 @@
 #define GAMEPLAY_H
 #include "bstNode.h"
 #include "database.h"
+#include "SkillTree/Skilltree.h"
+#include "SkillTree/Character.h"
 #include <cstdlib>
 #include <conio.h>
 #include <iomanip>
@@ -110,12 +112,16 @@ void menuDeveloper(address &root);
 /*gameplay.h
 **Fungsinya: THE GAME 
 */
-void mulaiBermain(address &root, int radiusPandang, int &profil, bool developer); 
-// void mulaiBermain(address &root, int radiusPandang, SkillNode* SkillRoot);
+void mulaiBermain(address &root, int radiusPandang, int &profil, bool developer, SkillNode* skillRoot = nullptr);
 
 /*gameplay.h
 **Fungsinya: masuk ke menu profil
 */
 int menuProfil(int &profil);
+
+/*gameplay.h
+**Fungsinya: membuka menu skill dalam gameplay
+*/
+bool bukaMenuSkillGameplay(CharacterStats* playerStats, SkillNode* skillRoot = nullptr);
 
 #endif
