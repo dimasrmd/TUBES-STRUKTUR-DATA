@@ -1,17 +1,8 @@
-# 🎮 The Game: Bizzare Night at Campus 🎮
-Sebuah game petualangan yang dapat dijalankan dalam terminal (CLI) berbasis Binary-Search Tree (BST).
+# 🏰 Campus Mystery: Text-Based Adventure Game
 
-***
-
-## 📃 Deskripsi 📃
-Game ini merupakan tugas besar dari mata kuliah struktur data (Praktikum), yang dimana kita menggunaka algoritma binary-search tree untuk penyimpanan data dan pencarian data. Tujuan kami lebih memilih menggunakan Binary Search Tree dibandingkan array, karena untuk menghemat penyimpanan memori dan memperdalam pengetahuan penggunaan Binary-Search Tree.
-
----
-
-## 🗨️ Sinopsi dari The Game: Bizzare Night at Campus💬
-Dalam game ini kita bermain sebagai seorang mahasiswa yang sedang mengerjakan tugas hingga larut malam didalam perpustakaan. Seorang satpam yang kebetulan sedang bersedia untuk pulang sedang mengunci semua pintu yang terbuka. Sehingga mahasiswa tersebut terkurung didalam perpustakaan. Namun semakin malam, suasana kampus semakin berubah. Mahasiswa tersebut merasa tidak nyaman dan segera bergegas keluar dari kampus, namun pintu perpustakaan telah terkunci. Dari sinilah ia memulai pencarian jalan keluar. Bagaimanakah kelanjutannya?
-
----
+> **Status:** ✅ Selesai (Finished)
+> **Bahasa:** C++
+> **Struktur Data:** Binary Search Tree (BST)
 
 ## 👥 Anggota Kelompok 👥
 > Kelompok kecil yang memiliki keinginan untuk membuat game
@@ -22,64 +13,117 @@ Dalam game ini kita bermain sebagai seorang mahasiswa yang sedang mengerjakan tu
 | 2. | Lutfi Shidqi Mardian | 103112400077 | [Github - Lutfi](https://github.com/chickenndrice) |
 | 3. | Abisar Fathir | 103112400068 | [Github - Fathir](https://github.com/Sarrrrrrrrrrrrrr) |
 
----
+## 📖 Deskripsi Proyek
+**Campus Mystery** adalah game petualangan berbasis teks (console) dengan nuansa horor/misteri. Pemain terjebak di dalam lingkungan kampus (dimulai dari Perpustakaan) dan harus mencari petunjuk, memecahkan teka-teki, dan menemukan jalan keluar.
 
-## 🌟 Fitur 🌟
-Berikut beberapa fitur yang ada didalam game **The Game: Bizzare Night at Campus**:
-* **Rendering**, dalam game ini player hanya dapat melihat objek bergantung dengan jarak pandang.
-* **Interaksi**, dalam game ini memiliki beberapa objek yang dapat di interaksi dan menampilkan pesan khusus.
-* **Efisiensi Memori**, game ini menggunakan Binary-Search Tree untuk menyimpan objek yang dapat dapat menghemat memori dibandingkan dengan array.
-* **Door Locked/Unlocked**, game ini juga ada pintu yang terkunci yang mengharuskan pemain mencari kuncinya terlebih dahulu.
-* **developer Mode** (On-Going), pada mode khusus ini pengguna dapat melakukan penambahan, update, atau hapus objek.
-* **Musuh** (On-Going), agar pemain tidak bosan maka ditambahkan beberapa tantangan dalam game. 
-* **Skill List** (On-Going), untuk mempermudah permainan akan diberikan beberapa skill tambahan. Konsep skill list ini akan menggunakan **multilinked list**
+Proyek ini dibuat untuk mendemonstrasikan implementasi struktur data **Binary Search Tree (BST)** dalam pengelolaan sistem peta (mapping) game, menggantikan penggunaan Array 2D konvensional untuk efisiensi memori pada peta yang luas (sparse matrix).
 
-***
+## 🎮 Fitur Utama
+* **Eksplorasi Dunia Terbuka (Sederhana):** Bergerak bebas menggunakan tombol `W`, `A`, `S`, `D`.
+* **Sistem Peta Dinamis:** Peta di-render secara *real-time* berdasarkan radius pandang pemain menggunakan BST.
+* **Interaksi Objek:** Pemain dapat memeriksa objek (seperti buku, lukisan, atau pintu) untuk mendapatkan deskripsi atau petunjuk.
+* **Visualisasi ASCII:** Menggunakan seni ASCII untuk memberikan atmosfer visual pada objek tertentu (seperti buku clue atau pemandangan perpustakaan).
+* **Mekanisme Puzzle:** Mencari digit password yang tersembunyi di berbagai lokasi untuk membuka pintu terkunci.
+* **Turn-Based Battle System:** Melawan Boss Naga menggunakan "Knowledge Battle", dimana pemain harus menjawab pertanyaan seputar materi Kuliah (Linked List) untuk menyerang.
+* **Database & Save System:** Menggunakan **SQLite** untuk menyimpan akun pemain, progress permainan (posisi terakhir, status pintu), dan data developer.
+* **Developer Mode:** Mode khusus (CRUD) untuk admin/developer menambahkan objek atau tembok baru ke dalam peta secara dinamis tanpa mengubah kodingan (disimpan di database).
 
-## CARA COMPILE 🚀
-### COMPILE GAME.EXE
-```bash
-g++ (ls *.cpp | ? {$_.Name -ne 'main_developer.cpp'}).name -o game.exe -lsqlite3;
+## 🛠️ Arsitektur Teknis (Struktur Data)
+
+### Mengapa Binary Search Tree (BST)?
+Dalam game ini, setiap objek (tembok, item, pintu) direpresentasikan sebagai sebuah **Node**. Kami menggunakan BST untuk menyimpan koordinat objek-objek tersebut.
+
+* **Efisiensi Memori:** Berbeda dengan Array 2D yang harus mengalokasikan memori untuk area kosong, BST hanya menyimpan koordinat yang memiliki objek.
+* **Pencarian Cepat:** Saat pemain bergerak ke koordinat `(x, y)`, program melakukan pencarian di Tree (Kompleksitas O(log n)) untuk menentukan apakah ada objek atau tembok di sana.
+
+### Struktur Node (`bstNode.h`)
+Setiap node dalam tree menyimpan data berikut:
+```cpp
+typedef struct Node *address; // bstNode.h: address menyimpan alamat node
+struct infoNode { // bstNode.h: struktur info node
+    int x, y;
+    string nama, pesan;
+    bool solid;
+};
+
+struct Node { // bstNode.h: struktur dari node
+    infoNode info;
+    address left, right;
+};
 ```
+
+### 📂 Struktur File
+```
+.
+├── Assets/                 # Header file berisi ASCII Art
+│   ├── lorongFrames.h
+│   ├── serpentIntroFrames.h
+│   └── ... (Art Assets lainnya)
+├── Database/               # Folder penyimpanan file database
+├── bstNode.h               # Header: Definisi pointer dan struct BST
+├── bstNode.cpp             # Source: Implementasi primitif BST (Insert, Search)
+├── database.h              # Header: Definisi fungsi database SQLite
+├── database.cpp            # Source: Implementasi query SQL (Save/Load)
+├── gameplay.h              # Header: Definisi logika game
+├── gameplay.cpp            # Source: Implementasi core loop, render map, interaksi
+├── BattleSystem.h          # Header: Definisi sistem battle
+├── BattleSystem.cpp        # Source: Implementasi mechanics battle & quiz
+├── main_game.cpp           # Main Program (Player Edition)
+└── main_developer.cpp      # Main Program (Developer/Admin Edition)
+```
+
+### Integrasi Database (SQLite)
+Game ini menggunakan SQLite untuk memisahkan data statis dan dinamis:
+- `dataPemain.db`: Menyimpan akun user (username), posisi terakhir (X, Y), dan status progress (misal: apakah pintu sudah dibuka).
+- `dataDeveloper.db`: Menyimpan akun developer dan daftar seluruh objek dalam game. Ketika game mulai, program akan meload semua objek dari database ini ke dalam BST.
+
+### 🚀 Cara Menjalankan
+Prasyarat:
+- Compiler C++ (GCC/G++ atau MinGW) dengan library **sqlite3** sudah terinstall.
+- Terminal / Command Prompt.
+
+Langkah-langkah
+Clone repository ini:
+```Bash
+git clone https://github.com/dimasrmd/TUBES-STRUKTUR-DATA.git
+```
+Masuk ke direktori project.
+
+### 1. COMPILE GAME UTAMA (Player)
+Jalan perintah berikut di terminal:
+```bash
+g++ main_game.cpp gameplay.cpp bstNode.cpp database.cpp BattleSystem.cpp -o game -lsqlite3
+```
+Jalankan program:
 ```bash
 ./game
 ```
 
-### COMPILE DEVELOPER.EXE
+### 2. COMPILE MODE DEVELOPER (Admin)
+Untuk menjalankan mode developer (menambah/edit objek peta):
 ```bash
-g++ (ls *.cpp | ? {$_.Name -ne 'main_game.cpp'}).name -o developer.exe -lsqlite3;
+g++ main_developer.cpp gameplay.cpp bstNode.cpp database.cpp BattleSystem.cpp -o developer -lsqlite3
 ```
+Jalankan program:
 ```bash
 ./developer
 ```
 
-<p align = "center"> 🛠️ MASIH DALAM PENGEMBANGAN (ON-GOING) </p>
+### 🗺️ Roadmap & Status Pengembangan
+Berikut adalah daftar fitur yang sudah diimplementasikan dan rencana pengembangan selanjutnya:
 
-<!-- ## ✍️ Cheat Penulisan dalam Markdown
-### 1. Penekanan Teks
-| Fungsi | Syntax (Kode) | Contoh Hasil |
-| :--- | :--- | :--- |
-| **Tebal (Bold)** | `**Kata Penting**` | **Kata Penting** |
-| *Miring (Italic)* | `*Perlu diperhatikan*` | *Perlu diperhatikan* |
-| ***Tebal & Miring*** | `***Kata Penting***` | ***Sangat Krusial*** |
-| Coret (Strikethrough) | `~~Sudah dihapus~~` | ~~Sudah dihapus~~ |
-| **Kombinasi** | `**Pastikan *Selesai***` | **Pastikan *Selesai*** |
+[x] **Core System:** Implementasi BST untuk koordinat peta.
 
-### 2. Struktur Organisasi
-| Fungsi | Syntax (Kode) | Contoh Hasil |
-| :--- | :--- | :--- |
-| **Judul Besar** | `# Judul Utama (H1)` | Judul paling atas, biasanya hanya sekali |
-| **Judul Sub-Bab** | `## Sub-Bab Penting (H2)` | Membagi dokumen menjadi bagian utama |
-| **Judul Rincian** | `### Rincian Kecil (H3)` | Bagus untuk judul di dalam sub-bab | 
-| **Daftar Poin** | `* Poin 1` | * Poin 1 | 
-| **Daftar Berurutan** | `1. Langkah 1` | 1. Langkah 1 | 
-| **Garis Pemisah** | `--- atau ***` | Membuat garis horizontal penuh |
+[x] **Rendering:** Menampilkan peta dengan simbol (#, P, =) sesuai radius pandang.
 
-### 3. Kode, Tautan, dan Data
-| Fungsi | Syntax (Kode) | Contoh Hasil |
-| :--- | :--- | :--- |
-| **Kode Inline** | ``git init`` | Digunakan untuk perintah atau nama variabel: `git init` |
-| **Kode Block** | `<br> ````bash`<br>`echo "halo dunia"`<br>` ````` | Memformat perintah/kode agar mudah disalain |
-| **Tautan (Link)** | `[Kunjungi Github](link-anda.com)` | Kunjungi GitHub | 
-| **Gambar (Image)** | `` | Menyematkan gambar (misalnya screenshot aplikasi) | 
-| **Tabel Data** | (Seperti pada format ini) | Mengatur data secara rapih |  -->
+[x] **Collision:** Deteksi tabrakan tembok.
+
+[x] **Puzzle Dasar:** Panel password pintu perpustakaan dengan riddle.
+
+[x] **Battle System:** Turn-based quiz melawan boss Naga dengan animasi ASCII art.
+
+[x] **Database:** Integrasi SQLite untuk login, save/load progress pemain, dan manajemen objek developer.
+
+[x] **Developer Mode:** Fitur login khusus dan input objek baru ke database.
+
+[x] **Art:** Integrasi ASCII art untuk clue visual, cutscene, dan battle.
