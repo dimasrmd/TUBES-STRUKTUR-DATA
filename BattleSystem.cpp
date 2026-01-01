@@ -264,10 +264,7 @@ void pintuMunculCutscene() {
 
 // Fungsi untuk menampilkan ending sequence setelah victory
 void victoryEndingSequence() {
-    // 1. Display null frames (black screen)
-    nullJiwaCutscene();
-    
-    // 2. Display monologue
+    // 1. Display monologue
     system("cls");
     cout << "\n\n";
     cout << "\n\nAkhirnya... naga itu sudah tidak ada lagi." << endl;
@@ -280,7 +277,8 @@ void victoryEndingSequence() {
     cout << "\nAku merasa... ini belum berakhir." << endl;
     Sleep(2000);
     
-    // 3. Display pintu muncul cutscene
+    // 2. Display pintu muncul cutscene
+    system("cls"); 
     cout << "\nPASTIKAN terminal sudah di-zoom out!" << endl;
     cout << "(Ctrl + Scroll atau Ctrl + -)" << endl;
     cout << "\nTekan tombol apapun untuk lanjut..." << endl;
@@ -288,7 +286,7 @@ void victoryEndingSequence() {
     
     pintuMunculCutscene();
     
-    // 5. Display "Chapter 1: Single Linked List - CLEARED"
+    // 3. Display "Chapter 1: Single Linked List - CLEARED"
     system("cls");
     cout << "\n\n\n\n\n\n";
     cout << "========================================" << endl;
@@ -297,7 +295,7 @@ void victoryEndingSequence() {
     cout << "========================================" << endl;
     Sleep(3000);
     
-    // 6. Display "TO BE CONTINUED..."
+    // 4. Display "TO BE CONTINUED..."
     system("cls");
     cout << "\n\n\n\n\n\n\n\n";
     cout << "           TO BE CONTINUED..." << endl;
@@ -460,6 +458,10 @@ void startDragonBattle() {
             
             // Display victory ending sequence
             victoryEndingSequence();
+            
+            // Setelah victory, langsung keluar dari loop (kembali ke main menu)
+            playAgain = false;
+            
         } else {
             // Reminder zoom out untuk game over cutscene
             cout << "\nPASTIKAN terminal sudah di-zoom out!" << endl;
@@ -478,31 +480,31 @@ void startDragonBattle() {
             cout << "\nKamu gagal me-management pointer." << endl;
             cout << "Naga itu memakanmu..." << endl;
             Sleep(2000);
-        }
-        
-        // === PLAY AGAIN PROMPT ===
-        cout << "\n\n========================================" << endl;
-        cout << "         PLAY AGAIN?                    " << endl;
-        cout << "========================================" << endl;
-        cout << "\n[Y] YES - Coba lagi melawan naga" << endl;
-        cout << "[N] NO  - Lanjut ke area berikutnya" << endl;
-        cout << "\n>> Pilihan: ";
-        
-        // Bersihkan buffer
-        while (_kbhit()) _getch();
-        
-        char choice = toupper(_getch());
-        cout << choice << endl;
-        
-        if (choice == 'Y') {
-            playAgain = true;
-            system("cls");
-            cout << "\nMemulai ulang battle..." << endl;
-            Sleep(1000);
-        } else {
-            playAgain = false;
-            cout << "\nMelanjutkan perjalanan..." << endl;
-            Sleep(1000);
+            
+            // === PLAY AGAIN PROMPT (hanya untuk game over) ===
+            cout << "\n\n========================================" << endl;
+            cout << "         PLAY AGAIN?                    " << endl;
+            cout << "========================================" << endl;
+            cout << "\n[Y] YES - Coba lagi " << endl;
+            cout << "[N] NO  - Kembali ke main menu" << endl;
+            cout << "\n>> Pilihan: ";
+            
+            // Bersihkan buffer
+            while (_kbhit()) _getch();
+            
+            char choice = toupper(_getch());
+            cout << choice << endl;
+            
+            if (choice == 'Y') {
+                playAgain = true;
+                system("cls");
+                cout << "\nMemulai ulang battle..." << endl;
+                Sleep(1000);
+            } else {
+                playAgain = false;
+                cout << "\nKembali ke main menu..." << endl;
+                Sleep(1000);
+            }
         }
         
     } while (playAgain);
