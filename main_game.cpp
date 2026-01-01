@@ -24,13 +24,13 @@ int main () {
     do {
         int extProfil = 0; // indikator exit di menu profil pas belom punya username
         system("cls");
-        cout << "=========================" << endl;
-        cout << "      RENDERING GAME      " << endl;
-        cout << "=========================" << endl;
+        cout << setfill('=') << setw(50) << " " << endl; setfill(' ');
+        cout << "\tTHE GAME: BIZZARE NIGHT AT CAMPUS      " << endl;
+        cout << setfill('=') << setw(50) << " " << endl; setfill(' ');
         cout << "1. Mulai Bermain" << endl;
         cout << "2. Setting" << endl;
         cout << "3. Keluar" << endl;
-        cout << "-------------------------" << endl;
+        cout << setfill('-') << setw(50) << " " << endl; setfill(' ');
         cout << "Pilih menu (1-3): ";
         cin >> pilihanMenu;
         switch (pilihanMenu)
