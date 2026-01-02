@@ -416,7 +416,7 @@ bool authDeveloper(){
     cout << "Sebutkan kata kunci nya: ";
     // cin.ignore();
     getline(cin, keyWord);
-    if (keyWord != "aku cinta bahlil") return false;
+    if (keyWord != "palpalepalpale") return false;
     cout << "\n[SYSTEM] Kata kunci diterima!..."; _getch();
 
     string usn, pass;
