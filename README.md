@@ -150,7 +150,7 @@ Masuk ke direktori project.
 ### 1. COMPILE GAME UTAMA (Player)
 Jalan perintah berikut di terminal:
 ```bash
-g++ -o game main_game.cpp gameplay.cpp BattleSystem.cpp bstNode.cpp database.cpp SkillTree/Skilltree.cpp SkillTree/effect.cpp -lsqlite3 -std=c++17 -lws2_32
+g++ -o game main_game.cpp gameplay.cpp BattleSystem.cpp bstNode.cpp database.cpp SkillTree/Skilltree.cpp SkillTree/effect.cpp Database/sqlite3.o -std=c++17 -lws2_32
 ```
 Jalankan program:
 ```bash
@@ -160,7 +160,7 @@ Jalankan program:
 ### 2. COMPILE MODE DEVELOPER (Admin)
 Untuk menjalankan mode developer (menambah/edit objek peta):
 ```bash
-g++ -o developer main_developer.cpp gameplay.cpp BattleSystem.cpp bstNode.cpp database.cpp SkillTree/Skilltree.cpp SkillTree/effect.cpp -lsqlite3 -std=c++17 -lws2_32
+g++ -o developer main_developer.cpp gameplay.cpp BattleSystem.cpp bstNode.cpp database.cpp SkillTree/Skilltree.cpp SkillTree/effect.cpp Database/sqlite3.o -std=c++17 -lws2_32
 ```
 Jalankan program:
 ```bash
