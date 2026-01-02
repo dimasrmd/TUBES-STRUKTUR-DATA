@@ -686,7 +686,7 @@ void mulaiBermain(address &root, int radiusPandang, int &profil, bool developer,
         system("cls");
         if (ruanganAktif == 1) namaRuangan = "PERPUSTAKAAN";
         else if (ruanganAktif == 2) namaRuangan = "LORONG";
-        cout << "======== PERMainan CAMPUS - RUANGAN " << namaRuangan << " ========" << endl;
+        cout << "======== " << namaRuangan << " ========" << endl;
         cout << "ID: " << profil << endl << endl;
         cout << "Posisi: " << x << ", " << y << endl;
     

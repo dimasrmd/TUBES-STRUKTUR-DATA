@@ -55,70 +55,66 @@ vector<Question> loadQuestions() {
 // ==========================================
 void serpentIntroductionCutscene() {
     // Array frame animasi naga dari file header
-    cout << "Ingin skip animasi? Y atau N";
-    cin.ignore();
-    char skip = toupper(cin.get());
-    if (skip != 'Y') {
-        const char* introFrames[18] = {
+    const char* introFrames[18] = {
         serpentIntroFrame1, serpentIntroFrame2, serpentIntroFrame3,
         serpentIntroFrame4, serpentIntroFrame5, serpentIntroFrame6,
         serpentIntroFrame7, serpentIntroFrame8, serpentIntroFrame9,
         serpentIntroFrame10, serpentIntroFrame11, serpentIntroFrame12,
         serpentIntroFrame13, serpentIntroFrame14, serpentIntroFrame15,
         serpentIntroFrame16, serpentIntroFrame17, serpentIntroFrame18
-        };
+    };
 
-        // Play Animasi 18 Frame
-        for (int i = 0; i < 18; i++) {
-            system("cls");
-            cout << introFrames[i] << endl;
-            Sleep(300); // Speed animasi
-        }
-
-        // Pause setelah frame terakhir - tunggu player tekan ENTER
-        cout << "\nTekan ENTER untuk lanjut..." << endl;
-        cin.ignore();
-        cin.get(); // untuk membaca 1 karakter saja
-
-        // === NARASI MONOLOG KARAKTER (4 BAGIAN) ===
-
-        // Bagian 1
+    // Play Animasi 18 Frame
+    for (int i = 0; i < 18; i++) {
         system("cls");
-        cout << "Apa... apa ini?!" << endl;
-        cout << "Naga raksasa... dengan rune aneh yang bercahaya!" << endl;
-        Sleep(2000);
-
-        cout << "\nTekan tombol apapun untuk lanjut..." << endl;
-        _getch();
-
-        // Bagian 2
-        system("cls");
-        cout << "Tunggu... rune ini..." << endl;
-        cout << "HEAD... DATA... NULL..." << endl;
-        Sleep(2000);
-
-        cout << "\nTekan tombol apapun untuk lanjut..." << endl;
-        _getch();
-
-        // Bagian 3
-        system("cls");
-        cout << "Ini... LINKED LIST?!" << endl;
-        cout << "Struktur yang kupelajari di mata kuliah Struktur Data!" << endl;
-        Sleep(2000);
-
-        cout << "\nTekan tombol apapun untuk lanjut..." << endl;
-        _getch();
-
-        // Bagian 4
-        system("cls");
-        cout << "Aku harus mengingat pelajaranku..." << endl;
-        cout << "Jika aku bisa memahami strukturnya..." << endl;
-        cout << "mungkin aku bisa mengalahkannya!" << endl;
-        Sleep(2000);
-
-        cout << "\nTekan tombol apapun untuk lanjut..." << endl;
-        _getch();
+        cout << introFrames[i] << endl;
+        Sleep(300); // Speed animasi
     }
+
+    // Pause setelah frame terakhir - tunggu player tekan ENTER
+    cout << "\nTekan ENTER untuk lanjut..." << endl;
+    cin.ignore();
+    cin.get(); // untuk membaca 1 karakter saja
+
+    // === NARASI MONOLOG KARAKTER (4 BAGIAN) ===
+
+    // Bagian 1
+    system("cls");
+    cout << "Apa... apa ini?!" << endl;
+    cout << "Naga raksasa... dengan rune aneh yang bercahaya!" << endl;
+    Sleep(2000);
+
+    cout << "\nTekan tombol apapun untuk lanjut..." << endl;
+    _getch();
+
+    // Bagian 2
+    system("cls");
+    cout << "Tunggu... rune ini..." << endl;
+    cout << "HEAD... DATA... NULL..." << endl;
+    Sleep(2000);
+
+    cout << "\nTekan tombol apapun untuk lanjut..." << endl;
+    _getch();
+
+    // Bagian 3
+    system("cls");
+    cout << "Ini... LINKED LIST?!" << endl;
+    cout << "Struktur yang kupelajari di mata kuliah Struktur Data!" << endl;
+    Sleep(2000);
+
+    cout << "\nTekan tombol apapun untuk lanjut..." << endl;
+    _getch();
+
+    // Bagian 4
+    system("cls");
+    cout << "Aku harus mengingat pelajaranku..." << endl;
+    cout << "Jika aku bisa memahami strukturnya..." << endl;
+    cout << "mungkin aku bisa mengalahkannya!" << endl;
+    Sleep(2000);
+
+    cout << "\nTekan tombol apapun untuk lanjut..." << endl;
+    _getch();
+
     
     // === REMINDER ZOOM OUT SEBELUM BATTLE ===
     system("cls");
