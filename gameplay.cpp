@@ -198,17 +198,12 @@ bool firstPersonWalking(int &playerX, int &playerY, CharacterStats& playerStats,
     
     Sleep(500); // Jeda dikit biar napas
     
-    cout << "SKIPPPPP? ";
-    cin.ignore();
-    char apa = toupper(cin.get());
-    if (apa != 'Y') {
-        // 1. Cutscene Pintu & Transisi
-        doorOpeningCutscene();
-        transisiCutscene();
-        
-        // 2. Cutscene Naga
-        serpentIntroductionCutscene();
-    }
+    // 1. Cutscene Pintu & Transisi
+    doorOpeningCutscene();
+    transisiCutscene();
+    
+    // 2. Cutscene Naga
+    serpentIntroductionCutscene();
     
     // 3. Battle Quiz
     bool kembaliMenu = startDragonBattle(playerStats, skillRoot);
